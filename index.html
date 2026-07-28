@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Founder Validation Intelligence Platform — discover where your startup truly stands and receive a personalized validation roadmap.">
+<meta name="theme-color" content="#0d0d0d">
+<title>Founder Validation Journey — Film Business Accelerator</title>
+
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="assets/css/main.css">
+
+<!-- Tailwind utility layer. Preflight is disabled deliberately: it resets
+     heading sizes and form controls, which would override the design system
+     in main.css. Utilities remain available; main.css stays authoritative.
+     If this CDN is blocked, the platform still renders correctly. -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  if (window.tailwind) {
+    tailwind.config = {
+      corePlugins: { preflight: false },
+      theme: { extend: { colors: { accent: '#7c6df2', plane: '#0d0d0d' } } }
+    };
+  }
+</script>
+</head>
+<body>
+
+<div class="rail no-print"><div class="rail-fill" id="rail-fill"></div></div>
+
+<!-- ===================== TOP BAR ===================== -->
+<header class="topbar no-print" id="topbar" hidden>
+  <div class="wrap topbar-inner">
+    <a class="brand" href="./" id="brand-home">
+      <span class="brand-mark">FV</span>
+      <span>
+        Founder Validation
+        <span class="brand-sub" id="brand-context"></span>
+      </span>
+    </a>
+    <nav class="nav-pills" id="section-nav" aria-label="Dashboard sections"></nav>
+    <span class="pill" id="sync-badge" aria-live="polite" style="flex:none"></span>
+  </div>
+</header>
+
+<main id="app">
+
+  <!-- ===================== VIEW 1 — SEARCH ===================== -->
+  <section class="view active" id="view-search">
+    <div class="wrap" style="min-height:100vh;display:grid;place-items:center;padding:3rem 0">
+      <div style="width:100%;max-width:760px;text-align:center">
+
+        <div class="pill pill-accent" style="margin-bottom:2rem">
+          <span aria-hidden="true">🎬</span> Film Business Accelerator
+        </div>
+
+        <h1 style="margin-bottom:1.2rem">
+          Welcome to the<br>
+          <span style="background:linear-gradient(120deg,#a99bff,#6fb0f5 55%,#3fd39c);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:#a99bff">
+            Founder Validation Journey
+          </span>
+        </h1>
+
+        <p style="font-size:clamp(1rem,2vw,1.18rem);color:var(--ink-2);max-width:56ch;margin:0 auto 2.6rem">
+          Discover where your startup truly stands and receive a personalized validation roadmap.
+        </p>
+
+        <div class="search-shell">
+          <div class="search-field">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path>
+            </svg>
+            <input class="search-input" id="search-input" type="text" autocomplete="off"
+                   spellcheck="false" role="combobox" aria-expanded="false"
+                   aria-controls="suggestions" aria-autocomplete="list"
+                   aria-label="Search by your name or your startup name"
+                   placeholder="Enter your name or your startup name...">
+          </div>
+          <div class="suggestions" id="suggestions" role="listbox" aria-label="Search results"></div>
+        </div>
+
+        <p class="muted" style="font-size:.86rem;margin-top:1.4rem">
+          Search in Arabic or English — founder name, team member, or startup.
+        </p>
+
+        <div style="margin-top:2.8rem">
+          <p class="muted" style="font-size:.76rem;letter-spacing:.11em;text-transform:uppercase;margin-bottom:.9rem">
+            Participating this session
+          </p>
+          <div class="tags" id="quick-picks" style="justify-content:center"></div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== VIEW 2 — WELCOME ===================== -->
+  <section class="view" id="view-welcome">
+    <div class="wrap" style="min-height:100vh;display:grid;place-items:center;padding:3rem 0">
+      <div style="width:100%;max-width:920px" id="welcome-content"></div>
+    </div>
+  </section>
+
+  <!-- ===================== VIEW 3 — LOADING ===================== -->
+  <section class="view" id="view-loading">
+    <div class="wrap loader">
+      <div class="loader-ring" role="status" aria-live="polite" aria-label="Preparing your journey"></div>
+      <h2 id="loader-headline">Preparing your personalized mentor recommendations...</h2>
+      <div class="loader-steps" id="loader-steps"></div>
+    </div>
+  </section>
+
+  <!-- ===================== VIEW 4 — DASHBOARD ===================== -->
+  <section class="view" id="view-dashboard">
+    <div id="dashboard-content"></div>
+  </section>
+
+  <!-- ===================== VIEW 5 — REPORT ===================== -->
+  <section class="view" id="view-report">
+    <div id="report-content"></div>
+  </section>
+
+</main>
+
+<footer class="no-print" style="border-top:1px solid var(--line);padding:2rem 0;margin-top:3rem">
+  <div class="wrap" style="display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;align-items:center">
+    <p class="muted" style="font-size:.85rem">
+      Founder Validation Intelligence Platform — Film Business Accelerator
+    </p>
+    <a href="mentor.html" class="muted" style="font-size:.85rem">Mentor Dashboard →</a>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/storage.js"></script>
+<script src="assets/js/ui.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>

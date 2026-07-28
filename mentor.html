@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Anonymous cohort analytics for the Film Business Accelerator validation workshop.">
+<meta name="theme-color" content="#0d0d0d">
+<title>Mentor Dashboard — Film Business Accelerator</title>
+
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="assets/css/main.css">
+
+<!-- Preflight disabled — see index.html for rationale. -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  if (window.tailwind) {
+    tailwind.config = {
+      corePlugins: { preflight: false },
+      theme: { extend: { colors: { accent: '#7c6df2', plane: '#0d0d0d' } } }
+    };
+  }
+</script>
+</head>
+<body>
+
+<div class="rail no-print"><div class="rail-fill" id="rail-fill"></div></div>
+
+<!-- ===================== GATE ===================== -->
+<section class="view active" id="view-gate">
+  <div class="wrap" style="min-height:100vh;display:grid;place-items:center;padding:3rem 0">
+    <div class="glass" style="width:100%;max-width:440px;padding:2.4rem;text-align:center">
+      <div class="brand-mark" style="width:46px;height:46px;border-radius:14px;margin:0 auto 1.4rem;font-size:1rem">FV</div>
+      <h2 style="margin-bottom:.6rem">Mentor Dashboard</h2>
+      <p class="muted" style="font-size:.93rem;margin-bottom:1.8rem">
+        Anonymous cohort analytics. No startup names, no founder names.
+      </p>
+
+      <form id="gate-form" autocomplete="off">
+        <label class="field-label" for="gate-password" style="text-align:left">Access password</label>
+        <input class="input" id="gate-password" type="password" placeholder="Enter mentor password"
+               autocomplete="current-password" aria-describedby="gate-error">
+        <p id="gate-error" class="text-critical" style="font-size:.87rem;margin-top:.7rem;display:none" role="alert"></p>
+        <button class="btn btn-primary" type="submit" style="width:100%;margin-top:1.2rem">Open Dashboard</button>
+      </form>
+
+      <p class="muted" style="font-size:.78rem;margin-top:1.6rem">
+        This gate keeps the dashboard out of the way during the workshop.
+        It is a client-side check, not a security boundary.
+      </p>
+      <a href="index.html" class="muted" style="font-size:.85rem;display:inline-block;margin-top:1rem">← Founder Portal</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== DASHBOARD ===================== -->
+<section class="view" id="view-dash">
+
+  <header class="topbar no-print">
+    <div class="wrap topbar-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">FV</span>
+        <span>Mentor Dashboard<span class="brand-sub"> · Anonymous cohort view</span></span>
+      </a>
+      <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
+        <span class="pill" id="live-badge" aria-live="polite"></span>
+        <button class="btn btn-ghost" id="refresh-data" style="padding:.5rem 1rem;font-size:.85rem">↻ Refresh</button>
+        <button class="btn btn-primary" id="print-workshop" style="padding:.5rem 1rem;font-size:.85rem">Workshop Report</button>
+      </div>
+    </div>
+  </header>
+
+  <div id="dash-content"></div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/storage.js"></script>
+<script src="assets/js/ui.js"></script>
+<script src="assets/js/mentor.js"></script>
+</body>
+</html>

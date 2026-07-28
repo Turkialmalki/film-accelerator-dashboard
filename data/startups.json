@@ -1,0 +1,1076 @@
+[
+  {
+    "id": "specter-production",
+    "startup_name_ar": "سبكتر برودكشن",
+    "startup_name_en": "Specter Production",
+    "category": "Production House",
+    "description": "A boutique production house delivering branded films and commercials for Saudi enterprise clients, moving toward owned IP.",
+    "stage": "First Revenue",
+    "readiness": 62,
+    "revenue": "SAR 480K / year",
+    "team_size": 7,
+    "founders": [
+      { "name_ar": "أحمد الحويماني", "name_en": "Ahmed Alhuwaimani", "role": "Co-Founder & CEO" },
+      { "name_ar": "عبد الله با مجبور", "name_en": "Abdullah Bamajbour", "role": "Co-Founder & Head of Production" }
+    ],
+    "team_members": [
+      { "name_ar": "ريم القحطاني", "name_en": "Reem Alqahtani", "role": "Producer" },
+      { "name_ar": "فهد الشمري", "name_en": "Fahad Alshamri", "role": "Director of Photography" }
+    ],
+    "logo": "specter",
+    "cover_image": "gradient-violet",
+    "business_model": "Project-based B2B services (retainer + per-project)",
+    "target_customer": "Marketing directors at Saudi enterprises and government entities with annual content budgets above SAR 300K.",
+    "problem_statement": "Enterprise marketing teams need high-quality Saudi-authentic video content but agencies deliver slowly, expensively, and with generic creative that fails locally.",
+    "value_proposition": "Cinema-grade branded films with a Saudi creative voice, delivered in half the typical agency timeline at a transparent fixed price.",
+    "traction": "14 paid projects delivered, 3 clients on retainer, 68% of revenue from repeat business, zero paid marketing spend.",
+    "validation_scores": { "problem": 78, "customer": 71, "solution": 74, "revenue": 66, "market": 58, "execution": 69, "team": 64, "investor": 41, "competition": 52 },
+    "strengths": [
+      "Strong repeat-purchase rate proves clients are genuinely satisfied, not just experimenting.",
+      "Founding team combines commercial production discipline with real directing craft.",
+      "Reputation-driven pipeline with zero customer acquisition cost to date."
+    ],
+    "weaknesses": [
+      "Revenue is entirely founder-dependent — both founders touch every project.",
+      "No standardised pricing model, so margins vary wildly between projects.",
+      "Cash flow is lumpy with 60–90 day enterprise payment terms."
+    ],
+    "opportunities": [
+      "Saudi content spend is rising sharply under Vision 2030 cultural investment.",
+      "Retainer contracts could convert lumpy project income into predictable ARR.",
+      "Owned IP (short films, formats) could create an asset base beyond services."
+    ],
+    "threats": [
+      "Large regional agencies moving down-market into boutique pricing.",
+      "Client budgets are discretionary and cut first in a downturn.",
+      "Key talent can be poached by better-funded competitors."
+    ],
+    "risks": [
+      {
+        "title": "The business does not scale beyond the founders' hours",
+        "why": "Every project depends on one of the two founders being personally involved in creative and delivery. Revenue is capped by their calendar, not by market demand.",
+        "consequences": "Growth stalls around SAR 1M, both founders burn out, and the company has no enterprise value because it cannot be sold or run without them.",
+        "solution": "Document the production process into a repeatable playbook, hire and train one senior producer to own delivery end-to-end, and deliberately keep the founders off two consecutive projects to test the system.",
+        "example": "Early-stage agencies like Wieden+Kennedy grew only after codifying a creative process others could execute; founder-led shops that never did stayed at boutique scale for decades."
+      },
+      {
+        "title": "Client concentration creates fragility",
+        "why": "A large share of revenue comes from a small number of enterprise clients whose marketing budgets are annually renegotiated and outside your control.",
+        "consequences": "Losing a single account could remove a third or more of annual revenue overnight, forcing layoffs during your growth phase.",
+        "solution": "Set a hard rule that no client exceeds 25% of revenue, and build a named pipeline of ten target accounts you actively pursue each quarter.",
+        "example": "Many service businesses collapse not from lack of demand but from losing one anchor client — the classic agency failure pattern."
+      },
+      {
+        "title": "Pricing is negotiated, not engineered",
+        "why": "Without a costed pricing model you cannot tell which projects are profitable. Discounting to win work silently destroys margin.",
+        "consequences": "You can grow revenue while shrinking profit, and you will not discover it until cash runs short.",
+        "solution": "Build a bottom-up cost model per project type, set a minimum gross margin floor of 40%, and walk away from work below it.",
+        "example": "Basecamp's fixed, published pricing removed negotiation entirely and protected margin — a deliberate strategic choice, not an accident."
+      }
+    ],
+    "customer_assumptions": [
+      { "title": "Clients buy on creative quality, not price", "description": "We assume marketing directors choose us for craft even when a cheaper vendor bids. If price actually dominates, our entire positioning is wrong.", "status": "partial" },
+      { "title": "Retainers are attractive to enterprise clients", "description": "We assume clients want ongoing monthly content rather than one-off campaign projects.", "status": "not" },
+      { "title": "The buyer is the marketing director", "description": "We assume the marketing director holds real budget authority rather than routing approval upward to a CMO or procurement.", "status": "validated" }
+    ],
+    "business_assumptions": [
+      { "title": "40% gross margin is achievable at scale", "description": "We assume margins hold as we add staff rather than compress under fixed payroll.", "status": "not" },
+      { "title": "Repeat business will continue without sales effort", "description": "We assume word of mouth sustains pipeline as we grow beyond the founders' personal networks.", "status": "partial" }
+    ],
+    "technical_assumptions": [
+      { "title": "Our production workflow can handle 3 concurrent projects", "description": "We assume current crew, equipment and post-production capacity supports parallel delivery without quality loss.", "status": "not" }
+    ],
+    "pricing_assumptions": [
+      { "title": "Clients will accept a published rate card", "description": "We assume moving from bespoke quotes to standard packages will not lose deals.", "status": "not" },
+      { "title": "A 20% price increase would not reduce demand", "description": "We assume we are currently under-priced relative to delivered value.", "status": "not" }
+    ],
+    "investor_questions": [
+      "What is your revenue per founder-hour, and how does that change as you grow?",
+      "Which of your clients would still buy if both founders were unavailable for a quarter?",
+      "What percentage of revenue comes from your largest client?",
+      "Is this a services business or a product business — and which one are you pitching me?",
+      "What is your gross margin per project type, and how do you know?",
+      "What would you build with capital that you cannot build with revenue?"
+    ],
+    "reflection_questions": [
+      "If Specter disappeared tomorrow, which client would genuinely struggle to replace you, and why?",
+      "What evidence proves clients choose you for craft rather than relationship?",
+      "Which part of the business only works because you personally intervene?",
+      "What would have to be true for this to be a SAR 10M company?"
+    ],
+    "mentor_notes": "You have something rare — real revenue and real repeat customers. The danger is comfort. A profitable services business feels like success but caps out at the founders' capacity. The strategic question this quarter is not how to get more clients; it is whether you are building an agency or a product company, because the two require opposite decisions. Pick one deliberately.",
+    "recommended_books": [
+      { "title": "Built to Sell", "author": "John Warrillow", "why": "Directly addresses the founder-dependency trap in service businesses." },
+      { "title": "The E-Myth Revisited", "author": "Michael Gerber", "why": "On systemising delivery so the business runs without you." },
+      { "title": "Profit First", "author": "Mike Michalowicz", "why": "Practical cash discipline for lumpy project revenue." }
+    ],
+    "recommended_frameworks": [
+      { "name": "Value-Based Pricing", "why": "Move from cost-plus quoting to pricing against client outcomes." },
+      { "name": "Jobs To Be Done", "why": "Understand what clients actually hire a production house to accomplish." },
+      { "name": "Productised Service Model", "why": "Convert bespoke projects into repeatable packages." }
+    ],
+    "recommended_tools": [
+      { "name": "Notion", "why": "Build the production playbook and SOP library." },
+      { "name": "Harvest", "why": "Track true hours per project to expose real margin." },
+      { "name": "HubSpot CRM", "why": "Manage a named enterprise pipeline instead of relying on inbound." }
+    ],
+    "recommended_videos": [
+      { "title": "How to Start a Startup — Lecture 2: Ideas, Products, Teams", "source": "Y Combinator", "why": "On choosing between service and product paths." },
+      { "title": "The Productized Service Playbook", "source": "Indie Hackers", "why": "Concrete tactics for packaging creative work." }
+    ],
+    "action_plan": [
+      { "task": "Build a costed pricing model for your three most common project types", "reason": "You cannot manage margin you cannot measure, and pricing is your fastest lever on profit.", "impact": "Expected 10–15 point gross margin improvement within two quarters.", "metric": "Documented cost model with gross margin calculated for every active project.", "deadline": "14 days" },
+      { "task": "Run one project end-to-end with neither founder in the delivery seat", "reason": "This is the only real test of whether the business can exist independently of you.", "impact": "Proves or disproves the scalability thesis before you hire against it.", "metric": "Project delivered at normal quality with founder involvement under 5 hours.", "deadline": "30 days" },
+      { "task": "Interview 8 enterprise marketing directors about retainer appetite", "reason": "Your retainer assumption is unvalidated and it is the core of your predictable-revenue plan.", "impact": "Either unlocks recurring revenue or saves you a wasted quarter.", "metric": "8 completed interviews with documented willingness-to-pay for monthly retainers.", "deadline": "21 days" }
+    ],
+    "discussion_topics": [
+      "Services versus product: which business are you actually building?",
+      "How to price creative work without racing to the bottom",
+      "Removing the founder from the delivery critical path"
+    ],
+    "kpis": [
+      { "name": "Gross margin per project", "target": "Above 40%", "why": "The single clearest signal of pricing health." },
+      { "name": "Revenue from largest client", "target": "Below 25%", "why": "Protects against concentration collapse." },
+      { "name": "Founder hours per project", "target": "Under 10", "why": "Measures progress toward a scalable operation." },
+      { "name": "Retainer ARR", "target": "SAR 600K", "why": "Converts lumpy revenue into predictable income." }
+    ],
+    "current_status": "Profitable but founder-dependent; the strategic question is whether to systemise services or build owned IP."
+  },
+  {
+    "id": "senaryohat",
+    "startup_name_ar": "سيناريوهات",
+    "startup_name_en": "Senaryohat",
+    "category": "Marketplace",
+    "description": "A marketplace connecting Arabic screenwriters with producers looking for original scripts and development talent.",
+    "stage": "MVP",
+    "readiness": 44,
+    "revenue": "Pre-revenue",
+    "team_size": 4,
+    "founders": [
+      { "name_ar": "نورة العتيبي", "name_en": "Noura Alotaibi", "role": "Founder & CEO" }
+    ],
+    "team_members": [
+      { "name_ar": "سعد المطيري", "name_en": "Saad Almutairi", "role": "Full-Stack Engineer" },
+      { "name_ar": "لمى الدوسري", "name_en": "Lama Aldosari", "role": "Community Lead" }
+    ],
+    "business_model": "Marketplace take rate (12% on script licensing) plus premium writer subscriptions",
+    "target_customer": "Independent Arabic screenwriters seeking paid work, and production companies sourcing original material.",
+    "problem_statement": "Arabic screenwriters have no visible market for their work, and producers waste months searching for original scripts through personal networks.",
+    "value_proposition": "A trusted marketplace where verified producers discover original Arabic scripts and writers get paid, discovered, and credited.",
+    "traction": "310 writers registered, 44 scripts uploaded, 6 producer accounts, zero completed transactions.",
+    "validation_scores": { "problem": 72, "customer": 48, "solution": 45, "revenue": 18, "market": 51, "execution": 46, "team": 42, "investor": 24, "competition": 38 },
+    "strengths": [
+      "Genuine writer-side enthusiasm with organic signups and no paid acquisition.",
+      "Founder has deep credibility inside the Arabic screenwriting community.",
+      "A real, widely-felt problem that everyone in the industry recognises immediately."
+    ],
+    "weaknesses": [
+      "Classic cold-start problem: supply is growing but demand is nearly absent.",
+      "No transaction has ever completed, so the core model is entirely unproven.",
+      "The team has no one focused on producer-side business development."
+    ],
+    "opportunities": [
+      "Streaming platforms are aggressively commissioning Arabic original content.",
+      "No incumbent owns Arabic script discovery — the category is genuinely open.",
+      "Data on what producers search for becomes a defensible asset over time."
+    ],
+    "threats": [
+      "Producers may prefer trusted personal networks over any platform.",
+      "Writers may transact off-platform once introduced, bypassing your take rate.",
+      "A well-funded regional player could copy the model quickly."
+    ],
+    "risks": [
+      {
+        "title": "You are building the wrong side of the marketplace",
+        "why": "You have 310 writers and 6 producers. Writers are easy to attract because they want money; producers are the scarce side that creates all the value. Every additional writer without a producer makes the experience worse, not better.",
+        "consequences": "Your most enthusiastic early users churn when nothing sells, and the community goodwill you built is spent before the model ever works.",
+        "solution": "Freeze writer growth entirely. Spend the next 60 days manually recruiting 20 producers, even if you have to broker the first deals by hand over WhatsApp with no product involved.",
+        "example": "Airbnb ignored scale early and manually recruited and photographed hosts in New York; the unscalable work was the strategy, not a detour from it."
+      },
+      {
+        "title": "Zero transactions means zero validation",
+        "why": "Registrations and uploads are vanity metrics. Until money moves between a producer and a writer, you have not validated the problem, the solution, the price, or the trust model.",
+        "consequences": "You could spend a year improving a product that no one will ever transact on, mistaking engagement for demand.",
+        "solution": "Set a single goal: one completed paid transaction within 45 days, achieved by any means including manual matchmaking. Then repeat it five times and study what made each one work.",
+        "example": "Stripe's founders manually onboarded their first users by installing the product themselves — the 'Collison installation' — to guarantee real usage."
+      },
+      {
+        "title": "Disintermediation will bypass your revenue model",
+        "why": "Once a producer and writer meet, they have every incentive to close the deal privately and avoid your 12% fee. Your product currently offers nothing that makes staying on-platform worthwhile.",
+        "consequences": "You become a free introduction service that funds itself with nothing, watching your own transactions happen elsewhere.",
+        "solution": "Build value that only exists on-platform: escrow payments, standardised contracts, rights management, and credit verification. Make leaving costly rather than trying to police it.",
+        "example": "Upwork retained transactions by owning payments, contracts, and dispute resolution rather than relying on rules against off-platform work."
+      }
+    ],
+    "customer_assumptions": [
+      { "title": "Producers will trust an online platform for script sourcing", "description": "We assume producers will consider unsolicited scripts from writers they do not personally know.", "status": "not" },
+      { "title": "Writers will pay for premium visibility", "description": "We assume writers will subscribe for better placement before the marketplace has proven demand.", "status": "not" },
+      { "title": "Writers want a public marketplace", "description": "We assume writers are comfortable listing work publicly rather than fearing idea theft.", "status": "partial" }
+    ],
+    "business_assumptions": [
+      { "title": "A 12% take rate is acceptable to both sides", "description": "We assume neither side finds the fee high enough to transact privately.", "status": "not" },
+      { "title": "Supply attracts demand", "description": "We assume producers come because we have many scripts, rather than because of specific quality.", "status": "not" }
+    ],
+    "technical_assumptions": [
+      { "title": "Rights and IP protection can be handled digitally", "description": "We assume timestamped uploads give writers enough legal comfort to share full scripts.", "status": "partial" }
+    ],
+    "pricing_assumptions": [
+      { "title": "Scripts will license in the SAR 15K–50K range", "description": "We assume market pricing supports meaningful take-rate revenue per transaction.", "status": "not" }
+    ],
+    "investor_questions": [
+      "How many transactions have completed on the platform, and what was the total value?",
+      "Which side of the marketplace is scarce, and what are you doing about it?",
+      "What stops a producer and writer from closing the deal off-platform?",
+      "What is your liquidity metric, and what does it look like today?",
+      "How do you acquire producers, and what does one cost?",
+      "Why has no one built this before, and why does it work now?"
+    ],
+    "reflection_questions": [
+      "If Senaryohat disappeared tomorrow, would any producer notice?",
+      "What evidence do you have that producers have a real sourcing problem worth paying to solve?",
+      "Why has not a single transaction completed yet — and what does that tell you?",
+      "What would you do differently if you could only have 20 users total?"
+    ],
+    "mentor_notes": "Your community credibility is a genuine asset, but it has pulled you toward the easy side of the marketplace. Three hundred writers is not traction — it is a liability that grows more disappointed each week. The entire company right now is one question: can you make a producer pay for a script? Stop building product and go close a deal by hand. Everything else is premature.",
+    "recommended_books": [
+      { "title": "Platform Revolution", "author": "Parker, Van Alstyne & Choudary", "why": "The definitive treatment of marketplace cold-start dynamics." },
+      { "title": "The Cold Start Problem", "author": "Andrew Chen", "why": "Specifically about getting the first network effects moving." },
+      { "title": "The Mom Test", "author": "Rob Fitzpatrick", "why": "How to interview producers without getting polite, useless answers." }
+    ],
+    "recommended_frameworks": [
+      { "name": "Single-Sided Focus (Hard Side First)", "why": "Concentrate all effort on the scarce side of the marketplace." },
+      { "name": "Concierge MVP", "why": "Manually broker transactions before automating anything." },
+      { "name": "Marketplace Liquidity Metrics", "why": "Measure what actually predicts marketplace survival." }
+    ],
+    "recommended_tools": [
+      { "name": "Airtable", "why": "Run manual matchmaking before building marketplace features." },
+      { "name": "DocuSign", "why": "Standardised licensing contracts to keep deals on-platform." },
+      { "name": "Calendly", "why": "Remove friction from producer discovery calls." }
+    ],
+    "recommended_videos": [
+      { "title": "Do Things That Don't Scale", "source": "Y Combinator / Paul Graham", "why": "Exactly the strategy your stage requires." },
+      { "title": "How to Build a Marketplace", "source": "a16z", "why": "On sequencing supply and demand correctly." }
+    ],
+    "action_plan": [
+      { "task": "Close one paid script transaction manually within 45 days", "reason": "Nothing about your business is validated until money moves between the two sides.", "impact": "Converts a theoretical marketplace into a proven one and unlocks every subsequent decision.", "metric": "One completed transaction with money transferred and a signed licensing agreement.", "deadline": "45 days" },
+      { "task": "Personally recruit 20 verified producers", "reason": "Demand is your scarce side; writer growth without producers actively harms you.", "impact": "Creates the liquidity needed for organic transactions to begin.", "metric": "20 producers onboarded who have each viewed at least three scripts.", "deadline": "60 days" },
+      { "task": "Pause all writer acquisition and product development", "reason": "Adding supply to an illiquid marketplace increases disappointment and burns community goodwill.", "impact": "Redirects 100% of team capacity to the actual bottleneck.", "metric": "Zero new writer marketing spend; engineering time reallocated to producer tools.", "deadline": "7 days" }
+    ],
+    "discussion_topics": [
+      "Which side of a marketplace to build first, and why it is almost never the easy side",
+      "Vanity metrics: when registrations actively mislead you",
+      "Doing things that do not scale as deliberate strategy"
+    ],
+    "kpis": [
+      { "name": "Completed transactions", "target": "5 in 90 days", "why": "The only metric that proves the marketplace works." },
+      { "name": "Active producers", "target": "20", "why": "Demand-side liquidity is your binding constraint." },
+      { "name": "Time to first match", "target": "Under 14 days", "why": "Measures marketplace responsiveness." },
+      { "name": "Off-platform leakage", "target": "Below 20%", "why": "Tests whether your take rate is defensible." }
+    ],
+    "current_status": "Pre-revenue MVP with strong supply-side interest but no demand and no completed transactions."
+  },
+  {
+    "id": "blacklight-films",
+    "startup_name_ar": "بلاك لايت فيلمز",
+    "startup_name_en": "Blacklight Films",
+    "category": "Film Studio",
+    "description": "An independent studio developing Saudi genre features — thriller and horror — for regional streaming and theatrical release.",
+    "stage": "Problem Validation",
+    "readiness": 35,
+    "revenue": "Pre-revenue",
+    "team_size": 3,
+    "founders": [
+      { "name_ar": "خالد الغامدي", "name_en": "Khalid Alghamdi", "role": "Founder & Director" },
+      { "name_ar": "مشاعل الزهراني", "name_en": "Mashael Alzahrani", "role": "Co-Founder & Executive Producer" }
+    ],
+    "team_members": [
+      { "name_ar": "يوسف الحربي", "name_en": "Yousef Alharbi", "role": "Development Executive" }
+    ],
+    "business_model": "IP development and licensing to streaming platforms, plus co-production equity",
+    "target_customer": "Regional streaming commissioners (Shahid, Netflix MENA) and theatrical distributors seeking Saudi genre content.",
+    "problem_statement": "Saudi audiences consume enormous amounts of genre content but almost none of it reflects local culture, while platforms struggle to source credible Saudi genre projects.",
+    "value_proposition": "Saudi genre films built for commercial appeal rather than festival prestige, developed by a team that understands both local culture and international genre conventions.",
+    "traction": "2 screenplays in development, 1 proof-of-concept short with 400K organic views, informal interest from one commissioner.",
+    "validation_scores": { "problem": 61, "customer": 38, "solution": 42, "revenue": 12, "market": 55, "execution": 33, "team": 47, "investor": 21, "competition": 44 },
+    "strengths": [
+      "The proof-of-concept short proves audience appetite with real organic viewership.",
+      "Genre focus is a clear, defensible positioning in an underserved niche.",
+      "Founders combine directing craft with genuine producing experience."
+    ],
+    "weaknesses": [
+      "No signed commitment from any buyer — interest is entirely informal.",
+      "Development timelines are long and the team has no bridge revenue.",
+      "Single-project risk: everything depends on one film getting made."
+    ],
+    "opportunities": [
+      "Streaming platforms are actively hunting for Saudi originals with commercial appeal.",
+      "Saudi theatrical exhibition is expanding rapidly with growing screen count.",
+      "Genre travels internationally far better than local drama."
+    ],
+    "threats": [
+      "Commissioning decisions are slow, relationship-driven, and outside your control.",
+      "Platform content budgets are being tightened across the region.",
+      "Larger studios can outbid you for the same talent and material."
+    ],
+    "risks": [
+      {
+        "title": "Your entire business depends on a decision you do not control",
+        "why": "The model requires a commissioner to say yes. You have no influence over their timeline, their budget cycle, or their strategy shifts, and 'informal interest' has no contractual value whatsoever.",
+        "consequences": "You could spend 18 months in development, run out of money, and have nothing to show — a completely standard outcome in film development.",
+        "solution": "Build a bridge revenue line — commercials, service production, or branded content — that funds development independently. Pitch at least six buyers in parallel so no single no is fatal.",
+        "example": "A24 sustained itself through distribution and service work while building its own production slate, rather than betting everything on one greenlight."
+      },
+      {
+        "title": "You have validated the audience, not the buyer",
+        "why": "400,000 views proves people want to watch this. It does not prove a commissioner will pay to make it. Those are entirely different validations with different decision criteria.",
+        "consequences": "You optimise for audience signals that do not move the people who actually write cheques, and misread enthusiasm as progress.",
+        "solution": "Interview eight commissioners about how greenlight decisions are actually made: what budget bands, what evidence, what timing in their cycle. Build the package they need rather than the one you want to make.",
+        "example": "Many acclaimed shorts never became features because the filmmakers never learned what commissioners actually needed to say yes."
+      },
+      {
+        "title": "No bridge revenue means a funding cliff",
+        "why": "With three people, no revenue, and long development cycles, your runway is finite while your sales cycle is not.",
+        "consequences": "The team disbands for financial reasons just before a deal lands — the most common way promising studios die.",
+        "solution": "Establish a service production line targeting SAR 40K monthly within 90 days, explicitly ring-fenced to fund development time.",
+        "example": "Most successful indie studios began as service shops and used those margins to finance their own IP."
+      }
+    ],
+    "customer_assumptions": [
+      { "title": "Commissioners want Saudi genre content", "description": "We assume platforms are actively seeking horror and thriller from Saudi creators rather than prestige drama.", "status": "partial" },
+      { "title": "Our short film is sufficient proof of capability", "description": "We assume the proof-of-concept convinces buyers we can deliver a feature.", "status": "not" },
+      { "title": "Saudi audiences will watch local genre films", "description": "We assume the audience appetite shown online converts to viewership at scale.", "status": "validated" }
+    ],
+    "business_assumptions": [
+      { "title": "IP licensing can sustain the studio", "description": "We assume licensing revenue arrives fast enough to fund ongoing operations.", "status": "not" },
+      { "title": "We can develop two projects in parallel", "description": "We assume a three-person team has the capacity for parallel development.", "status": "not" }
+    ],
+    "technical_assumptions": [
+      { "title": "Genre production is achievable at regional budget levels", "description": "We assume we can deliver convincing genre production value within a realistic Saudi budget.", "status": "partial" }
+    ],
+    "pricing_assumptions": [
+      { "title": "Platforms will license at SAR 3M+ per feature", "description": "We assume licensing fees support a viable production budget and margin.", "status": "not" }
+    ],
+    "investor_questions": [
+      "What is signed, and what is merely interest?",
+      "How do you survive if no commissioner says yes for 18 months?",
+      "What does your revenue look like in a year where no film gets made?",
+      "How many commissioners have you formally pitched, and what did they say no to?",
+      "Do you own the IP outright, and what happens to it in a co-production?",
+      "Why is genre the right wedge rather than drama?"
+    ],
+    "reflection_questions": [
+      "If Blacklight disappeared tomorrow, who in the industry would actually care?",
+      "What evidence proves a buyer will pay, as opposed to an audience will watch?",
+      "How long can the team survive with no revenue, honestly?",
+      "What assumption about the commissioning process worries you most?"
+    ],
+    "mentor_notes": "The short film is real validation and you should take confidence from it — audience appetite is proven. But you have confused two different customers. Your audience is the viewer; your customer is the commissioner, and you have not validated that one at all. Film development kills companies through time, not through bad ideas. Your priority is not a better script; it is surviving long enough to sell it. Build the bridge revenue now.",
+    "recommended_books": [
+      { "title": "The Lean Startup", "author": "Eric Ries", "why": "On validating before committing large irreversible investment." },
+      { "title": "Rebel Without a Crew", "author": "Robert Rodriguez", "why": "On making films within brutal resource constraints." },
+      { "title": "Venture Deals", "author": "Brad Feld", "why": "Understand IP, equity and co-production terms before you sign." }
+    ],
+    "recommended_frameworks": [
+      { "name": "Customer vs User Distinction", "why": "Separate who watches from who pays — the core confusion in your model." },
+      { "name": "Runway & Burn Discipline", "why": "Development businesses die of time, not of ideas." },
+      { "name": "Parallel Pipeline Selling", "why": "Never let one buyer's decision be existential." }
+    ],
+    "recommended_tools": [
+      { "name": "Celtx", "why": "Development and production planning in one place." },
+      { "name": "Notion", "why": "Track a commissioner pipeline like a real sales funnel." },
+      { "name": "Streamtime", "why": "Manage bridge service work alongside development." }
+    ],
+    "recommended_videos": [
+      { "title": "How to Talk to Users", "source": "Y Combinator", "why": "Apply customer discovery rigour to commissioner conversations." },
+      { "title": "Financing Independent Film", "source": "Sundance Institute", "why": "Practical alternatives to single-buyer dependency." }
+    ],
+    "action_plan": [
+      { "task": "Establish a bridge revenue line targeting SAR 40K per month", "reason": "Development timelines are long and unpredictable; without revenue the team disbands before a deal lands.", "impact": "Extends runway indefinitely and removes desperation from negotiations.", "metric": "SAR 40K monthly recurring service revenue by day 90.", "deadline": "90 days" },
+      { "task": "Formally pitch six commissioners in parallel", "reason": "One informal conversation is not a pipeline, and parallel pitching removes existential dependency on any single yes.", "impact": "Creates real optionality and generates honest feedback on what buyers need.", "metric": "6 formal pitch meetings completed with written feedback captured.", "deadline": "60 days" },
+      { "task": "Interview 8 commissioners about how greenlight decisions actually work", "reason": "You are building a package based on assumptions about a decision process you have never seen from the inside.", "impact": "Reshapes your pitch around real decision criteria instead of guesses.", "metric": "8 interviews documenting budget bands, evidence required, and timing.", "deadline": "45 days" }
+    ],
+    "discussion_topics": [
+      "The difference between your user and your customer",
+      "Surviving long sales cycles without revenue",
+      "Why parallel pitching beats sequential pitching"
+    ],
+    "kpis": [
+      { "name": "Months of runway", "target": "Above 12", "why": "Time is the binding constraint in development businesses." },
+      { "name": "Formal pitches delivered", "target": "6 per quarter", "why": "Pipeline volume drives greenlight probability." },
+      { "name": "Bridge revenue", "target": "SAR 40K per month", "why": "Funds development independence." },
+      { "name": "Signed development agreements", "target": "1", "why": "Converts interest into contractual commitment." }
+    ],
+    "current_status": "Strong creative validation with proven audience appetite, but no validated buyer and no revenue to survive the sales cycle."
+  },
+  {
+    "id": "tashbeek",
+    "startup_name_ar": "تشبيك",
+    "startup_name_en": "Tashbeek",
+    "category": "SaaS Platform",
+    "description": "A crew-booking platform connecting film and TV productions with verified freelance crew across Saudi Arabia.",
+    "stage": "Customer Discovery",
+    "readiness": 51,
+    "revenue": "SAR 36K / year",
+    "team_size": 5,
+    "founders": [
+      { "name_ar": "عبد الله با مجبور", "name_en": "Abdullah Bamajbour", "role": "Co-Founder & CPO" },
+      { "name_ar": "هند السبيعي", "name_en": "Hind Alsubaie", "role": "Co-Founder & CEO" }
+    ],
+    "team_members": [
+      { "name_ar": "ماجد العنزي", "name_en": "Majed Alanazi", "role": "Backend Engineer" },
+      { "name_ar": "جواهر الرشيد", "name_en": "Jawaher Alrashid", "role": "Operations" }
+    ],
+    "business_model": "SaaS subscription for production companies plus booking commission",
+    "target_customer": "Production managers at Saudi production houses staffing 5–40 person crews on short notice.",
+    "problem_statement": "Production managers staff crews through fragmented WhatsApp groups and personal contacts, causing delays, unverified quality, and last-minute failures.",
+    "value_proposition": "A verified crew database with availability, rates, and reviews, so a production manager can staff a full crew in hours instead of days.",
+    "traction": "620 crew profiles, 18 production companies signed up, 3 paying subscribers, 40 bookings completed.",
+    "validation_scores": { "problem": 81, "customer": 66, "solution": 58, "revenue": 31, "market": 62, "execution": 57, "team": 59, "investor": 34, "competition": 49 },
+    "strengths": [
+      "The problem is intensely felt — every production manager describes it unprompted.",
+      "Real completed bookings prove the core loop works end-to-end.",
+      "Co-founder is an active producer with direct access to the customer base."
+    ],
+    "weaknesses": [
+      "Only 3 of 18 signed-up companies pay, suggesting weak willingness to pay.",
+      "Bookings are concentrated among a handful of power users.",
+      "Revenue per customer is far too low to sustain the current team."
+    ],
+    "opportunities": [
+      "Saudi production volume is growing rapidly, expanding the crew market.",
+      "Payments, insurance and contracts are natural high-margin add-ons.",
+      "Crew availability data becomes a defensible industry asset."
+    ],
+    "threats": [
+      "WhatsApp remains free, familiar, and genuinely good enough for many.",
+      "Crew may resist rate transparency that weakens their negotiating position.",
+      "Seasonal production cycles create heavy revenue volatility."
+    ],
+    "risks": [
+      {
+        "title": "Willingness to pay is not validated",
+        "why": "Only three of eighteen companies pay. A 17% conversion from an audience that told you the problem is severe suggests the pain is real but your solution is not yet worth paying for — or is priced wrong.",
+        "consequences": "You scale usage while revenue stays flat, and eventually discover you built a free utility that cannot fund itself.",
+        "solution": "Interview all fifteen non-paying companies specifically about the payment decision, then run a pricing experiment with three different models on new signups.",
+        "example": "Dropbox validated payment early by making the free tier deliberately limited; free utilities that never test payment rarely convert later."
+      },
+      {
+        "title": "You are competing against free and familiar",
+        "why": "WhatsApp costs nothing, everyone already uses it, and it works acceptably. Your product must be dramatically better, not marginally better, to overcome that inertia.",
+        "consequences": "Adoption stays shallow — people sign up, try it once, and quietly return to their existing groups.",
+        "solution": "Focus relentlessly on the one job WhatsApp genuinely cannot do — verified availability in real time — and make that ten times better rather than adding breadth.",
+        "example": "Slack won against email not by matching features but by being dramatically better at one thing: persistent team conversation."
+      },
+      {
+        "title": "Revenue per customer cannot support the team",
+        "why": "SAR 36K annual revenue across five people is roughly SAR 600 per month per paying customer at best. Unit economics do not work at this price point regardless of volume.",
+        "consequences": "You need thousands of customers in a market that has hundreds, which makes the business arithmetically impossible as priced.",
+        "solution": "Move up-market toward larger productions, or add transaction-based revenue such as payments and insurance where value scales with booking size.",
+        "example": "Many vertical SaaS companies survived only by layering payments on top of subscription, where revenue scales with customer volume."
+      }
+    ],
+    "customer_assumptions": [
+      { "title": "Production managers will pay a subscription", "description": "We assume the problem is painful enough to justify a recurring cost rather than free workarounds.", "status": "not" },
+      { "title": "Crew will keep availability updated", "description": "We assume freelancers maintain accurate calendars without constant prompting.", "status": "partial" },
+      { "title": "The problem is severe and universal", "description": "We assume crew staffing is a top-three operational pain for production managers.", "status": "validated" }
+    ],
+    "business_assumptions": [
+      { "title": "The Saudi market is large enough for vertical SaaS", "description": "We assume enough production companies exist to build a subscription business.", "status": "not" },
+      { "title": "Commission and subscription can coexist", "description": "We assume customers accept paying both a subscription and a booking fee.", "status": "not" }
+    ],
+    "technical_assumptions": [
+      { "title": "Real-time availability can stay accurate", "description": "We assume the data stays fresh enough to be trusted for urgent bookings.", "status": "partial" }
+    ],
+    "pricing_assumptions": [
+      { "title": "SAR 500/month is the right price point", "description": "We assume current pricing reflects delivered value rather than being an arbitrary guess.", "status": "not" },
+      { "title": "Larger productions would pay 5x more", "description": "We assume an enterprise tier is viable for high-volume productions.", "status": "not" }
+    ],
+    "investor_questions": [
+      "Why do 15 of your 18 signed-up companies not pay?",
+      "What is your average revenue per customer, and how does that support a five-person team?",
+      "How many production companies exist in your market in total?",
+      "What can you do that a WhatsApp group genuinely cannot?",
+      "What is your monthly retention among paying customers?",
+      "Where does revenue come from at scale — subscription or transactions?"
+    ],
+    "reflection_questions": [
+      "If Tashbeek disappeared tomorrow, what would production managers actually go back to — and would that be painful?",
+      "What evidence proves customers will pay rather than merely sign up?",
+      "Is your market big enough to build a real company, honestly?",
+      "What assumption worries you most about the pricing model?"
+    ],
+    "mentor_notes": "You have found a genuinely severe problem, which is the hardest part and you should not undervalue it. But severe problems do not automatically become businesses. Your 17% payment conversion is the single most important number in your company and it is telling you something you have not yet listened to. Do not build more features. Go find out precisely why fifteen companies decided your product was not worth SAR 500, and be prepared for the answer to change your pricing model entirely.",
+    "recommended_books": [
+      { "title": "Monetizing Innovation", "author": "Madhavan Ramanujam", "why": "On designing the product around the price rather than the reverse." },
+      { "title": "The Mom Test", "author": "Rob Fitzpatrick", "why": "How to ask about payment without eliciting polite lies." },
+      { "title": "Crossing the Chasm", "author": "Geoffrey Moore", "why": "Moving from enthusiastic early users to a mainstream paying market." }
+    ],
+    "recommended_frameworks": [
+      { "name": "Van Westendorp Price Sensitivity", "why": "Structured method to find the acceptable price range." },
+      { "name": "Unit Economics (LTV/CAC)", "why": "Test whether the business is arithmetically viable at all." },
+      { "name": "Sean Ellis PMF Survey", "why": "Measure how disappointed users would be without you." }
+    ],
+    "recommended_tools": [
+      { "name": "Stripe", "why": "Enables transaction revenue layered on subscription." },
+      { "name": "Mixpanel", "why": "Understand which behaviours predict conversion to paid." },
+      { "name": "Typeform", "why": "Run structured pricing sensitivity research." }
+    ],
+    "recommended_videos": [
+      { "title": "How to Set Pricing", "source": "Y Combinator", "why": "Directly addresses your central open question." },
+      { "title": "Vertical SaaS and the Payments Layer", "source": "a16z", "why": "On escaping small-market subscription ceilings." }
+    ],
+    "action_plan": [
+      { "task": "Interview all 15 non-paying companies about the payment decision", "reason": "Your 17% conversion rate is the clearest signal in your business and you do not yet know why it is low.", "impact": "Directly determines whether to change price, product, or target customer.", "metric": "15 interviews completed with documented reasons for not paying.", "deadline": "30 days" },
+      { "task": "Model unit economics at three different price points", "reason": "Current revenue per customer cannot support a five-person team at any realistic volume.", "impact": "Reveals whether the business is viable as designed or needs a structural change.", "metric": "Written model showing customers needed for breakeven at each price.", "deadline": "21 days" },
+      { "task": "Test a transaction-fee revenue model on 5 productions", "reason": "Subscription alone may not scale in a market this size; transaction revenue grows with customer value.", "impact": "Could multiply revenue per customer without needing more customers.", "metric": "5 productions completed under a commission model with measured revenue.", "deadline": "60 days" }
+    ],
+    "discussion_topics": [
+      "Why severe problems do not automatically become paid products",
+      "Competing against free, familiar, and good enough",
+      "Escaping small-market ceilings with transaction revenue"
+    ],
+    "kpis": [
+      { "name": "Free-to-paid conversion", "target": "Above 40%", "why": "The clearest measure of whether value justifies price." },
+      { "name": "Average revenue per customer", "target": "SAR 2,000/month", "why": "Required for unit economics to support the team." },
+      { "name": "Monthly retention", "target": "Above 90%", "why": "Proves the product becomes part of the workflow." },
+      { "name": "Bookings per active customer", "target": "8 per month", "why": "Measures genuine workflow adoption over trial usage." }
+    ],
+    "current_status": "Strong problem validation with real usage, but weak willingness to pay and unit economics that do not yet support the team."
+  },
+  {
+    "id": "filmla",
+    "startup_name_ar": "فليملا",
+    "startup_name_en": "Filmla",
+    "category": "Streaming",
+    "description": "A niche streaming service curating Arabic independent and arthouse cinema for a subscription audience.",
+    "stage": "Idea",
+    "readiness": 22,
+    "revenue": "Pre-revenue",
+    "team_size": 2,
+    "founders": [
+      { "name_ar": "سارة القحطاني", "name_en": "Sarah Alqahtani", "role": "Founder" }
+    ],
+    "team_members": [
+      { "name_ar": "تركي المالكي", "name_en": "Turki Almalki", "role": "Technical Advisor" }
+    ],
+    "business_model": "Consumer subscription (SAR 29/month) with licensed catalogue",
+    "target_customer": "Arabic-speaking cinephiles aged 25–45 who actively seek independent film and are underserved by mainstream platforms.",
+    "problem_statement": "Arabic independent cinema is nearly invisible — films screen at festivals and then disappear, while the audience that wants them has nowhere to watch.",
+    "value_proposition": "A curated home for Arabic independent cinema, where films remain available and discoverable long after their festival run.",
+    "traction": "Landing page with 190 email signups, no content licensed, no product built.",
+    "validation_scores": { "problem": 44, "customer": 26, "solution": 21, "revenue": 8, "market": 29, "execution": 18, "team": 24, "investor": 11, "competition": 31 },
+    "strengths": [
+      "Founder has genuine, credible passion and deep knowledge of the space.",
+      "Clear cultural gap that people in the industry recognise immediately.",
+      "Early email signups show at least surface-level audience interest."
+    ],
+    "weaknesses": [
+      "Two-person team with no content licensing experience whatsoever.",
+      "Streaming is among the most capital-intensive models that exists.",
+      "No content, no product, and no validated willingness to pay."
+    ],
+    "opportunities": [
+      "Growing regional interest in local cultural content and Arabic originals.",
+      "Rights to older independent films may be inexpensive to license.",
+      "Could start as a curation newsletter or events business before streaming."
+    ],
+    "threats": [
+      "Netflix, Shahid and OSN dominate attention and subscription budgets.",
+      "Content licensing costs scale badly for small subscriber bases.",
+      "Subscription fatigue is high and rising among consumers."
+    ],
+    "risks": [
+      {
+        "title": "Streaming is the wrong model for your resources",
+        "why": "Streaming requires large upfront content licensing, expensive infrastructure, and a subscriber base big enough to amortise fixed costs. With two people and no capital, the model's economics work directly against you.",
+        "consequences": "You spend everything you have on content and technology before discovering the audience is too small to sustain the licensing costs.",
+        "solution": "Test the audience thesis with a model that costs almost nothing first — a curated newsletter, screening events, or a YouTube channel — and only build streaming if that audience proves it will pay.",
+        "example": "MUBI began as a film community and blog long before it became a streaming service, earning the audience before carrying content costs."
+      },
+      {
+        "title": "Email signups are not demand",
+        "why": "190 people giving an email address for a free future product costs them nothing and proves nothing about payment. It is the weakest form of validation available.",
+        "consequences": "You build against a signal that evaporates the moment a price appears, and mistake curiosity for a market.",
+        "solution": "Ask those 190 people to pre-pay SAR 29 today for access later. The number who actually pay is your real market signal, and it will be far smaller.",
+        "example": "Kickstarter's entire value is forcing this test — pre-payment separates genuine demand from polite interest."
+      },
+      {
+        "title": "No content, and no path to getting it",
+        "why": "Your product is entirely the catalogue, and nobody on the team has ever licensed a film or negotiated with a rights holder.",
+        "consequences": "Even with funding and an audience, you cannot launch, because the core asset is unobtainable with current capability.",
+        "solution": "Before anything else, secure written licensing terms for ten films. If you cannot license ten, the business does not exist regardless of demand.",
+        "example": "Many streaming startups died in the licensing stage, having built full platforms with nothing to show on them."
+      }
+    ],
+    "customer_assumptions": [
+      { "title": "Cinephiles will pay for a niche subscription", "description": "We assume the audience will add another subscription specifically for Arabic independent film.", "status": "not" },
+      { "title": "The audience is large enough to sustain licensing", "description": "We assume enough Arabic arthouse viewers exist to cover fixed content costs.", "status": "not" },
+      { "title": "People want Arabic independent film", "description": "We assume there is genuine unmet appetite rather than a small festival niche.", "status": "partial" }
+    ],
+    "business_assumptions": [
+      { "title": "Content can be licensed affordably", "description": "We assume rights holders will license older independent films at low cost to a new platform.", "status": "not" },
+      { "title": "SAR 29/month covers content and infrastructure", "description": "We assume the price supports the cost structure at achievable subscriber counts.", "status": "not" }
+    ],
+    "technical_assumptions": [
+      { "title": "We can build or license streaming infrastructure cheaply", "description": "We assume white-label platforms make the technical side affordable for a two-person team.", "status": "not" }
+    ],
+    "pricing_assumptions": [
+      { "title": "SAR 29/month is acceptable to the audience", "description": "We assume this price point sits comfortably alongside existing subscriptions.", "status": "not" }
+    ],
+    "investor_questions": [
+      "How many of your 190 signups have paid you anything?",
+      "What does it cost to license ten films, and have you ever asked?",
+      "How many subscribers do you need to break even, and does that many people exist?",
+      "Why streaming rather than a lower-cost model that tests the same thesis?",
+      "Who on the team has licensed content before?",
+      "What happens when Shahid adds an arthouse category?"
+    ],
+    "reflection_questions": [
+      "If Filmla never launched, who would genuinely be worse off?",
+      "What evidence proves anyone will pay, as opposed to sign up for free?",
+      "Could you test this thesis for under SAR 5,000?",
+      "What is the smallest possible version of this idea?"
+    ],
+    "mentor_notes": "Your instinct about the cultural gap is probably right, and that matters. But you have chosen the most expensive possible way to test it. Streaming is a capital business wearing a creative costume. The honest question is not how to build Filmla — it is how to find out whether the audience will pay without spending a riyal on content. Run a paid screening series or a paid newsletter first. If two hundred people will pay for that, you have a business worth funding. If they will not, you have saved yourself two years.",
+    "recommended_books": [
+      { "title": "The Lean Startup", "author": "Eric Ries", "why": "Core to finding the cheapest possible test of your thesis." },
+      { "title": "The Mom Test", "author": "Rob Fitzpatrick", "why": "Your signups are telling you what you want to hear." },
+      { "title": "Blue Ocean Strategy", "author": "Kim & Mauborgne", "why": "On competing where incumbents are not." }
+    ],
+    "recommended_frameworks": [
+      { "name": "Smoke Test / Pre-Sales", "why": "Charge before you build to find real demand." },
+      { "name": "Minimum Viable Product", "why": "Find the smallest version that tests the core assumption." },
+      { "name": "Unit Economics", "why": "Understand the subscriber count required for viability." }
+    ],
+    "recommended_tools": [
+      { "name": "Substack", "why": "Test paid curation at near-zero cost." },
+      { "name": "Eventbrite", "why": "Run paid screening events to validate willingness to pay." },
+      { "name": "Vimeo OTT", "why": "White-label streaming without building infrastructure." }
+    ],
+    "recommended_videos": [
+      { "title": "How to Get and Evaluate Startup Ideas", "source": "Y Combinator", "why": "On testing an idea before committing to it." },
+      { "title": "Do Things That Don't Scale", "source": "Y Combinator / Paul Graham", "why": "The manual path to validating an audience." }
+    ],
+    "action_plan": [
+      { "task": "Ask your 190 signups to pre-pay SAR 29 today", "reason": "Email signups cost nothing and prove nothing; pre-payment is the only honest demand signal available to you.", "impact": "Converts a vanity metric into a real market answer within two weeks.", "metric": "Number of signups who actually pay — target above 20.", "deadline": "14 days" },
+      { "task": "Get written licensing terms for 10 films", "reason": "Your product is the catalogue, and nobody has confirmed the catalogue is obtainable.", "impact": "Either proves the business is possible or ends it before you spend more.", "metric": "10 written licensing quotes from rights holders.", "deadline": "45 days" },
+      { "task": "Run one paid screening event", "reason": "It tests the same audience thesis as streaming at a fraction of the cost and risk.", "impact": "Real revenue, real audience data, and a community you can build on.", "metric": "One event with 50+ paying attendees.", "deadline": "60 days" }
+    ],
+    "discussion_topics": [
+      "Finding the cheapest possible test of an expensive idea",
+      "Why email signups are the weakest form of validation",
+      "Starting with community before starting with product"
+    ],
+    "kpis": [
+      { "name": "Pre-paying customers", "target": "20", "why": "The only real proof of demand at this stage." },
+      { "name": "Licensing quotes secured", "target": "10", "why": "Tests whether the core asset is obtainable." },
+      { "name": "Cost per validation test", "target": "Under SAR 5,000", "why": "Keeps learning cheap while the thesis is unproven." },
+      { "name": "Paid event attendance", "target": "50", "why": "Validates audience willingness to pay in the real world." }
+    ],
+    "current_status": "Pure idea stage with an untested audience thesis and a capital-intensive model that does not match available resources."
+  },
+  {
+    "id": "mashhad-studios",
+    "startup_name_ar": "مشهد ستوديوز",
+    "startup_name_en": "Mashhad Studios",
+    "category": "Post-Production",
+    "description": "A post-production studio offering colour grading, VFX and sound design with an AI-accelerated workflow.",
+    "stage": "Product Market Fit",
+    "readiness": 74,
+    "revenue": "SAR 1.4M / year",
+    "team_size": 12,
+    "founders": [
+      { "name_ar": "طلال الشهري", "name_en": "Talal Alshehri", "role": "Founder & CEO" },
+      { "name_ar": "دانة الفيصل", "name_en": "Dana Alfaisal", "role": "Co-Founder & Head of VFX" }
+    ],
+    "team_members": [
+      { "name_ar": "عمر باوزير", "name_en": "Omar Bawazir", "role": "Colourist" },
+      { "name_ar": "شهد النجار", "name_en": "Shahad Alnajjar", "role": "Sound Designer" },
+      { "name_ar": "راكان الثنيان", "name_en": "Rakan Althunayan", "role": "Pipeline Engineer" }
+    ],
+    "business_model": "Per-project post-production services with tiered packages and capacity retainers",
+    "target_customer": "Production companies, agencies and streaming productions needing fast, high-quality post-production in Saudi Arabia.",
+    "problem_statement": "Saudi productions send post-production abroad because local capacity is limited, causing long turnaround times, high costs and communication friction.",
+    "value_proposition": "International-standard post-production delivered locally in half the time, with an AI-accelerated pipeline that cuts turnaround without cutting quality.",
+    "traction": "SAR 1.4M annual revenue, 62% repeat clients, capacity booked 8 weeks out, 3 streaming productions delivered.",
+    "validation_scores": { "problem": 88, "customer": 84, "solution": 86, "revenue": 79, "market": 72, "execution": 81, "team": 76, "investor": 63, "competition": 68 },
+    "strengths": [
+      "Clear product-market fit with demand exceeding capacity for eight weeks out.",
+      "AI-accelerated pipeline is a genuine, measurable differentiator on turnaround.",
+      "Strong repeat rate proves consistent quality delivery at scale."
+    ],
+    "weaknesses": [
+      "Capacity-constrained: growth now requires capital and hiring, not sales.",
+      "Talent pipeline is thin — senior colourists and VFX artists are scarce locally.",
+      "Heavy fixed costs make a demand downturn genuinely dangerous."
+    ],
+    "opportunities": [
+      "Regional expansion into UAE and Egypt where the same gap exists.",
+      "Productising the AI pipeline as software would create a second, higher-margin line.",
+      "Training programmes could solve the talent shortage and create loyalty."
+    ],
+    "threats": [
+      "International post houses opening Saudi offices with deeper capital.",
+      "AI tools commoditising parts of the workflow you currently charge for.",
+      "Key artist departure could directly reduce delivery capacity."
+    ],
+    "risks": [
+      {
+        "title": "Growth is now capital-constrained, not demand-constrained",
+        "why": "You are booked eight weeks out, which means every additional sale makes the queue worse rather than making you more money. Scaling requires equipment, senior hires and space — all of which need capital before revenue arrives.",
+        "consequences": "Clients tired of waiting go elsewhere, and competitors capture demand you generated but could not serve.",
+        "solution": "Model exactly what capital converts into capacity, then either raise growth financing or raise prices until demand matches capacity. Do not simply absorb the queue.",
+        "example": "Many profitable service businesses lose their market position at exactly this moment by refusing to finance capacity expansion."
+      },
+      {
+        "title": "The AI pipeline advantage has a short shelf life",
+        "why": "Your differentiator is a workflow advantage built on tools that are improving and spreading rapidly. What is proprietary today becomes standard within eighteen months.",
+        "consequences": "Your turnaround advantage disappears, and you compete purely on price against larger houses with better cost structures.",
+        "solution": "Convert the workflow advantage into something durable — either productise it as licensed software, or use the current margin advantage to lock in multi-year capacity retainers.",
+        "example": "Early digital-effects houses that treated their pipeline as a temporary edge invested in IP; those that did not were commoditised."
+      },
+      {
+        "title": "Key-person concentration in senior craft roles",
+        "why": "A small number of senior artists deliver the quality that drives your repeat rate, and the local market for replacing them is extremely thin.",
+        "consequences": "A single senior departure could cut delivery capacity and damage the quality reputation your repeat business depends on.",
+        "solution": "Build a structured junior-to-senior training pipeline and introduce equity or long-term incentives for critical craft roles.",
+        "example": "Pixar deliberately invested in internal training through Pixar University rather than competing purely on hiring."
+      }
+    ],
+    "customer_assumptions": [
+      { "title": "Clients will pay a premium for speed", "description": "We assume turnaround time justifies pricing above international alternatives.", "status": "validated" },
+      { "title": "Clients would follow us into other markets", "description": "We assume our reputation transfers to UAE and Egypt expansions.", "status": "not" },
+      { "title": "Local delivery matters more than price", "description": "We assume proximity and communication outweigh cost advantages abroad.", "status": "validated" }
+    ],
+    "business_assumptions": [
+      { "title": "Margins hold as we add senior headcount", "description": "We assume unit economics survive the higher fixed cost of senior staff.", "status": "partial" },
+      { "title": "The AI pipeline can be productised", "description": "We assume the internal workflow could be sold as software to other studios.", "status": "not" }
+    ],
+    "technical_assumptions": [
+      { "title": "The pipeline scales to 3x current volume", "description": "We assume the technical workflow holds up at triple throughput without quality degradation.", "status": "partial" },
+      { "title": "AI quality meets streaming delivery standards", "description": "We assume AI-accelerated output continues to pass platform QC at scale.", "status": "validated" }
+    ],
+    "pricing_assumptions": [
+      { "title": "A 25% price increase would not reduce demand", "description": "With an eight-week queue, we assume we are meaningfully under-priced.", "status": "not" }
+    ],
+    "investor_questions": [
+      "If you are booked eight weeks out, why have you not raised prices?",
+      "What exactly does capital buy, and what capacity does it create?",
+      "How defensible is the AI pipeline in eighteen months?",
+      "What happens to delivery if your two most senior artists leave?",
+      "Is the expansion thesis services or software — and which do you want to be?",
+      "What is your revenue per employee, and how does it change with scale?"
+    ],
+    "reflection_questions": [
+      "If Mashhad disappeared tomorrow, where would your clients go — and how much worse would it be for them?",
+      "What evidence proves your AI advantage is durable rather than temporary?",
+      "Why have you not raised prices despite excess demand?",
+      "What would make an investor say yes to funding your capacity expansion?"
+    ],
+    "mentor_notes": "You are the most advanced company in this cohort and you have a real problem that most founders would envy: more demand than capacity. But excess demand is not a trophy, it is an unpriced signal. You are almost certainly under-priced, and raising prices is the fastest, cheapest capacity expansion available to you. The deeper strategic question is your AI pipeline. Right now it is a temporary operational edge. You have roughly eighteen months to turn it into either owned IP or locked-in contracts before it becomes table stakes.",
+    "recommended_books": [
+      { "title": "Monetizing Innovation", "author": "Madhavan Ramanujam", "why": "You have an eight-week queue and have not raised prices." },
+      { "title": "Good Strategy Bad Strategy", "author": "Richard Rumelt", "why": "Choosing between services scale and software IP." },
+      { "title": "Scaling Up", "author": "Verne Harnish", "why": "Operational discipline for the growth stage you are entering." }
+    ],
+    "recommended_frameworks": [
+      { "name": "Capacity-Constrained Pricing", "why": "Price is your fastest lever when demand exceeds supply." },
+      { "name": "Services-to-Product Transition", "why": "Framework for productising an internal advantage." },
+      { "name": "Key-Person Risk Mapping", "why": "Systematically reduce dependency on individual craft talent." }
+    ],
+    "recommended_tools": [
+      { "name": "Ftrack", "why": "Production tracking built for post-production pipelines at scale." },
+      { "name": "Float", "why": "Capacity planning and resource forecasting." },
+      { "name": "Causal", "why": "Model capital-to-capacity scenarios before raising." }
+    ],
+    "recommended_videos": [
+      { "title": "How to Set Pricing", "source": "Y Combinator", "why": "Directly relevant to your under-pricing problem." },
+      { "title": "Turning Services into Products", "source": "SaaStr", "why": "On productising an internal pipeline advantage." }
+    ],
+    "action_plan": [
+      { "task": "Raise prices 20% on all new bookings and measure demand", "reason": "An eight-week queue is direct evidence of under-pricing, and price is the fastest capacity lever you have.", "impact": "Potential SAR 280K additional annual revenue at zero additional cost.", "metric": "New pricing live with booking rate tracked weekly for six weeks.", "deadline": "21 days" },
+      { "task": "Build a capital-to-capacity model for a growth raise", "reason": "Growth is now constrained by capacity rather than demand, and that requires financing to solve.", "impact": "Turns an unserved queue into servable revenue.", "metric": "Written model showing revenue capacity added per SAR 1M invested.", "deadline": "45 days" },
+      { "task": "Decide whether the AI pipeline becomes a product", "reason": "Your workflow advantage has roughly eighteen months before it becomes standard across the industry.", "impact": "Determines whether you build a durable asset or remain a services business.", "metric": "Written strategic decision with a resourcing plan attached.", "deadline": "60 days" }
+    ],
+    "discussion_topics": [
+      "Pricing when demand exceeds capacity",
+      "Turning an operational advantage into a durable asset",
+      "When to raise capital as a profitable company"
+    ],
+    "kpis": [
+      { "name": "Revenue per employee", "target": "SAR 180K", "why": "Core efficiency measure for a services business." },
+      { "name": "Booking lead time", "target": "3–4 weeks", "why": "Too long signals under-pricing; too short signals weak demand." },
+      { "name": "Gross margin", "target": "Above 50%", "why": "Must hold as senior headcount increases." },
+      { "name": "Senior talent retention", "target": "100% annually", "why": "Directly protects delivery capacity and quality." }
+    ],
+    "current_status": "Clear product-market fit, constrained by capacity and capital rather than demand; under-priced relative to market position."
+  },
+  {
+    "id": "riwaya-labs",
+    "startup_name_ar": "رواية لابز",
+    "startup_name_en": "Riwaya Labs",
+    "category": "AI Tools",
+    "description": "AI-assisted script development tools built specifically for Arabic-language storytelling and dialect authenticity.",
+    "stage": "MVP",
+    "readiness": 48,
+    "revenue": "SAR 22K / year",
+    "team_size": 4,
+    "founders": [
+      { "name_ar": "بدر القرني", "name_en": "Badr Alqarni", "role": "Founder & CTO" },
+      { "name_ar": "أمل السديري", "name_en": "Amal Alsudairi", "role": "Co-Founder & Head of Product" }
+    ],
+    "team_members": [
+      { "name_ar": "زياد العمري", "name_en": "Ziad Alamri", "role": "ML Engineer" }
+    ],
+    "business_model": "SaaS subscription (SAR 79/month) with a free tier",
+    "target_customer": "Arabic screenwriters and development executives who write daily and struggle with generic AI tools that mangle dialect and cultural nuance.",
+    "problem_statement": "General-purpose AI writing tools handle Arabic poorly — flattening dialect, misreading cultural context, and producing dialogue no Arabic speaker would say.",
+    "value_proposition": "Script development tools that genuinely understand Arabic dialects and cultural context, built by people who write in Arabic.",
+    "traction": "1,100 free users, 24 paying subscribers, 41% weekly active rate among paying users.",
+    "validation_scores": { "problem": 69, "customer": 57, "solution": 61, "revenue": 34, "market": 47, "execution": 54, "team": 58, "investor": 29, "competition": 26 },
+    "strengths": [
+      "Genuine technical differentiation in Arabic dialect handling.",
+      "Strong weekly active rate among paying users indicates real utility.",
+      "Founding team combines ML capability with actual screenwriting practice."
+    ],
+    "weaknesses": [
+      "Very low free-to-paid conversion at roughly 2%.",
+      "Deep dependency on foundation models controlled by others.",
+      "Weak competitive awareness — the space is moving extremely fast."
+    ],
+    "opportunities": [
+      "Arabic-language AI is genuinely underserved relative to market size.",
+      "Could expand from screenwriting into publishing, advertising and localisation.",
+      "Proprietary Arabic dialect data could become a defensible moat."
+    ],
+    "threats": [
+      "A foundation model provider could improve Arabic and erase your advantage overnight.",
+      "Well-funded international writing tools adding Arabic support.",
+      "Writers may be unwilling to pay for AI assistance on principle."
+    ],
+    "risks": [
+      {
+        "title": "Your moat sits on someone else's roadmap",
+        "why": "Your core advantage is Arabic quality, but you build on foundation models you do not control. Any provider that meaningfully improves Arabic support removes your reason to exist in a single release.",
+        "consequences": "The company's entire differentiation could vanish with an announcement you learn about on the same day as everyone else.",
+        "solution": "Build assets the model layer cannot replicate: proprietary dialect datasets, screenwriter workflow integration, and community. Compete on workflow and data rather than on raw model quality.",
+        "example": "Jasper built on GPT-3 and lost its position when the underlying models improved; tools with proprietary workflow and data survived that shift."
+      },
+      {
+        "title": "Two percent conversion signals a value problem",
+        "why": "1,100 free users and 24 paying subscribers means your free tier satisfies nearly everyone completely. The paid tier is not solving a problem the free tier leaves open.",
+        "consequences": "You carry the cost of 1,100 users while earning from 24, and inference costs scale with the free tier rather than revenue.",
+        "solution": "Redesign the free tier around a hard usage limit rather than a feature limit, and interview twenty active free users about what would justify paying.",
+        "example": "Notion's free tier was generous but capped exactly where teams felt the constraint, converting at the moment of real value."
+      },
+      {
+        "title": "Competitive awareness is dangerously low",
+        "why": "Your competition score is the lowest in the cohort in the fastest-moving category. AI tooling changes monthly, and you are not tracking it systematically.",
+        "consequences": "You are surprised by competitors and model releases rather than positioned ahead of them, and you make roadmap decisions on outdated assumptions.",
+        "solution": "Set up a formal monthly competitive review covering both direct competitors and foundation model releases, with explicit implications for your roadmap.",
+        "example": "Fast-moving categories punish inattention more than they punish poor execution."
+      }
+    ],
+    "customer_assumptions": [
+      { "title": "Writers will pay for AI assistance", "description": "We assume screenwriters see AI as a tool worth paying for rather than a threat to their craft.", "status": "partial" },
+      { "title": "Dialect accuracy is the deciding factor", "description": "We assume dialect quality is why users choose us over general tools.", "status": "partial" },
+      { "title": "Writers use the tool weekly", "description": "We assume the product fits into a regular writing workflow.", "status": "validated" }
+    ],
+    "business_assumptions": [
+      { "title": "Inference costs stay below subscription revenue", "description": "We assume unit economics survive as free-tier usage grows.", "status": "not" },
+      { "title": "Screenwriting is a large enough beachhead", "description": "We assume the Arabic screenwriting market alone can sustain the company.", "status": "not" }
+    ],
+    "technical_assumptions": [
+      { "title": "Our dialect advantage is defensible", "description": "We assume fine-tuning and data give us a lasting edge over general models.", "status": "not" },
+      { "title": "Quality holds across all major dialects", "description": "We assume performance is consistent beyond Gulf Arabic.", "status": "partial" }
+    ],
+    "pricing_assumptions": [
+      { "title": "SAR 79/month matches perceived value", "description": "We assume the price reflects value delivered to a working screenwriter.", "status": "not" }
+    ],
+    "investor_questions": [
+      "What happens to your business if a major model provider ships excellent Arabic next quarter?",
+      "Why do only 2% of your users pay?",
+      "What do you own that a competitor could not rebuild in three months?",
+      "What are your inference costs per free user per month?",
+      "Is screenwriting the market, or the wedge into a bigger one?",
+      "What is your retention after three months among paying users?"
+    ],
+    "reflection_questions": [
+      "If Riwaya disappeared tomorrow, what would your 24 paying users do instead?",
+      "What evidence proves dialect quality is why people pay, rather than something else?",
+      "What do you own that is genuinely yours rather than borrowed from a model provider?",
+      "What assumption about your defensibility worries you most?"
+    ],
+    "mentor_notes": "You have real technical differentiation and a healthy weekly active rate, which means the product genuinely works for the people who use it. Two things need your attention urgently. First, your 2% conversion says your free tier is too generous and you are subsidising non-customers with real inference costs. Second, and more seriously, your moat is currently rented. Arabic quality is exactly the kind of gap that foundation model providers close on their own schedule. Start building the thing they cannot copy — proprietary data and workflow — starting now, not after it becomes urgent.",
+    "recommended_books": [
+      { "title": "Competing in the Age of AI", "author": "Iansiti & Lakhani", "why": "On where defensibility actually comes from in AI products." },
+      { "title": "Hooked", "author": "Nir Eyal", "why": "Building workflow habit that outlasts model advantages." },
+      { "title": "Monetizing Innovation", "author": "Madhavan Ramanujam", "why": "Directly addresses your conversion and pricing problem." }
+    ],
+    "recommended_frameworks": [
+      { "name": "Moat Analysis for AI Products", "why": "Distinguish rented advantages from owned ones." },
+      { "name": "Freemium Conversion Design", "why": "Design the free tier to create rather than remove urgency." },
+      { "name": "Beachhead Market Strategy", "why": "Decide whether screenwriting is the market or the entry point." }
+    ],
+    "recommended_tools": [
+      { "name": "PostHog", "why": "Understand which behaviours precede conversion to paid." },
+      { "name": "LangSmith", "why": "Track model performance and cost per user." },
+      { "name": "Stripe", "why": "Run pricing and packaging experiments quickly." }
+    ],
+    "recommended_videos": [
+      { "title": "Building Defensible AI Products", "source": "a16z", "why": "Squarely addresses your central strategic risk." },
+      { "title": "How to Price Your SaaS", "source": "SaaStr", "why": "Practical tactics for freemium conversion." }
+    ],
+    "action_plan": [
+      { "task": "Redesign the free tier around usage limits", "reason": "At 2% conversion your free tier fully satisfies users while you carry real inference costs for them.", "impact": "Target 8% conversion, roughly quadrupling revenue with no new users.", "metric": "New free tier live with conversion tracked over six weeks.", "deadline": "30 days" },
+      { "task": "Build a proprietary Arabic dialect dataset", "reason": "Your only durable defence against foundation models improving is data they do not have.", "impact": "Converts a rented advantage into an owned asset.", "metric": "10,000 reviewed dialect samples collected and structured.", "deadline": "90 days" },
+      { "task": "Interview 20 active free users about payment", "reason": "You do not know what would make a satisfied free user become a paying one.", "impact": "Directly informs both pricing and free-tier design.", "metric": "20 interviews with documented conversion triggers.", "deadline": "30 days" }
+    ],
+    "discussion_topics": [
+      "Owned versus rented moats in AI products",
+      "Designing a free tier that converts instead of satisfying",
+      "Competing in a category that changes monthly"
+    ],
+    "kpis": [
+      { "name": "Free-to-paid conversion", "target": "Above 8%", "why": "Current 2% makes the model economically unviable." },
+      { "name": "Inference cost per free user", "target": "Under SAR 3/month", "why": "Free-tier costs must not scale faster than revenue." },
+      { "name": "3-month paid retention", "target": "Above 70%", "why": "Proves durable workflow value rather than novelty." },
+      { "name": "Proprietary dataset size", "target": "10,000 samples", "why": "The measurable proxy for a defensible moat." }
+    ],
+    "current_status": "Working MVP with real technical differentiation, undermined by weak conversion and a moat dependent on external model providers."
+  },
+  {
+    "id": "khayal-vr",
+    "startup_name_ar": "خيال في آر",
+    "startup_name_en": "Khayal VR",
+    "category": "Immersive Media",
+    "description": "Immersive VR experiences bringing Saudi heritage and historical narratives to museums, events and cultural venues.",
+    "stage": "Growth",
+    "readiness": 68,
+    "revenue": "SAR 890K / year",
+    "team_size": 9,
+    "founders": [
+      { "name_ar": "ليان المهنا", "name_en": "Layan Almuhanna", "role": "Founder & CEO" }
+    ],
+    "team_members": [
+      { "name_ar": "سلطان الدوسري", "name_en": "Sultan Aldosari", "role": "Unity Developer" },
+      { "name_ar": "غادة الخالد", "name_en": "Ghada Alkhalid", "role": "Creative Director" },
+      { "name_ar": "نايف البقمي", "name_en": "Naif Albaqami", "role": "3D Artist" }
+    ],
+    "business_model": "B2B/B2G project contracts plus venue revenue share",
+    "target_customer": "Museums, cultural authorities, event organisers and tourism destinations commissioning visitor experiences.",
+    "problem_statement": "Cultural institutions want to engage younger visitors with heritage content but static exhibits fail to hold attention or convey narrative.",
+    "value_proposition": "Immersive heritage experiences that make Saudi history genuinely engaging, delivered as turnkey installations with measurable visitor engagement.",
+    "traction": "SAR 890K revenue, 6 installations delivered, 2 government contracts, 84% average visitor completion rate.",
+    "validation_scores": { "problem": 76, "customer": 73, "solution": 79, "revenue": 71, "market": 54, "execution": 72, "team": 66, "investor": 57, "competition": 61 },
+    "strengths": [
+      "Government contracts provide credibility and substantial contract values.",
+      "84% completion rate is strong evidence the experiences genuinely work.",
+      "Reusable technical platform across installations improves margin over time."
+    ],
+    "weaknesses": [
+      "Heavy dependence on government and institutional budget cycles.",
+      "Very long sales cycles with procurement processes outside your control.",
+      "Single founder carrying both the commercial and strategic load."
+    ],
+    "opportunities": [
+      "Vision 2030 tourism and cultural investment is expanding the buyer pool.",
+      "Content library could be licensed repeatedly across venues.",
+      "Regional expansion into Gulf cultural institutions with similar mandates."
+    ],
+    "threats": [
+      "Government spending priorities can shift with little warning.",
+      "VR hardware adoption remains uncertain among general visitors.",
+      "International immersive studios entering the Saudi market."
+    ],
+    "risks": [
+      {
+        "title": "Government revenue concentration with long procurement cycles",
+        "why": "Institutional and government buyers dominate revenue, and their procurement cycles are long, political, and entirely outside your influence.",
+        "consequences": "A budget freeze or priority shift could remove most of your pipeline with no warning and no recourse.",
+        "solution": "Build a commercial revenue line — malls, entertainment venues, tourism operators — targeting 40% of revenue from private buyers within a year.",
+        "example": "Government-dependent contractors routinely collapse during budget cycles despite strong delivery track records."
+      },
+      {
+        "title": "Every project is bespoke, so margin never compounds",
+        "why": "If each installation is custom-built, you rebuild rather than reuse, and revenue growth requires proportional cost growth.",
+        "consequences": "You scale headcount linearly with revenue and margins stay flat regardless of how many projects you deliver.",
+        "solution": "Extract a reusable content and platform layer, then licence existing experiences to new venues at a fraction of the build cost.",
+        "example": "Immersive studios that built licensable content libraries achieved far higher margins than pure custom shops."
+      },
+      {
+        "title": "Single-founder commercial dependency",
+        "why": "One founder carries business development, client relationships, and strategic direction for a nine-person company with government clients.",
+        "consequences": "Sales stop entirely if the founder is unavailable, and strategic work is permanently crowded out by deal execution.",
+        "solution": "Hire or promote a commercial lead to own the pipeline, freeing the founder for strategy, partnerships and the private-sector expansion.",
+        "example": "Founder-led sales is right early and becomes the binding constraint at exactly your stage."
+      }
+    ],
+    "customer_assumptions": [
+      { "title": "Private venues will pay commercial rates", "description": "We assume malls and entertainment venues will buy at rates comparable to institutional clients.", "status": "not" },
+      { "title": "Institutions will renew and expand installations", "description": "We assume delivered installations lead to follow-on contracts.", "status": "partial" },
+      { "title": "Visitors engage with VR heritage content", "description": "We assume the format holds attention, evidenced by completion rates.", "status": "validated" }
+    ],
+    "business_assumptions": [
+      { "title": "Content can be licensed across venues", "description": "We assume experiences built for one venue can be resold to others with modest adaptation.", "status": "not" },
+      { "title": "Margins improve with platform reuse", "description": "We assume the technical platform reduces cost per project over time.", "status": "partial" }
+    ],
+    "technical_assumptions": [
+      { "title": "Hardware remains viable for public venues", "description": "We assume VR headsets stay practical for high-throughput public installations.", "status": "partial" }
+    ],
+    "pricing_assumptions": [
+      { "title": "A revenue-share model works for commercial venues", "description": "We assume private venues prefer revenue share over upfront project fees.", "status": "not" }
+    ],
+    "investor_questions": [
+      "What percentage of revenue comes from government, and what is your plan if that halves?",
+      "How much of each new installation is genuinely reused versus rebuilt?",
+      "What is your gross margin trend across your six installations?",
+      "Who sells when you are not in the room?",
+      "What is the total addressable market for cultural VR in Saudi Arabia?",
+      "Is this a projects business or a content-licensing business?"
+    ],
+    "reflection_questions": [
+      "If Khayal disappeared tomorrow, would institutions commission this from someone else, or simply not do it?",
+      "What evidence proves private venues will pay commercial rates?",
+      "What percentage of your last project was genuinely new work?",
+      "What would you delegate first if you had a commercial lead tomorrow?"
+    ],
+    "mentor_notes": "You are further along than most and the 84% completion rate is real, hard evidence that the experiences work. Two structural issues will determine whether this becomes a large company. First, government concentration is a risk you can only solve before you need to. Second, and more important, if every installation is custom you have a projects business that grows linearly with headcount forever. The company becomes valuable the moment content becomes licensable rather than bespoke. That is the strategic shift worth making this year.",
+    "recommended_books": [
+      { "title": "Good Strategy Bad Strategy", "author": "Richard Rumelt", "why": "On choosing between projects and platform decisively." },
+      { "title": "Built to Sell", "author": "John Warrillow", "why": "Escaping the bespoke-project trap." },
+      { "title": "The Great CEO Within", "author": "Matt Mochary", "why": "Delegation and hiring at your exact stage." }
+    ],
+    "recommended_frameworks": [
+      { "name": "Projects-to-Platform Transition", "why": "Turn bespoke work into a licensable content library." },
+      { "name": "Revenue Concentration Analysis", "why": "Quantify and reduce dependence on government budgets." },
+      { "name": "Founder Delegation Mapping", "why": "Identify what only the founder can do, and hand over the rest." }
+    ],
+    "recommended_tools": [
+      { "name": "Unity Cloud", "why": "Manage a reusable content and build pipeline." },
+      { "name": "HubSpot", "why": "Institutionalise a pipeline that does not live in the founder's head." },
+      { "name": "Causal", "why": "Model margin under project versus licensing scenarios." }
+    ],
+    "recommended_videos": [
+      { "title": "How to Hire and Delegate", "source": "Y Combinator", "why": "Directly relevant to single-founder commercial dependency." },
+      { "title": "From Services to Products", "source": "SaaStr", "why": "On building the licensable layer." }
+    ],
+    "action_plan": [
+      { "task": "Win two private-sector commercial contracts", "reason": "Government concentration is your largest structural risk and must be reduced before a budget cycle forces it.", "impact": "Diversifies revenue and validates commercial pricing.", "metric": "2 signed private-sector contracts.", "deadline": "90 days" },
+      { "task": "Extract a reusable content layer from existing installations", "reason": "Bespoke projects mean margin never compounds and growth requires proportional hiring.", "impact": "Could cut delivery cost per installation by 30–40%.", "metric": "One existing experience packaged and licensed to a second venue.", "deadline": "90 days" },
+      { "task": "Hire a commercial lead to own the pipeline", "reason": "A nine-person company cannot depend on one person for all business development and strategy.", "impact": "Frees founder capacity for the private-sector and licensing strategy.", "metric": "Commercial lead hired and owning the pipeline independently.", "deadline": "60 days" }
+    ],
+    "discussion_topics": [
+      "Reducing government revenue concentration before it becomes urgent",
+      "Turning bespoke projects into licensable content",
+      "When founder-led sales becomes the constraint"
+    ],
+    "kpis": [
+      { "name": "Private-sector revenue share", "target": "40%", "why": "Reduces dependence on government budget cycles." },
+      { "name": "Content reuse rate", "target": "Above 50%", "why": "The core measure of the platform transition." },
+      { "name": "Gross margin per installation", "target": "Above 45%", "why": "Proves reuse is translating into economics." },
+      { "name": "Pipeline not founder-sourced", "target": "50%", "why": "Measures real commercial delegation." }
+    ],
+    "current_status": "Growing with real revenue and proven engagement, but constrained by government concentration and a bespoke project model that does not compound."
+  }
+]
