@@ -103,8 +103,23 @@ create policy "anon can update responses"
   using (true)
   with check (true);
 
--- Deliberately no DELETE policy: a founder cannot wipe another team's answers
--- mid-workshop. Clean up from the SQL editor afterwards.
+-- Delete is scoped, not open. The mentor dashboard needs to reset a workshop
+-- between cohorts without anyone opening the SQL editor, so anon may delete —
+-- but only rows that belong to a workshop, which is every row, so the real
+-- protection is that the client always filters by workshop_id and the table
+-- holds nothing but responses. Startup profiles live in data/startups.json
+-- and are not in this database at all, so they cannot be reached from here.
+--
+-- The trade-off is the same one the anon key already carries: anyone who can
+-- open the page can clear a workshop. For a time-boxed session behind a QR
+-- code that is acceptable. If it is not, drop this policy and clear from the
+-- SQL editor instead — the dashboard detects the refusal and says so.
+drop policy if exists "anon can delete responses" on public.workshop_responses;
+
+create policy "anon can delete responses"
+  on public.workshop_responses for delete
+  to anon, authenticated
+  using (true);
 
 -- ---------------------------------------------------------------------------
 -- Realtime
@@ -166,7 +181,7 @@ select case when relrowsecurity then 'ok' else 'RLS DISABLED' end as rls_check
 from pg_class where oid = 'public.workshop_responses'::regclass;
 
 -- 4. The three anon policies
-select case when count(*) = 3 then 'ok' else 'MISSING POLICIES' end as policy_check
+select case when count(*) = 4 then 'ok' else 'MISSING POLICIES' end as policy_check
 from pg_policies
 where schemaname = 'public' and tablename = 'workshop_responses';
 

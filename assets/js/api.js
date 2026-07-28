@@ -177,6 +177,36 @@ const FVApi = (() => {
     }
   }
 
+  /**
+   * Delete every response for the current workshop, and prove it.
+   *
+   * PostgREST answers 204 for a delete that matched no rows, so a missing RLS
+   * policy is indistinguishable from success by status code alone. The only
+   * honest confirmation is to read the workshop back and count what is left.
+   *
+   * Scoped to workshop_id, so startup profiles — which live in
+   * data/startups.json and never in the database — cannot be touched, and
+   * neither can another cohort running at the same time.
+   */
+  async function clearWorkshop() {
+    if (!isLive()) return { ok: false, remaining: null, error: 'not-configured' };
+
+    try {
+      const { error } = await client
+        .from(TABLE)
+        .delete()
+        .eq('workshop_id', workshopId());
+
+      if (error) throw error;
+
+      const remaining = await fetchAll();
+      return { ok: remaining.length === 0, remaining: remaining.length, error: null };
+    } catch (err) {
+      console.warn('FVApi: clearWorkshop failed', err?.message || err);
+      return { ok: false, remaining: null, error: err?.message || String(err) };
+    }
+  }
+
   /* ---------------------------- Realtime ---------------------------- */
 
   /**
@@ -223,7 +253,40 @@ const FVApi = (() => {
       if (!realtimeOk) startPolling(handler);
     }, REALTIME_GRACE_MS);
 
+    /* A reconciliation read runs regardless of realtime health. A dropped
+       websocket frame is silent by nature, and a facilitator standing in
+       front of the room cannot be asked to notice that a number stopped
+       moving. Twenty rows every five seconds costs nothing. */
+    startReconcile(handler);
+
     return unsubscribe;
+  }
+
+  let reconcileTimer = null;
+
+  function startReconcile(handler) {
+    if (reconcileTimer) return;
+    reconcileTimer = setInterval(async () => {
+      const rows = await fetchAll();
+      const seenNow = new Set();
+
+      rows.forEach(row => {
+        seenNow.add(row.startup_id);
+        const seen = lastSeen.get(row.startup_id);
+        if (seen === row.updated_at) return;
+        lastSeen.set(row.startup_id, row.updated_at);
+        try { handler(seen ? 'UPDATE' : 'INSERT', row); } catch (e) { console.error(e); }
+      });
+
+      /* Rows that vanished — a workshop cleared from another device — have to
+         be reported too, or the dashboard keeps showing responses that no
+         longer exist. */
+      [...lastSeen.keys()].forEach(id => {
+        if (seenNow.has(id)) return;
+        lastSeen.delete(id);
+        try { handler('DELETE', { startup_id: id }); } catch (e) { console.error(e); }
+      });
+    }, POLL_MS);
   }
 
   /* ---------------------------- Polling fallback ---------------------------- */
@@ -264,6 +327,7 @@ const FVApi = (() => {
 
   function unsubscribe() {
     clearTimeout(realtimeProbe);
+    if (reconcileTimer) { clearInterval(reconcileTimer); reconcileTimer = null; }
     stopPolling();
     if (channel && client) {
       client.removeChannel(channel);
@@ -348,7 +412,7 @@ const FVApi = (() => {
 
   return {
     init, isLive, get status() { return status; }, get reason() { return reason; }, onStatus,
-    save, fetchAll, fetchOne, subscribe, unsubscribe,
+    save, fetchAll, fetchOne, clearWorkshop, subscribe, unsubscribe,
     flush, pendingCount, rowToResponse, workshopId, sessionId
   };
 })();

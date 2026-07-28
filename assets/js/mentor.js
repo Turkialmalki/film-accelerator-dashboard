@@ -122,10 +122,31 @@
    * dashboard shows nothing: every founder answer goes to a local outbox that
    * never drains, so the room fills in while the facilitator watches zeros.
    */
+  /**
+   * Notices render into #notices, never into #content.
+   *
+   * render() replaces #content wholesale on every reconciliation, so a notice
+   * placed there survives only until the next poll — which is how the
+   * "could not delete" message silently disappeared before anyone read it.
+   */
+  function notify(kind, text) {
+    const host = $('#notices');
+    if (!host) return;
+    host.innerHTML = '';
+    const note = document.createElement('div');
+    note.className = kind === 'warn' ? 'notice notice--warn' : 'notice';
+    note.setAttribute('role', 'alert');
+    note.innerHTML = `<span class="notice-icon" aria-hidden="true">⚠️</span><span>${esc(text)}</span>`;
+    host.appendChild(note);
+  }
+
+  function clearNotices() {
+    const host = $('#notices');
+    if (host) host.innerHTML = '';
+  }
+
   function showBackendNotice() {
     if (FVApi.isLive()) return;
-    const host = $('#content');
-    if (!host) return;
 
     const text = FVApi.reason === 'library-missing'
       ? 'تعذّر تحميل مكتبة الاتصال بقاعدة البيانات. تحقق من الاتصال بالإنترنت ثم أعد تحميل الصفحة.'
@@ -133,11 +154,7 @@
       + `القيم الناقصة في ملف assets/js/config.js: ${FVConfig.missing().join('، ')}. `
       + 'كما يجب تشغيل ملف supabase/schema.sql مرة واحدة قبل بدء الورشة.';
 
-    const note = document.createElement('div');
-    note.className = 'notice';
-    note.setAttribute('role', 'alert');
-    note.innerHTML = `<span class="notice-icon" aria-hidden="true">⚠️</span><span>${esc(text)}</span>`;
-    host.prepend(note);
+    notify('error', text);
   }
 
   async function loadResponses() {
@@ -183,14 +200,14 @@
       const badge = $('#live');
       if (!badge) return;
       const map = {
-        live:    ['live',    'مباشر'],
-        polling: ['live',    'تحديث تلقائي'],
-        offline: ['offline', 'جارٍ إعادة الاتصال...'],
+        live:    ['live',    '🟢 تحديث مباشر'],
+        polling: ['polling', '🟡 تحديث تلقائي'],
+        offline: ['offline', '⚠️ جارٍ إعادة الاتصال...'],
         local:   ['',        'وضع محلي']
       };
       const [cls, label] = map[status] || map.local;
       badge.className = `badge ${cls}`;
-      badge.innerHTML = `<span class="badge-dot"></span>${esc(label)}`;
+      badge.textContent = label;
     });
   }
 
@@ -211,8 +228,13 @@
         started: Boolean(row),
         submitted: Boolean(row?.submitted),
         completion: row ? (row.completion_percentage ?? 0) : 0,
-        readiness: row
-          ? (row.validation_score || FVStore.readinessOf(r, s))
+        /* Strictly what the database holds. An earlier version fell back to
+           recomputing this from the startup profile when validation_score was
+           missing, which put a number on screen that no founder had produced.
+           A response with no score is null and is excluded from the average,
+           never substituted. */
+        readiness: row && Number.isFinite(Number(row.validation_score)) && row.validation_score > 0
+          ? Number(row.validation_score)
           : null,
         area: (r?.challenge?.tags || [])[0] || null,
         assumptions: r?.assumptions || {},
@@ -222,28 +244,35 @@
       };
     });
 
-    const answered = participants.filter(p => p.readiness !== null);
+    /* Aggregations read submitted responses only. A half-finished journey is
+       not an opinion yet, and letting partial answers into the challenge
+       ranking would move the room's picture every time someone tapped. */
+    const done = participants.filter(p => p.submitted);
+    const scored = done.filter(p => p.readiness !== null);
+    const responses = participants.filter(p => p.started);
 
     return {
       total: participants.length,
       participants,
-      started: participants.filter(p => p.started).length,
-      submitted: participants.filter(p => p.submitted).length,
-      avgCompletion: mean(participants.map(p => p.completion)),
-      avgReadiness: answered.length ? mean(answered.map(p => p.readiness)) : 0,
-      areas: rank(participants, p => p.area && AREA_LABELS[p.area]),
-      /* Only founders who actually started. Counting the whole cohort file
-         here would report stages for companies that never scanned the QR,
-         and would disagree with the challenge ranking directly above it,
-         which can only count people who answered. */
-      stages: rank(participants.filter(p => p.started), p => p.stage, STAGE_ORDER),
-      unvalidated: unvalidatedAssumptions(participants),
-      untested: rank(participants.flatMap(p => p.untested.map(u => ({ u }))), x => UNTESTED_LABELS[x.u]),
-      words: wordFrequencies(participants),
+      /* Responses actually in the database — not how many companies exist. */
+      responses: responses.length,
+      started: responses.length,
+      submitted: done.length,
+      /* Share of the cohort that has finished, which is what a facilitator
+         reads as "how far through are we". */
+      avgCompletion: participants.length
+        ? Math.round((done.length / participants.length) * 100)
+        : 0,
+      avgReadiness: scored.length ? mean(scored.map(p => p.readiness)) : 0,
+      areas: rank(done, p => p.area && AREA_LABELS[p.area]),
+      stages: rank(done, p => p.stage, STAGE_ORDER),
+      unvalidated: unvalidatedAssumptions(done),
+      untested: rank(done.flatMap(p => p.untested.map(u => ({ u }))), x => UNTESTED_LABELS[x.u]),
+      words: wordFrequencies(done),
       /* Kept separate from the cloud: the summary calls these the recurring
          questions, so they must come from what founders raised as problems,
          not from what they promised to do next. */
-      challengeWords: wordFrequencies(participants, p => p.challengeText)
+      challengeWords: wordFrequencies(done, p => p.challengeText)
     };
   }
 
@@ -521,6 +550,7 @@
     const a = analyse();
 
     $('#content').innerHTML = `
+      ${adminSection()}
       ${metricsSection(a)}
       ${completionSection(a)}
       ${rankSection('أكثر التحديات انتشاراً', a.areas, a.total, false)}
@@ -540,17 +570,134 @@
     });
 
     wireSummary(a);
+    wireAdmin(a);
+  }
+
+  /* ------------------------------ الإدارة ------------------------------ */
+
+  function wireAdmin(a) {
+    $('#admin-refresh')?.addEventListener('click', async (e) => {
+      const btn = e.currentTarget;
+      btn.setAttribute('aria-disabled', 'true');
+      btn.textContent = '⏳ جارٍ التحديث...';
+      await loadResponses();
+      render();
+      toast('تم تحديث البيانات من قاعدة البيانات');
+    });
+
+    $('#admin-export')?.addEventListener('click', () => exportCsv(a));
+
+    $('#admin-clear')?.addEventListener('click', () => confirmClear());
+  }
+
+  /**
+   * Export is anonymous like everything else here: it carries the response
+   * fields and an index, never a startup id or a name. A file that leaks what
+   * the screen protects would defeat the whole design.
+   */
+  function exportCsv(a) {
+    const head = ['#', 'مكتملة', 'نسبة الإنجاز', 'الجاهزية', 'مجال الدعم',
+                  'تحدث مع العملاء', 'وجود عميل دافع', 'وضوح المشكلة',
+                  'التحدي المكتوب', 'الالتزام'];
+
+    const cell = (v) => `"${String(v ?? '').replace(/"/g, '""').replace(/\r?\n/g, ' ')}"`;
+
+    const rows = a.participants
+      .filter(p => p.started)
+      .map(p => [
+        p.index, p.submitted ? 'نعم' : 'لا', p.completion, p.readiness ?? '',
+        AREA_LABELS[p.area] || '', p.assumptions.talked || '',
+        p.assumptions.paid || '', p.assumptions.problem || '',
+        p.challengeText, p.commitment
+      ].map(cell).join(','));
+
+    if (!rows.length) return toast('لا توجد استجابات للتصدير');
+
+    /* The BOM is what makes Excel open UTF-8 Arabic correctly instead of
+       rendering it as mojibake. */
+    const csv = '\uFEFF' + [head.map(cell).join(','), ...rows].join('\r\n');
+    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `workshop-${FVApi.workshopId()}-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+    toast('تم تصدير الاستجابات');
+  }
+
+  function confirmClear() {
+    const host = $('#content');
+    if ($('#clear-confirm')) return;
+
+    const box = document.createElement('div');
+    box.className = 'card';
+    box.id = 'clear-confirm';
+    box.style.cssText = 'margin-bottom:1rem;border-color:rgba(240,91,78,.4)';
+    box.innerHTML = `
+      <p class="card-value" style="font-size:1.05rem">هل أنت متأكد من حذف جميع استجابات هذه الورشة؟</p>
+      <p class="lede" style="font-size:.92rem;margin-top:.5rem">
+        سيتم حذف استجابات ورشة «${esc(FVApi.workshopId())}» فقط.
+        بيانات الشركات ومعلوماتها لا تتأثر إطلاقاً. لا يمكن التراجع.
+      </p>
+      <div class="actions">
+        <button class="btn btn--primary" id="clear-go" style="background:linear-gradient(135deg,#F05B4E,#BB3B44);color:#fff">
+          حذف جميع الاستجابات
+        </button>
+        <button class="btn btn--ghost" id="clear-cancel">إلغاء</button>
+      </div>`;
+    host.prepend(box);
+
+    $('#clear-cancel').addEventListener('click', () => box.remove());
+
+    $('#clear-go').addEventListener('click', async (e) => {
+      const btn = e.currentTarget;
+      btn.setAttribute('aria-disabled', 'true');
+      btn.textContent = 'جارٍ الحذف...';
+
+      const result = await FVApi.clearWorkshop();
+      box.remove();
+
+      await loadResponses();
+      render();
+
+      /* Verified by re-reading, not by trusting the status code: PostgREST
+         answers 204 for a delete that matched nothing, so a missing RLS
+         policy would otherwise look like a success. */
+      if (result.ok) {
+        clearNotices();
+        toast('تم حذف جميع استجابات الورشة');
+      } else {
+        notify('error',
+          `لم تُحذف الاستجابات (ما زال هناك ${num(result.remaining ?? 0)}). `
+          + 'سياسة الحذف غير مفعّلة في قاعدة البيانات — شغّل ملف supabase/schema.sql '
+          + 'مرة أخرى لإضافتها، أو احذف من محرر SQL مباشرة.');
+      }
+    });
+  }
+
+  function adminSection() {
+    return `
+      <section class="section">
+        <div class="admin">
+          <button class="admin-btn" id="admin-refresh">🔄 تحديث البيانات</button>
+          <button class="admin-btn" id="admin-export">📥 تصدير الاستجابات (CSV)</button>
+          <button class="admin-btn admin-btn--danger" id="admin-clear">🗑 حذف استجابات الورشة</button>
+        </div>
+      </section>`;
   }
 
   function metricsSection(a) {
     return `
       <section class="section">
         <div class="metrics">
-          ${metric(a.started, 'عدد الشركات المشاركة')}
-          ${metric(a.submitted, 'عدد الشركات المكتملة')}
+          ${metric(a.responses, 'الاستجابات المستلمة')}
+          ${metric(a.submitted, 'الشركات المكتملة')}
           ${metric(a.avgCompletion, 'نسبة الإنجاز', '٪')}
-          ${metric(a.avgReadiness, 'متوسط جاهزية الشركات', '٪')}
+          ${metric(a.avgReadiness, 'متوسط الجاهزية', '٪')}
         </div>
+        <p class="muted" style="font-size:.8rem;margin-top:.6rem;text-align:center">
+          من أصل ${companies(a.total)} في هذه الورشة · كل الأرقام محسوبة مباشرة من قاعدة البيانات
+        </p>
       </section>`;
   }
 
