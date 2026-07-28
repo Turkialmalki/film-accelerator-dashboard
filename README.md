@@ -2,254 +2,223 @@
 
 **Founder validation workshop — مسرعة الأعمال في الأفلام (Film Business Accelerator).**
 
-Founders scan a QR code during the workshop, spend ten to fifteen minutes, and leave with
-one clear next action. The interface is entirely Arabic and RTL.
+Founders scan a QR code during the workshop and spend eight to ten minutes in a guided AI
+consultation. They leave with one clear next action; the facilitator leaves with an
+anonymous view of the room. The interface is entirely Arabic and RTL.
 
-The goal is not data collection. It is reflection: every founder should identify their
-biggest validation gap and commit to a single step before the next session.
+Static HTML, CSS and JavaScript. **No build step, no framework, no `package.json`.** Deployed
+on GitHub Pages, backed by Supabase.
 
----
-
-## The experience
-
-Five steps, one screen each, one task per screen.
-
-| | Screen | What happens |
-|---|---|---|
-| — | البحث | The founder types their name or company. No suggestions, no dropdown. |
-| — | الترحيب | Company confirmed, purpose and duration stated. |
-| ١ | مرحلتك الحالية | Their stage explained in two sentences, then: what is your biggest challenge? |
-| ٢ | التحقق من الفرضيات | Three questions. Customers, payment, problem clarity. |
-| ٣ | تحديك الحالي | One open text answer. |
-| ٤ | توصيات خاصة بشركتك | نقطة قوة · أكبر مخاطرة · أفضل خطوة تالية |
-| ٥ | التزامك | «قبل الورشة القادمة سأقوم بـ...» |
-| — | النهاية | Readiness score, top risk, next step. |
-
-Progress, estimated time remaining, and save state are shown throughout.
-
-### The search is silent
-
-Autocomplete was removed deliberately. Suggesting startup or founder names would reveal
-who else is in the room, which is a privacy problem in a cohort programme.
-
-The founder types and presses التالي. The lookup happens invisibly and resolves to exactly
-one company or to nothing. It matches founder names, team member names and startup names,
-in Arabic or English, tolerating partial words, extra spaces, hamza and taa-marbuta
-variation, and the words شركة / منصة / studio / production.
-
-On failure the message is only:
-
-> لم يتم العثور على الاسم.
-> يرجى التأكد من كتابة اسمك أو اسم الشركة بشكل صحيح.
-
-No count, no near-miss, no "did you mean". Nothing about the cohort leaks.
-
-Two guards sit on the resolver in [`assets/js/search.js`](assets/js/search.js): a score floor
-of 70, which admits only exact, prefix, substring and whole-token matches, and a minimum
-query length of 3. Without the length guard a single letter would prefix-match somebody and
-open a stranger's journey on a mistyped Enter.
+**Live:** https://turkialmalki.github.io/founder-validation-platform/
 
 ---
 
-## Design
+## Quick start
 
-The palette, mark and typography come from the official Accelerator template. The brand
-vectors in [`assets/images/`](assets/images/) are extracted from it, not redrawn.
+```bash
+git clone https://github.com/Turkialmalki/founder-validation-platform.git
+cd founder-validation-platform
+python3 -m http.server 8000     # must be HTTP; fetch() fails on file://
+```
 
-| Token | Value | Use |
-|---|---|---|
-| Navy | `#0F2837` `#0B1A24` `#071119` | The plane |
-| Slate | `#4B5E69` `#87939B` | Structure, secondary bars |
-| Amber | `#FBAE40` `#F89C49` | The single accent |
-| Teal | `#76B6B7` | نقطة قوة, saved state |
-| Coral | `#F05B4E` | أكبر مخاطرة, errors |
-
-Brand type is **Effra** (Light / Medium). It is not a web font, so the stack falls back to
-**IBM Plex Sans Arabic**, which matches its geometric humanist proportions and has a strong
-Arabic cut. Effra is used first where it is installed locally.
-
-Numerals render as Arabic-Indic (٠١٢٣) everywhere a founder sees them; stored values stay
-Western digits. Arabic counting is not a suffix — `companies()`, `minutes()` and `times()`
-in [`assets/js/ui.js`](assets/js/ui.js) carry the dual forms, including the oblique
-(`شركتان` as a subject, `لدى شركتين` after a preposition).
-
----
-
-## Mentor dashboard
-
-[`mentor.html`](mentor.html) — password gated, fully anonymous, live.
-
-Shows only: participating companies, completed companies, completion rate, average
-readiness, most common challenges, most common stage, a word cloud, three generated
-insights, five discussion topics, and a live completion bar. No charts.
-
-`analyse()` in [`assets/js/mentor.js`](assets/js/mentor.js) is the only function that reads
-a database row, and it never copies a startup name, founder name, `participant_name`,
-`session_id` or `startup_id` onto the object the UI renders. The anonymity guarantee lives
-in one place rather than being a habit spread across the view.
-
-### ✨ ملخص الورشة
-
-The summary button composes أهم التحديات، أكثر الفرضيات غير المثبتة، أكثر الأسئلة تكراراً،
-توصيات الجلسة القادمة، أفضل ٥ مواضيع للنقاش.
-
-**It is generated locally by rule, not by a model call.** There is no API key in this
-project, and more importantly a facilitator pressing this in front of the room needs it to
-answer every time — workshop venue wifi is the one thing that cannot be relied on. Each
-rule only fires when the data supports the claim, so it never states a pattern that is not
-there. To swap in a real model later, replace `buildSummary()`; it already receives the
-complete anonymous analysis.
+Then open `http://localhost:8000`. It runs immediately in **local-only mode** — useful for a
+demo, but nothing syncs and the mentor dashboard stays empty. For a real workshop complete
+the two steps below.
 
 ---
 
 ## Setup
 
-### 1. Create the database
+### 1. Install the database
 
-In your Supabase project, open **SQL Editor → New query**, paste
-[`supabase/schema.sql`](supabase/schema.sql), and run it. It creates the table, the
-uniqueness constraint, the RLS policies, and enables Realtime.
+Supabase → **SQL Editor → New query** → paste all of
+[`supabase/schema.sql`](supabase/schema.sql) → **Run**.
+
+The file is idempotent — safe to run repeatedly. It creates the table, the unique
+constraint, the indexes, the `updated_at` trigger, the RLS policies, and enables Realtime.
+
+It ends with six verification queries. **Every one must report `ok`:**
+
+| Query | Reports `ok` when |
+|---|---|
+| `columns_check` | all 15 columns exist |
+| `unique_check` | the `(workshop_id, startup_id)` unique index exists |
+| `rls_check` | Row Level Security is enabled |
+| `policy_check` | all three anon policies exist |
+| `realtime_check` | the table is in the `supabase_realtime` publication |
+| `replica_check` | `REPLICA IDENTITY FULL` is set |
 
 Then confirm **Database → Replication** shows `workshop_responses` enabled.
 
 ### 2. Add your keys
 
-Edit [`assets/js/config.js`](assets/js/config.js) with the values from
-**Project Settings → API**:
+Edit [`assets/js/config.js`](assets/js/config.js):
+
+| Value | Where to find it | Required |
+|---|---|---|
+| `SUPABASE_URL` | Project Settings → API → Project URL | yes |
+| `SUPABASE_ANON_KEY` | Project Settings → API → `anon` / `public` | yes |
+| `DEFAULT_WORKSHOP_ID` | any slug you choose for the cohort | yes |
+| `DATA_VERSION` | bump whenever `data/startups.json` changes | on data change |
 
 ```js
-const SUPABASE_URL      = 'https://your-project-ref.supabase.co';
+const SUPABASE_URL      = 'https://abcdefgh.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhb...';
+const DEFAULT_WORKSHOP_ID = 'film-accelerator-2026';
 ```
 
-The anon key is a publishable key — it is designed to ship in the client.
+The anon key is a **publishable** key — it is designed to ship in client code and is not a
+secret. **Never** put the `service_role` key here: it bypasses RLS entirely, and every file
+in this repository is public.
 
-### 3. Name the workshop
+`FVConfig.missing()` returns the names of any unset values, and both pages display them on
+screen if configuration is incomplete.
 
-`DEFAULT_WORKSHOP_ID` scopes every response. To run two cohorts at once, put the id in the
-QR code URL instead:
+### 3. Deploy
+
+Push to `main`. GitHub Pages serves the repository root; `.nojekyll` is included.
+
+**Bump the version token on every deploy** — `?v=` in `index.html` and `mentor.html`, and
+`DATA_VERSION` in `config.js`. GitHub Pages sets `cache-control: max-age=600` on everything
+including `index.html`, so without this a returning founder can hold a fresh page and a
+stale script, which throws rather than degrading.
+
+### 4. The QR code
+
+Encode the URL with the workshop id:
 
 ```
-https://you.github.io/film-accelerator-dashboard/?workshop=riyadh-nov-2026
+https://turkialmalki.github.io/founder-validation-platform/?workshop=riyadh-2026
 ```
 
-Open the mentor dashboard with the **same** parameter so it watches that workshop.
-
-### 4. Run it
-
-Static site, but it must be served over HTTP — it `fetch`es the JSON, which browsers block
-on `file://`.
-
-```bash
-python3 -m http.server 8000
-```
-
-For GitHub Pages, push to the repository root and enable Pages. No build step;
-`.nojekyll` is included.
-
-**If you skip steps 1–2 the platform still runs** in local-only mode — useful for a demo —
-but nothing syncs between devices.
-
-The mentor password is `accelerator2026`, set at the top of `assets/js/mentor.js`. It keeps
-the dashboard out of the way during a workshop; it is a client-side check, not a security
-boundary.
+Open the mentor dashboard with the **same** parameter, or it will watch a different workshop.
 
 ---
 
-## Structure
+## Folder structure
 
 ```
-index.html              الرحلة — five steps
+index.html              رحلة المؤسس — the founder journey
 mentor.html             لوحة المدرب — anonymous cohort view
+.nojekyll               stops GitHub Pages running Jekyll over assets/
 
-assets/css/brand.css    The design system. RTL-first.
-assets/images/          Brand vectors from the official template
+assets/css/brand.css    the whole design system, RTL-first
+assets/images/          brand vectors extracted from the official deck
 
-assets/js/config.js     Supabase keys, workshop id, anonymous session id
-assets/js/api.js        Sync, realtime, offline outbox
+assets/js/config.js     keys, workshop id, anonymous device id   ← EDIT THIS
+assets/js/api.js        Supabase sync, realtime, offline outbox
+assets/js/session.js    session lifecycle: NEW / ACTIVE / COMPLETED / EXPIRED
+assets/js/storage.js    local draft cache, completion, readiness
 assets/js/search.js     Arabic + English fuzzy search, silent resolve
-assets/js/storage.js    Local draft cache, completion, readiness
 assets/js/ui.js         DOM helpers, Arabic numerals and counting
-assets/js/recommend.js  Personalised findings for step 4
-assets/js/journey.js    The five-step journey
-assets/js/mentor.js     Cohort analytics, insights, summary
+assets/js/questions.js  per-startup question engine
+assets/js/coach.js      per-startup coach message
+assets/js/recommend.js  findings and the closing dashboard
+assets/js/journey.js    screen flow and rendering
+assets/js/mentor.js     cohort analytics, insights, workshop summary
 
-data/startups.json      The cohort
-supabase/schema.sql     Table, RLS, realtime
+data/startups.json      the cohort — 20 companies, 29 people
+supabase/schema.sql     table, indexes, RLS, realtime, verification
 ```
 
 ---
 
-## Adding or editing startups
+## The journey
 
-Each entry in [`data/startups.json`](data/startups.json) needs these fields for the journey
-to work. The file carries a lot more, which the current UI does not read.
-
-```jsonc
-{
-  "id": "unique-slug",
-  "startup_name_ar": "الاسم بالعربية",
-  "startup_name_en": "Name in English",
-  "stage": "MVP",                       // drives readiness baseline + mentor grouping
-  "stage_ar": "المنتج الأولي",           // shown in step 1
-  "stage_summary_ar": "جملتان تشرحان المرحلة.",
-  "readiness": 44,                      // 0–100 baseline
-  "founders":     [{ "name_ar": "...", "name_en": "...", "role": "..." }],
-  "team_members": [{ "name_ar": "...", "name_en": "...", "role": "..." }],
-
-  // Step 4. Written per company so no two founders see the same three sentences.
-  "recommendation_ar": {
-    "strength":  "نقطة قوة مبنية على إنجاز حقيقي.",
-    "risk":      "أكبر مخاطرة.",
-    "next_step": "أفضل خطوة تالية."
-  }
-}
+```
+البحث → التحليل → التعريف بالشركة → المرشد → اللقطة → ١٠ أسئلة → لوحة النتائج
 ```
 
-Every founder and team member name becomes searchable in both scripts, so any member of a
-team resolves to the same company and shares one row.
+Identification is silent: no autocomplete, no dropdown, no suggestions. Showing who else is
+in the room is a privacy problem in a cohort programme, so the founder types a name, presses
+التالي, and the lookup resolves to exactly one company or to nothing.
 
-### How the recommendations personalise
+Three guards sit on the resolver in [`search.js`](assets/js/search.js):
 
-[`assets/js/recommend.js`](assets/js/recommend.js) layers two things: the authored baseline
-above, and overrides driven by the step-2 answers. A founder who says nobody has paid yet
-has a more urgent risk than whatever their profile knew beforehand, so that override wins.
-Rules are ordered by urgency and the first match takes it — nobody is handed two "biggest"
-risks. `strength` is never overridden: it comes from what the company actually achieved,
-and the point of showing it first is that the risk lands on someone who has just been told
-they are doing something right.
+- **Score floor of 70** — admits only exact, prefix, substring and whole-token matches.
+- **Minimum length of 3** — one or two letters always prefix-match somebody.
+- **Ambiguity check** — this cohort has two founders called أحمد and five whose names begin
+  عبد. When the top two matches tie, nothing resolves and the founder is asked for the full
+  name. Picking one silently would open a stranger's company.
 
----
+On failure the message is only `لم يتم العثور على بيانات مطابقة.` with a retry button. No
+count, no near-miss, no "did you mean".
 
-## How responses behave
+### Personalisation
 
-One row per `(workshop_id, startup_id)`. Every write is an upsert on that constraint, so
-two co-founders answering from different phones edit the same answer rather than creating
-two, and "edit your previous answers" needs no extra code.
-
-Typing writes to `localStorage` immediately and renders instantly; the network round trip
-happens behind it, debounced. A failed write goes into an outbox and is retried every six
-seconds and on the `online` event until it lands. The founder is told the answer saved
-either way — a queued write is a safe write, and alarming someone mid-journey about a
-network they cannot fix helps nobody.
-
-Submit is the one write that is not debounced: the founder is about to stop touching the
-page, so it has to leave now.
-
-`readinessOf()` starts from the startup's baseline `readiness` and moves with the three
-step-2 answers. It is deliberately blunt — a conversation starter for the room, not a
-valuation.
+Every founder gets their own coach message, their own ten questions, and their own closing
+dashboard. The strongest personalisation is not generated prose but real text: the ranking
+question's options **are** the company's reported challenges, and the scale question quotes
+its reported advantage back and asks how long it will survive.
 
 ---
 
-## Privacy
+## Data flow
 
-- No founder name, startup name, session id or email is ever rendered in the mentor view.
+```
+founder answers
+   ↓ instant     localStorage           (never blocks the UI)
+   ↓ debounced   FVApi.save → Supabase  (700 ms after the last keystroke)
+   ↓ on failure  outbox → retry every 6 s and on the `online` event
+   ↓ realtime    postgres_changes
+mentor dashboard   (debounced 500 ms — twenty founders typing is a stream)
+```
+
+One row per `(workshop_id, startup_id)`. Every write is an upsert on that constraint, so two
+co-founders answering from different phones edit the same row rather than creating two, and
+duplicate submissions are impossible.
+
+Submit is the one write that is **not** debounced — the founder is about to stop touching
+the page.
+
+| Answer | Column |
+|---|---|
+| the three validation questions | `assumption_status` |
+| support area | `challenge_tags` |
+| open challenge | `challenge` |
+| commitment | `commitment` |
+| every generated question | `reflection_answers` |
+
+The mentor dashboard aggregates the first four, which is why those four are worded
+identically for everyone. Adding a question to the engine cannot break it.
+
+---
+
+## Session lifecycle
+
+[`session.js`](assets/js/session.js) — only **ACTIVE** resumes.
+
+| State | Meaning | On load |
+|---|---|---|
+| `NEW` | no journey on this device | start at search |
+| `ACTIVE` | started, not submitted, under 12 h old | resume at the exact question |
+| `COMPLETED` | submitted | **start fresh** — never reopens |
+| `EXPIRED` | untouched for over 12 h | discard the draft, start fresh |
+
+A founder who finishes and refreshes lands on a clean start, not back on the thank-you page.
+The device is often handed to the next person in the room, and they must never inherit the
+previous founder's finished journey. `pageshow` is handled too, so the back button and the
+mobile bfcache cannot restore a finished journey from memory.
+
+**بدء جلسة جديدة** on the final screen calls `FVSession.resetAll()`, which clears every
+`fvip:` key from both localStorage and sessionStorage — including the anonymous device id,
+so the next founder's answers are never attributed to the previous one's row.
+
+---
+
+## Privacy and anonymity
+
+- `analyse()` in [`mentor.js`](assets/js/mentor.js) is the only function that reads a
+  database row, and it never copies a startup name, founder name, `participant_name`,
+  `session_id` or `startup_id` onto the object the UI renders. The guarantee lives in one
+  place rather than being a habit spread across the view.
 - The search reveals nothing about who is attending, on success or failure.
 - `participant_name` is stored but never displayed anywhere.
 - Anyone holding the anon key — that is, anyone who opens the page — can read and write
   `workshop_responses`. That is acceptable for a time-boxed workshop with non-sensitive
-  content and is not acceptable for anything else. **Delete the data after the session:**
+  content and is **not** acceptable for anything else.
+
+**Delete the data after the session:**
 
 ```sql
 delete from public.workshop_responses where workshop_id = 'film-accelerator-2026';
@@ -257,15 +226,97 @@ delete from public.workshop_responses where workshop_id = 'film-accelerator-2026
 
 ---
 
+## Troubleshooting
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| Mentor dashboard shows zeros all session | `config.js` still has placeholders, so answers go to a local outbox that never drains | Fill in both keys. Both pages now say this on screen. |
+| `FVSearch.resolve is not a function` | browser holds a cached script from a previous deploy | Bump the `?v=` token; hard-reload once |
+| A founder's name is not found | ambiguous first name, or a spelling not in `aliases` | Enter the full name, or add an alias in `data/startups.json` |
+| Dashboard does not update live | Realtime not enabled for the table | Database → Replication, then re-run `realtime_check` |
+| Nothing loads, console shows a `fetch` error | opened over `file://` | Serve over HTTP |
+| Arabic renders left-to-right | stylesheet failed to load | Check `assets/css/brand.css` returns 200 |
+
+Connection state is shown in the mentor header: **مباشر** (live), **جارٍ إعادة الاتصال…**
+(retrying), **وضع محلي** (not configured).
+
+---
+
+## Known limitations
+
+- **`business_model` is inferred**, not reported. The accelerator dashboard has no such
+  field, and the question engine needs one. Each entry carries
+  `business_model_source: 'derived-from-category-and-description'` so it can never be
+  mistaken for source data.
+- **`accelerator_priorities` mirrors the reported `challenges`.** There is no separate
+  priorities field upstream.
+- **The workshop summary is rule-based, not a model call.** There is no API key in this
+  project, and a facilitator pressing that button in front of the room needs it to answer
+  when the venue wifi does not. `buildSummary()` already receives the complete anonymous
+  analysis, so swapping in a real model is a one-function change.
+- **The mentor password is a client-side check**, not a security boundary. It keeps the
+  dashboard out of the way during a workshop; it does not protect the data. The anon key
+  does the real gatekeeping, and it is public by design.
+- **`data/startups.json` is publicly fetchable.** Hiding the cohort in the UI does not hide
+  it if the file is one URL away. Make the repository private if that matters.
+- **A bare first name will not resolve** when several founders share it. This is deliberate;
+  see the ambiguity guard above.
+
+---
+
 ## Technical notes
 
-- No build step, no framework, no bundler. Two CDN dependencies: the Supabase client and
-  Google Fonts. If either is blocked the page still renders and still works locally.
-- Charts, PDF export, printable reports and the thirteen-section dashboard were removed.
-- Mobile-first. Every target is at least 56px; the content column is capped at 34rem and
-  the screen body switches from centred to top-aligned under 720px of height so a long
-  step never traps its own button off-screen.
-- Motion is fade, slide and scale only, on one easing curve, and fully disabled under
+- Two CDN dependencies: the Supabase client and Google Fonts. If either is blocked the page
+  still renders and still works locally.
+- Brand type is **Effra** (from the official template), which is not a web font. The stack
+  falls back to **IBM Plex Sans Arabic**.
+- Numerals render Arabic-Indic (٠١٢٣) everywhere a founder sees them; stored values stay
+  Western. `numText()` leaves Latin identifiers alone, so `2014` converts but `B2B` and
+  `bingolab51` survive.
+- Arabic counting is not a suffix — `companies()`, `minutes()` and `times()` carry the dual
+  forms, including the oblique (`شركتان` as a subject, `لدى شركتين` after a preposition).
+- Mobile-first. Every target is at least 56 px; the content column is capped at 34 rem.
+- Ranking is tap-to-order. Dragging is unreliable one-handed on a phone and unusable from a
+  keyboard.
+- Motion is fade, slide and scale on one easing curve, fully disabled under
   `prefers-reduced-motion`.
-- Screen changes move focus to the new heading so a screen reader follows; choice groups
-  are real radio groups with arrow-key roving, mirrored for RTL.
+- Screen changes move focus to the new heading so a screen reader follows; choice groups are
+  real radio groups with arrow-key roving, mirrored for RTL.
+
+---
+
+## Editing the cohort
+
+Each entry in [`data/startups.json`](data/startups.json) needs these fields. Bump
+`DATA_VERSION` in `config.js` afterwards.
+
+```jsonc
+{
+  "id": "unique-slug",
+  "startup_name_ar": "شركة الاسم",
+  "startup_name_en": "Name in English",
+  "aliases": ["الاسم", "sub-brand"],       // extra searchable spellings
+  "founder":     { "name_ar": "...", "role": "..." },
+  "co_founders": [{ "name_ar": "...", "role": "..." }],
+  "leadership":  [{ "name_ar": "...", "role": "..." }],
+  "stage": "MVP",                          // Pre-Seed | MVP | Seed | Pre-A | Series A
+  "stage_ar": "المنتج الأولي",
+  "stage_summary_ar": "جملتان تشرحان المرحلة.",
+  "readiness": 61,                         // 0–100
+  "revenue": "أقل من 100,000 ر.س",
+  "team_size": 3,
+  "team_size_label": "3 موظفين",
+  "city": "الرياض",
+  "category": "...",
+  "business_model": "...",                 // inferred — see limitations
+  "description": "...",
+  "competitive_advantages": ["..."],       // drives the scale question
+  "current_challenges": ["..."],           // drives the ranking question
+  "accelerator_priorities": ["..."],
+  "growth_roadmap": "...",
+  "recommendation_ar": { "strength": "...", "risk": "...", "next_step": "..." }
+}
+```
+
+Every founder, co-founder and leadership name becomes searchable in both scripts, so any
+member of a team resolves to the same company and shares one row.

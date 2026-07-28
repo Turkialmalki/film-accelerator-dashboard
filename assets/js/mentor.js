@@ -106,12 +106,38 @@
     await loadResponses();
     render();
     startRealtime();
+    showBackendNotice();
 
     $('#refresh').addEventListener('click', async () => {
       await loadResponses();
       render();
       toast('تم تحديث البيانات');
     });
+  }
+
+  /**
+   * State the backend problem in the page, not in the console.
+   *
+   * An unconfigured deployment is the single most likely reason this
+   * dashboard shows nothing: every founder answer goes to a local outbox that
+   * never drains, so the room fills in while the facilitator watches zeros.
+   */
+  function showBackendNotice() {
+    if (FVApi.isLive()) return;
+    const host = $('#content');
+    if (!host) return;
+
+    const text = FVApi.reason === 'library-missing'
+      ? 'تعذّر تحميل مكتبة الاتصال بقاعدة البيانات. تحقق من الاتصال بالإنترنت ثم أعد تحميل الصفحة.'
+      : 'قاعدة البيانات غير مهيأة، لذلك لن تصل إجابات المشاركين إلى هذه اللوحة. '
+      + `القيم الناقصة في ملف assets/js/config.js: ${FVConfig.missing().join('، ')}. `
+      + 'كما يجب تشغيل ملف supabase/schema.sql مرة واحدة قبل بدء الورشة.';
+
+    const note = document.createElement('div');
+    note.className = 'notice';
+    note.setAttribute('role', 'alert');
+    note.innerHTML = `<span class="notice-icon" aria-hidden="true">⚠️</span><span>${esc(text)}</span>`;
+    host.prepend(note);
   }
 
   async function loadResponses() {

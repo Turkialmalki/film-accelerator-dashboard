@@ -113,7 +113,21 @@ create policy "anon can update responses"
 -- Also enable Realtime for this table in Dashboard → Database → Replication.
 -- ---------------------------------------------------------------------------
 
-alter publication supabase_realtime add table public.workshop_responses;
+-- `alter publication ... add table` raises 42710 if the table is already a
+-- member, which would abort a re-run of this file partway through. Guarded so
+-- the script stays idempotent end to end.
+do $$
+begin
+  if not exists (
+    select 1 from pg_publication_tables
+    where pubname = 'supabase_realtime'
+      and schemaname = 'public'
+      and tablename = 'workshop_responses'
+  ) then
+    alter publication supabase_realtime add table public.workshop_responses;
+  end if;
+end
+$$;
 
 -- REPLICA IDENTITY FULL makes the old row available on UPDATE events, so the
 -- dashboard can reconcile edits rather than only insertions.
@@ -130,3 +144,38 @@ alter table public.workshop_responses replica identity full;
 
 -- Reset a workshop before a new cohort:
 --   delete from public.workshop_responses where workshop_id = 'film-accelerator-2026';
+
+-- ---------------------------------------------------------------------------
+-- Verification
+--
+-- Run these after installing. Every row should report `ok`.
+-- ---------------------------------------------------------------------------
+
+-- 1. Table, columns and defaults
+select case when count(*) = 15 then 'ok' else 'MISSING COLUMNS' end as columns_check
+from information_schema.columns
+where table_schema = 'public' and table_name = 'workshop_responses';
+
+-- 2. The unique constraint that makes upsert-on-conflict work
+select case when count(*) = 1 then 'ok' else 'MISSING UNIQUE INDEX' end as unique_check
+from pg_indexes
+where schemaname = 'public' and indexname = 'workshop_responses_workshop_startup_key';
+
+-- 3. Row Level Security enabled
+select case when relrowsecurity then 'ok' else 'RLS DISABLED' end as rls_check
+from pg_class where oid = 'public.workshop_responses'::regclass;
+
+-- 4. The three anon policies
+select case when count(*) = 3 then 'ok' else 'MISSING POLICIES' end as policy_check
+from pg_policies
+where schemaname = 'public' and tablename = 'workshop_responses';
+
+-- 5. Realtime publication membership
+select case when count(*) = 1 then 'ok' else 'REALTIME NOT ENABLED' end as realtime_check
+from pg_publication_tables
+where pubname = 'supabase_realtime' and schemaname = 'public'
+  and tablename = 'workshop_responses';
+
+-- 6. REPLICA IDENTITY FULL, so UPDATE events carry the old row
+select case when relreplident = 'f' then 'ok' else 'REPLICA IDENTITY NOT FULL' end as replica_check
+from pg_class where oid = 'public.workshop_responses'::regclass;

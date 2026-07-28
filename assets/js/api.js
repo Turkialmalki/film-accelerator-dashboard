@@ -18,6 +18,7 @@ const FVApi = (() => {
 
   let client = null;
   let status = 'local';           // 'live' | 'local' | 'offline'
+  let reason = null;              // why we are not live, for the UI to show
   let channel = null;
   let retryTimer = null;
   const statusListeners = new Set();
@@ -29,6 +30,7 @@ const FVApi = (() => {
 
   function init() {
     if (!FVConfig.isConfigured()) {
+      reason = 'not-configured';
       setStatus('local');
       console.warn(
         'FVApi: Supabase is not configured. Running in local-only mode — ' +
@@ -38,6 +40,7 @@ const FVApi = (() => {
       return false;
     }
     if (typeof window.supabase?.createClient !== 'function') {
+      reason = 'library-missing';
       setStatus('local');
       console.warn('FVApi: the Supabase client library did not load. Running local-only.');
       return false;
@@ -52,6 +55,7 @@ const FVApi = (() => {
       }
     );
 
+    reason = null;
     setStatus('live');
     startRetryLoop();
     window.addEventListener('online', flush);
@@ -287,7 +291,7 @@ const FVApi = (() => {
   }
 
   return {
-    init, isLive, get status() { return status; }, onStatus,
+    init, isLive, get status() { return status; }, get reason() { return reason; }, onStatus,
     save, fetchAll, fetchOne, subscribe, unsubscribe,
     flush, pendingCount, rowToResponse, workshopId, sessionId
   };

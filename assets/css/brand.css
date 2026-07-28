@@ -1021,6 +1021,33 @@ h3 {
 .stack-s { display: grid; gap: .6rem; }
 .stack-l { display: grid; gap: 1.6rem; }
 
+/* ---------------------------------------------------------------- Notice */
+
+/* Shown when the platform cannot reach its backend. It is deliberately
+   impossible to miss: an unconfigured deployment loses every answer in the
+   room, and the previous build reported that only to the browser console. */
+.notice {
+  display: flex;
+  gap: .7rem;
+  align-items: flex-start;
+  margin: 0 0 1rem;
+  padding: .95rem 1.1rem;
+  border-radius: var(--radius-sm);
+  background: rgba(240, 91, 78, .1);
+  border: 1px solid rgba(240, 91, 78, .32);
+  color: #FFD9D4;
+  font-size: .9rem;
+  line-height: 1.75;
+}
+
+.notice--warn {
+  background: rgba(251, 174, 64, .1);
+  border-color: rgba(251, 174, 64, .32);
+  color: #FFE6C2;
+}
+
+.notice-icon { flex: none; font-size: 1rem; line-height: 1.6; }
+
 /* ---------------------------------------------------------------- Toast */
 
 .toast {

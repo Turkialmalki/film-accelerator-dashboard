@@ -119,12 +119,78 @@
     FVSearch.buildIndex(state.startups);
     wireSearch();
 
-    /* Returning on the same device — pick the journey back up rather than
-       asking the founder to identify themselves a second time. */
-    const resumeId = FVStore.getSession();
-    const resume = resumeId && state.startups.find(s => s.id === resumeId);
-    if (resume) await openStartup(resume, '', true);
-    else show('search');
+    await restoreOrStart();
+    wirePageRestore();
+    showOfflineNotice();
+  }
+
+  /**
+   * The founder is told what it means for them — answers stay on this device —
+   * and nothing about keys or configuration, which is the organiser's problem
+   * and not theirs to act on mid-workshop.
+   */
+  function showOfflineNotice() {
+    if (FVApi.isLive()) return;
+    const host = $('.screen[data-screen="search"] .screen-body');
+    if (!host) return;
+
+    const note = document.createElement('div');
+    note.className = 'notice notice--warn';
+    note.setAttribute('role', 'status');
+    note.innerHTML = '<span class="notice-icon" aria-hidden="true">ℹ️</span>'
+      + '<span>سيتم حفظ إجاباتك على هذا الجهاز. يرجى إبلاغ منظم الورشة قبل البدء.</span>';
+    host.prepend(note);
+  }
+
+  /**
+   * Decide what this device should see on load.
+   *
+   * Only an ACTIVE journey resumes. A COMPLETED one is deliberately dropped:
+   * refreshing after finishing must give a clean start, because the phone is
+   * often passed to the next founder in the room.
+   */
+  async function restoreOrStart() {
+    const id = FVStore.getSession();
+    const startup = id && state.startups.find(s => s.id === id);
+
+    if (!startup) { show('search'); return; }
+
+    const draft = FVStore.get(id);
+    const st = FVSession.status(draft);
+
+    if (st === 'ACTIVE') { await openStartup(startup, '', true); return; }
+
+    /* COMPLETED or EXPIRED — release the device and start over. An expired
+       draft is also discarded, since it belongs to a previous cohort. */
+    if (st === 'EXPIRED') FVSession.clearStartup(id);
+    FVStore.clearSession();
+    resetToSearch();
+  }
+
+  function resetToSearch() {
+    state.startup = null;
+    state.answers = null;
+    state.questions = [];
+    state.qIndex = 0;
+    const input = $('#search-input');
+    if (input) { input.value = ''; input.classList.remove('error'); }
+    const err = $('#search-error');
+    if (err) err.classList.remove('show');
+    const btn = $('#search-submit');
+    if (btn) { btn.dataset.retry = ''; btn.textContent = 'التالي'; }
+    show('search');
+  }
+
+  /**
+   * The back button and the mobile bfcache restore a page from memory without
+   * re-running boot(), which would otherwise put a founder back inside a
+   * finished journey. Re-deciding on restore closes that path.
+   */
+  function wirePageRestore() {
+    window.addEventListener('pageshow', (e) => {
+      if (!e.persisted) return;
+      restoreOrStart();
+    });
   }
 
   function showFatal() {
@@ -428,9 +494,7 @@
 
     $('#welcome-switch').addEventListener('click', () => {
       FVStore.clearSession();
-      state.startup = null;
-      $('#search-input').value = '';
-      show('search');
+      resetToSearch();
     });
   }
 
@@ -774,6 +838,10 @@
     state.answers = FVStore.markSubmitted(state.startup.id);
     await FVApi.save(state.startup.id, payload(true));
 
+    /* The journey is now COMPLETED. Releasing the pointer is what makes a
+       refresh start clean instead of reopening this dashboard. */
+    FVStore.clearSession();
+
     btn.removeAttribute('aria-disabled');
     btn.textContent = 'إنهاء الرحلة';
 
@@ -827,6 +895,7 @@
         <span class="savestate" data-savestate></span>
         <button class="btn btn--primary" id="done-finish">إنهاء</button>
         <button class="btn-back" id="done-edit" style="align-self:center">تعديل إجاباتي</button>
+        <button class="btn-back" id="done-restart-top" style="align-self:center">بدء جلسة جديدة</button>
       </div>`;
 
     requestAnimationFrame(() => {
@@ -844,10 +913,28 @@
           <p class="lede" style="margin-top:.7rem">
             يمكنك إغلاق هذه الصفحة الآن والعودة إلى الورشة.
           </p>
+          <div class="actions">
+            <button class="btn btn--ghost" id="done-restart">بدء جلسة جديدة</button>
+          </div>
         </div>`;
+      $('#done-restart').addEventListener('click', startFresh);
     });
 
-    $('#done-edit').addEventListener('click', () => goToQuestion(0));
+    /* Editing re-opens the journey on this device, so the pointer has to come
+       back — it was released at submit. */
+    $('#done-edit').addEventListener('click', () => {
+      FVStore.setSession(state.startup.id);
+      goToQuestion(0);
+    });
+
+    $('#done-restart-top').addEventListener('click', startFresh);
+  }
+
+  /** Full reset — used when the phone is handed to the next founder. */
+  function startFresh() {
+    FVSession.resetAll();
+    resetToSearch();
+    FVUI.toast('تم بدء جلسة جديدة');
   }
 
   function ringMarkup(score, caption) {
