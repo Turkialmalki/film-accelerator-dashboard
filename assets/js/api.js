@@ -201,14 +201,70 @@ const FVApi = (() => {
         try { handler(payload.eventType, row); } catch (e) { console.error(e); }
       })
       .subscribe((s) => {
-        if (s === 'SUBSCRIBED') setStatus('live');
-        else if (s === 'CHANNEL_ERROR' || s === 'TIMED_OUT') setStatus('offline');
+        if (s === 'SUBSCRIBED') {
+          realtimeOk = true;
+          setStatus('live');
+        } else if (s === 'CHANNEL_ERROR' || s === 'TIMED_OUT' || s === 'CLOSED') {
+          /* Realtime is a websocket to a separate service, and it can be
+             unavailable while REST is perfectly healthy — a disabled
+             publication, a blocked socket on venue wifi, a proxy that drops
+             upgrades. The dashboard must still update without a manual
+             refresh, so failing over to polling is not a fallback for a bug,
+             it is the supported second path. */
+          realtimeOk = false;
+          startPolling(handler);
+        }
       });
+
+    /* If the channel never reports anything at all, treat that as a failure
+       too — silence is the most common websocket outcome behind a proxy. */
+    clearTimeout(realtimeProbe);
+    realtimeProbe = setTimeout(() => {
+      if (!realtimeOk) startPolling(handler);
+    }, REALTIME_GRACE_MS);
 
     return unsubscribe;
   }
 
+  /* ---------------------------- Polling fallback ---------------------------- */
+
+  let pollTimer = null;
+  let realtimeOk = false;
+  let realtimeProbe = null;
+  let lastSeen = new Map();          // startup_id -> updated_at
+
+  const REALTIME_GRACE_MS = 6000;
+  const POLL_MS = 5000;
+
+  /**
+   * Re-read the workshop on a timer and synthesise the same events the
+   * realtime channel would have delivered, so callers cannot tell the
+   * difference and nothing downstream needs a second code path.
+   */
+  function startPolling(handler) {
+    if (pollTimer) return;
+    console.warn('FVApi: realtime unavailable — falling back to polling every ' + POLL_MS + 'ms');
+    setStatus('polling');
+
+    pollTimer = setInterval(async () => {
+      const rows = await fetchAll();
+      rows.forEach(row => {
+        const seen = lastSeen.get(row.startup_id);
+        if (seen === row.updated_at) return;
+        lastSeen.set(row.startup_id, row.updated_at);
+        try { handler(seen ? 'UPDATE' : 'INSERT', row); } catch (e) { console.error(e); }
+      });
+    }, POLL_MS);
+  }
+
+  function stopPolling() {
+    if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+    lastSeen = new Map();
+  }
+
   function unsubscribe() {
+    clearTimeout(realtimeProbe);
+    stopPolling();
     if (channel && client) {
       client.removeChannel(channel);
       channel = null;

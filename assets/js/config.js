@@ -25,8 +25,8 @@
 
 const FVConfig = (() => {
 
-  const SUPABASE_URL = 'https://YOUR-PROJECT-REF.supabase.co';
-  const SUPABASE_ANON_KEY = 'YOUR-ANON-KEY';
+  const SUPABASE_URL = 'https://bpqiqplpkfeltjojzuvg.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_U8T9Blxrv_sKw206QJAfqw_AsEIRfXq';
 
   /* The workshop this device is taking part in. Every response is scoped to
      it, so two cohorts can run at the same time without colliding.
@@ -42,7 +42,7 @@ const FVConfig = (() => {
      fetched by script rather than referenced from the HTML, so it cannot get
      the ?v= stamp the other assets carry. Bump this whenever the cohort data
      changes, or founders will run new code against a stale roster. */
-  const DATA_VERSION = '20260728f';
+  const DATA_VERSION = '20260729a';
 
   const dataUrl = () => `data/startups.json?v=${DATA_VERSION}`;
 

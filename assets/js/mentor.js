@@ -184,6 +184,7 @@
       if (!badge) return;
       const map = {
         live:    ['live',    'مباشر'],
+        polling: ['live',    'تحديث تلقائي'],
         offline: ['offline', 'جارٍ إعادة الاتصال...'],
         local:   ['',        'وضع محلي']
       };

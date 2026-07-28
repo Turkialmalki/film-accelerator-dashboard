@@ -190,6 +190,112 @@ const FVQuestions = (() => {
     };
   }
 
+
+  /* ---- Slot five: drawn from what this company is actually building ----
+     Keyed on business model rather than a generic bucket, so a TVOD platform
+     is asked about paying behaviour and a licensing business about renewals.
+     This is the slot that stops two companies at the same stage from meeting
+     the same interview. */
+  const MODEL_QUESTIONS = [
+    {
+      match: (s) => s.business_model.includes('TVOD') || s.business_model.includes('بيع مباشر'),
+      build: () => ({
+        id: 'tvod-friction', type: 'cards', required: true,
+        title: 'ما أكبر سبب يمنع المشاهد من الدفع اليوم؟',
+        hint: 'اختر السبب الأقرب لواقعكم.',
+        options: [
+          { id: 'free',    label: 'توفر بدائل مجانية',        note: 'المنافسة ليست منصة أخرى، بل المجان' },
+          { id: 'habit',   label: 'اعتياد السوق على الاشتراك', note: 'الدفع لكل مشاهدة سلوك غير مألوف' },
+          { id: 'value',   label: 'القيمة غير واضحة قبل المشاهدة', note: 'لا يعرف ما الذي يشتريه' },
+          { id: 'friction',label: 'احتكاك في تجربة الدفع',     note: 'خطوات كثيرة أو قيود مزعجة' }
+        ]
+      })
+    },
+    {
+      match: (s) => s.business_model.includes('ترخيص'),
+      build: () => ({
+        id: 'licensing-repeat', type: 'choice', required: true,
+        title: 'هل تحوّل الاهتمام لديكم إلى ترخيص متكرر أم يبقى صفقات مفردة؟',
+        hint: 'التكرار هو ما يفصل الترخيص عن العمل بالمشروع.',
+        options: [
+          { id: 'renewing', label: 'تراخيص تتجدد فعلاً' },
+          { id: 'some',     label: 'بعضها يتجدد' },
+          { id: 'oneoff',   label: 'صفقات مفردة في الغالب' },
+          { id: 'none',     label: 'لا يوجد ترخيص مغلق بعد' }
+        ]
+      })
+    },
+    {
+      match: (s) => s.business_model.includes('اشتراك'),
+      build: () => ({
+        id: 'subscription-proof', type: 'choice', required: true,
+        title: 'ما الذي يجعل المشترك يبقى بعد الشهر الأول؟',
+        hint: 'الاشتراك يُختبر بالبقاء، لا بالتسجيل.',
+        options: [
+          { id: 'habit',   label: 'يستخدمه في عمله أسبوعياً' },
+          { id: 'content', label: 'محتوى جديد باستمرار' },
+          { id: 'lockin',  label: 'بياناته أو ملفاته داخل المنصة' },
+          { id: 'unknown', label: 'لا نعرف بعد — لم نصل لتجديد حقيقي' }
+        ]
+      })
+    },
+    {
+      match: (s) => s.business_model.includes('عمولة') || s.business_model.includes('وكالة'),
+      build: () => ({
+        id: 'marketplace-side', type: 'choice', required: true,
+        title: 'أي جانب من السوق هو الأصعب لديكم اليوم؟',
+        hint: 'الأسواق ثنائية الجانب تفشل من الجانب المهمل.',
+        options: [
+          { id: 'supply', label: 'استقطاب مقدمي الخدمة' },
+          { id: 'demand', label: 'استقطاب المشترين' },
+          { id: 'match',  label: 'إتمام المطابقة بينهما' },
+          { id: 'trust',  label: 'بناء الثقة في المعاملة' }
+        ]
+      })
+    },
+    {
+      match: () => true,   // fallback: services, funds, partnerships, IP
+      build: (s) => ({
+        id: 'revenue-concentration', type: 'choice', required: true,
+        title: 'ما نسبة إيرادكم القادمة من أكبر عميل واحد؟',
+        hint: 'التركّز في عميل واحد هو أكثر المخاطر التي تُكتشف متأخرة.',
+        options: [
+          { id: 'low',    label: 'أقل من الربع' },
+          { id: 'mid',    label: 'بين الربع والنصف' },
+          { id: 'high',   label: 'أكثر من النصف' },
+          { id: 'single', label: 'عميل واحد تقريباً' }
+        ]
+      })
+    }
+  ];
+
+  function modelQuestion(s) {
+    const rule = MODEL_QUESTIONS.find(r => r.match(s));
+    return rule ? rule.build(s) : null;
+  }
+
+  /* ---- Slot six: the accelerator's own priorities, as a top-three pick ----
+     The options are this company's reported priorities plus its roadmap, so
+     the founder is choosing among things written about them. */
+  function topThree(s) {
+    const opts = [];
+    (s.accelerator_priorities || []).forEach((p, i) => opts.push({ id: `pri${i}`, label: short(p, 66) }));
+    if (s.growth_roadmap) opts.push({ id: 'road', label: short(s.growth_roadmap, 66) });
+    opts.push(
+      { id: 'hire',    label: 'توظيف الدور الحرج الناقص' },
+      { id: 'pricing', label: 'إعادة النظر في التسعير' },
+      { id: 'funding', label: 'تأمين تمويل المرحلة القادمة' }
+    );
+    if (opts.length < 4) return null;
+    return {
+      id: 'top-three', type: 'top3', required: true,
+      title: 'اختر أهم ثلاث أولويات للتسعين يوماً القادمة',
+      hint: 'ثلاث فقط — الاختيار هنا يعني التخلي عن الباقي.',
+      max: 3,
+      options: opts
+    };
+  }
+
   /* ------------------------------ التجميع ------------------------------ */
 
   const MAX_QUESTIONS = 10;
@@ -203,15 +309,26 @@ const FVQuestions = (() => {
   function buildFor(startup) {
     const core = coreQuestions(startup);
 
-    const slot3 = startup.stage === 'Pre-Seed' ? runway(startup)
-                : Number(startup.team_size) <= 3 ? busFactor(startup)
-                : modelProof(startup);
+    /* Four generated slots, each branching on a different property, so two
+       companies only meet the same interview if they match on all of them.
+       Between them the cohort sees every answer type; each founder sees four
+       different ones. */
+    const readiness = Number(startup.readiness) || 0;
+
+    const slotRisk = startup.stage === 'Pre-Seed' ? runway(startup)         // slider
+                   : Number(startup.team_size) <= 3 ? busFactor(startup)    // choice
+                   : moatConfidence(startup) || modelProof(startup);        // scale
+
+    /* A company that is not ready yet needs to admit what is untested; one
+       that is needs to choose what to drop. Different question, different
+       type, decided by where they actually are. */
+    const slotFocus = readiness < 60 ? untested(startup) : topThree(startup);
 
     const generated = [
-      rankChallenges(startup) || untested(startup),
-      moatConfidence(startup) || modelProof(startup),
-      slot3,
-      untested(startup)
+      rankChallenges(startup) || untested(startup),   // rank — their own challenges
+      modelQuestion(startup),                          // cards / choice — their model
+      slotRisk,
+      slotFocus || untested(startup)
     ].filter(Boolean);
 
     const open = {
@@ -230,8 +347,13 @@ const FVQuestions = (() => {
       placeholder: 'قبل الورشة القادمة سأقوم بـ...'
     };
 
-    const all = [...core.slice(0, 3), ...generated, core[3], open, commitment];
-    return all.slice(0, MAX_QUESTIONS);
+    /* Ten is a promise about how long this takes. The area question and the
+       two open ones are fixed at the end, so the generated middle is what
+       gives way — and it gives way from the least company-specific end. */
+    const room = MAX_QUESTIONS - 3 - 3;          // core validation + fixed tail
+    const middle = generated.slice(0, room);
+
+    return [...core.slice(0, 3), ...middle, core[3], open, commitment];
   }
 
   return { buildFor, MAX_QUESTIONS, short };

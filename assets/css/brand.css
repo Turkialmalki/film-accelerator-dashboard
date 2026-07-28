@@ -694,6 +694,13 @@ h3 {
   color: #14212b;
 }
 
+/* Card choice: a label plus the reasoning behind it. */
+.choice--card { align-items: flex-start; padding-block: 1rem; }
+.choice--card > span:last-child { display: grid; gap: .2rem; }
+.card-choice-label { font-weight: 500; line-height: 1.6; }
+.card-choice-note { font-size: .85rem; color: var(--ink-3); line-height: 1.65; font-weight: 300; }
+.choice--card[aria-checked="true"] .card-choice-note { color: var(--ink-2); }
+
 /* ---------------------------------------------------------------- Buttons */
 
 .btn {
@@ -1047,6 +1054,65 @@ h3 {
 }
 
 .notice-icon { flex: none; font-size: 1rem; line-height: 1.6; }
+
+/* ---------------------------------------------------------------- Dashboard */
+
+.gauges {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 1.6rem 0 .4rem;
+}
+
+/* The two-up gauges use their own gradient ids, so the shared .fill rule
+   must not force the single-ring gradient onto them. */
+.score-ring[data-gauge] .fill { stroke-width: 6; }
+
+.plan { display: grid; gap: .7rem; }
+
+.plan-step {
+  display: grid;
+  gap: .25rem;
+  padding-inline-start: .9rem;
+  border-inline-start: 2px solid var(--line-strong);
+}
+
+.plan-step:first-child { border-inline-start-color: var(--amber); }
+
+.plan-when {
+  font-size: .78rem;
+  color: var(--amber);
+  font-weight: 500;
+}
+
+.plan-task {
+  font-size: .97rem;
+  line-height: 1.8;
+  color: var(--ink-2);
+  font-weight: 300;
+}
+
+/* ---------------------------------------------------------------- Live insight */
+
+/* Appears between questions when an answer changes what we can say. It is a
+   read-out, never a blocker: it must never delay the next tap. */
+.insight {
+  display: flex;
+  gap: .65rem;
+  align-items: flex-start;
+  margin-top: 1.1rem;
+  padding: .85rem 1rem;
+  border-radius: var(--radius-sm);
+  background: rgba(118, 182, 183, .09);
+  border: 1px solid rgba(118, 182, 183, .26);
+  font-size: .93rem;
+  line-height: 1.75;
+  color: #D6EEEE;
+  animation: rise var(--med) var(--ease) both;
+}
+
+.insight-icon { flex: none; font-size: .95rem; line-height: 1.7; }
 
 /* ---------------------------------------------------------------- Toast */
 

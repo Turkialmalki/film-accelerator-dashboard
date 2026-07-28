@@ -57,15 +57,24 @@ Edit [`assets/js/config.js`](assets/js/config.js):
 | Value | Where to find it | Required |
 |---|---|---|
 | `SUPABASE_URL` | Project Settings → API → Project URL | yes |
-| `SUPABASE_ANON_KEY` | Project Settings → API → `anon` / `public` | yes |
+| `SUPABASE_ANON_KEY` | Project Settings → API keys → publishable | yes |
 | `DEFAULT_WORKSHOP_ID` | any slug you choose for the cohort | yes |
 | `DATA_VERSION` | bump whenever `data/startups.json` changes | on data change |
 
+This project is already configured and connected:
+
 ```js
-const SUPABASE_URL      = 'https://abcdefgh.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhb...';
+const SUPABASE_URL        = 'https://bpqiqplpkfeltjojzuvg.supabase.co';
+const SUPABASE_ANON_KEY   = 'sb_publishable_…';
 const DEFAULT_WORKSHOP_ID = 'film-accelerator-2026';
 ```
+
+> **The `supabase-js` version matters.** Supabase's newer `sb_publishable_…`
+> keys are opaque, not JWTs, and older clients do not understand them. On
+> `@supabase/supabase-js@2.45.4` every REST call hung forever and Realtime
+> reported `TIMED_OUT`, while a plain `fetch()` to the same endpoint returned
+> `200` in 14 ms — so it looked like a backend outage when it was the client.
+> Both pages now pin **2.110.9**. If you ever downgrade, expect this to return.
 
 The anon key is a **publishable** key — it is designed to ship in client code and is not a
 secret. **Never** put the `service_role` key here: it bypasses RLS entirely, and every file
@@ -83,7 +92,17 @@ Push to `main`. GitHub Pages serves the repository root; `.nojekyll` is included
 including `index.html`, so without this a returning founder can hold a fresh page and a
 stale script, which throws rather than degrading.
 
-### 4. The QR code
+### 4. Check the connection
+
+Open [`verify.html`](verify.html) and press **ابدأ الفحص**. It talks to Supabase
+directly — not through `api.js` — so a failure points at the database rather
+than at our sync layer. Seven checks: configuration, client, read access,
+write, read-back, conflict resolution, and Realtime. All must be green.
+
+It writes one row under the workshop id `__diagnostic__`, which no real
+workshop ever reads.
+
+### 5. The QR code
 
 Encode the URL with the workshop id:
 
@@ -116,6 +135,7 @@ assets/js/coach.js      per-startup coach message
 assets/js/recommend.js  findings and the closing dashboard
 assets/js/journey.js    screen flow and rendering
 assets/js/mentor.js     cohort analytics, insights, workshop summary
+verify.html             backend self-test — run this after any config change
 
 data/startups.json      the cohort — 20 companies, 29 people
 supabase/schema.sql     table, indexes, RLS, realtime, verification
@@ -218,10 +238,16 @@ so the next founder's answers are never attributed to the previous one's row.
   `workshop_responses`. That is acceptable for a time-boxed workshop with non-sensitive
   content and is **not** acceptable for anything else.
 
-**Delete the data after the session:**
+There is deliberately **no DELETE policy**, so no founder can wipe another
+team's answers mid-workshop. An anon `DELETE` is filtered away by RLS — note
+that PostgREST still answers `204`, because zero rows matched, so a successful
+status code there does **not** mean anything was removed.
+
+**Clear the test data before the real workshop, from the SQL editor:**
 
 ```sql
-delete from public.workshop_responses where workshop_id = 'film-accelerator-2026';
+delete from public.workshop_responses
+where workshop_id in ('film-accelerator-2026', '__diagnostic__');
 ```
 
 ---
@@ -233,7 +259,8 @@ delete from public.workshop_responses where workshop_id = 'film-accelerator-2026
 | Mentor dashboard shows zeros all session | `config.js` still has placeholders, so answers go to a local outbox that never drains | Fill in both keys. Both pages now say this on screen. |
 | `FVSearch.resolve is not a function` | browser holds a cached script from a previous deploy | Bump the `?v=` token; hard-reload once |
 | A founder's name is not found | ambiguous first name, or a spelling not in `aliases` | Enter the full name, or add an alias in `data/startups.json` |
-| Dashboard does not update live | Realtime not enabled for the table | Database → Replication, then re-run `realtime_check` |
+| Dashboard does not update live | Realtime not enabled for the table | Database → Replication, then re-run `realtime_check`. The dashboard falls back to polling every 5 s automatically, so it keeps updating either way — the header shows **تحديث تلقائي** instead of **مباشر**. |
+| Every request hangs, Realtime times out | `supabase-js` too old for `sb_publishable_` keys | Pin `@supabase/supabase-js@2.110.9` or later |
 | Nothing loads, console shows a `fetch` error | opened over `file://` | Serve over HTTP |
 | Arabic renders left-to-right | stylesheet failed to load | Check `assets/css/brand.css` returns 200 |
 

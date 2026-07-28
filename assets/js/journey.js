@@ -628,6 +628,7 @@
   }
 
   function writeAnswer(q, value) {
+    showInsight(q, value);
     const a = state.answers;
     const where = q.store ? q.store[0] : null;
     if (where === 'assumptions') {
@@ -645,6 +646,9 @@
 
   function isAnswered(q) {
     const v = answerOf(q);
+    /* A partly-filled top three is not an answer — the question is the
+       trade-off, and two picks have not made it yet. */
+    if (q.type === 'top3') return Array.isArray(v) && v.length === (q.max || 3);
     if (Array.isArray(v)) return v.length > 0;
     if (typeof v === 'string') return v.trim().length > 0;
     return v !== undefined && v !== null && v !== '';
@@ -681,6 +685,71 @@
       if (state.qIndex === 0) return show('snapshot');
       goToQuestion(state.qIndex - 1);
     });
+  }
+
+  /* --------------------------- استنتاجات لحظية --------------------------- */
+
+  /* Fires on the question the founder has just answered, so the platform is
+     visibly reacting rather than storing quietly and reporting at the end.
+     Each rule reads one answer and states one consequence — anything vaguer
+     would read as filler and cost more trust than it earns. */
+  const LIVE_INSIGHTS = [
+    { q: 'talked', when: v => v === 'no',
+      text: 'كل قرار تبنيه الآن قائم على تخمين. هذه أهم فجوة سنعود إليها.' },
+    { q: 'talked', when: v => v === 'partly',
+      text: 'محادثات جزئية تعطي إشارات جزئية — سنرى إن كانت كافية.' },
+    { q: 'paid', when: v => v === 'no',
+      text: 'نموذج الإيرادات ما زال يعتمد على فرضيات غير مختبرة.' },
+    { q: 'paid', when: v => v === 'yes',
+      text: 'وجود عميل دافع يرفع جاهزيتك الاستثمارية أكثر من أي شيء آخر.' },
+    { q: 'problem', when: v => v === 'no',
+      text: 'نلاحظ أن وضوح القيمة يحتاج إلى تحسين قبل أي توسع.' },
+    { q: 'area', when: v => v === 'customers',
+      text: 'يبدو أن أكبر تحدٍ لديك هو اكتساب العملاء.' },
+    { q: 'area', when: v => v === 'pricing',
+      text: 'التسعير أسرع رافعة على الربحية، وأقلها تكلفة في الاختبار.' },
+    { q: 'area', when: v => v === 'investment',
+      text: 'ما يرفع تقييمك ليس العرض التقديمي، بل رقم إيراد متكرر.' },
+    { q: 'moat-confidence', when: v => Number(v) <= 2,
+      text: 'ميزتك التنافسية هشة بتقديرك أنت — وهذا اعتراف مفيد.' },
+    { q: 'moat-confidence', when: v => Number(v) >= 4,
+      text: 'ثقتك في الميزة عالية؛ سنختبر ما الذي يسندها فعلياً.' },
+    { q: 'runway', when: v => Number(v) <= 3,
+      text: 'رصيدك النقدي قصير — هذا يغيّر ترتيب أولوياتك بالكامل.' },
+    { q: 'bus-factor', when: v => v === 'all' || v === 'delivery',
+      text: 'الشركة تتوقف بغياب شخص واحد. هذه مخاطرة هيكلية لا تشغيلية.' },
+    { q: 'model-proof', when: v => v === 'untested' || v === 'testing',
+      text: 'نموذج الإيراد لم يثبت تكراره بعد — والتكرار هو الفرق.' },
+    { q: 'revenue-concentration', when: v => v === 'single' || v === 'high',
+      text: 'تركّز الإيراد في عميل واحد هو أكثر المخاطر التي تُكتشف متأخرة.' },
+    { q: 'untested', when: v => Array.isArray(v) && v.length >= 3,
+      text: 'ثلاث فرضيات غير مختبرة أو أكثر — سنرتّبها لك في النهاية.' },
+    { q: 'rank-challenges', when: v => Array.isArray(v) && v.length >= 2,
+      text: 'ترتيبك هذا سيحدد أولوياتك في لوحة النهاية.' }
+  ];
+
+  function insightFor(q, value) {
+    const rule = LIVE_INSIGHTS.find(r => r.q === q.id && r.when(value));
+    return rule ? rule.text : null;
+  }
+
+  /* Rendered under the answer, replacing any previous one for this question,
+     and never shown twice for the same question in a single pass. */
+  function showInsight(q, value) {
+    const host = $('#q-body');
+    if (!host) return;
+
+    const existing = host.parentElement.querySelector('.insight');
+    if (existing) existing.remove();
+
+    const text = insightFor(q, value);
+    if (!text) return;
+
+    const node = document.createElement('div');
+    node.className = 'insight';
+    node.setAttribute('role', 'status');
+    node.innerHTML = `<span class="insight-icon" aria-hidden="true">💡</span><span>${esc(text)}</span>`;
+    host.insertAdjacentElement('afterend', node);
   }
 
   function syncNext(q) {
@@ -737,6 +806,39 @@
         <input class="slider" id="q-slider" type="range"
                min="${q.min}" max="${q.max}" step="${q.step}" value="${cur}"
                aria-label="${esc(q.title)}">
+      </div>`;
+    }
+
+    /* Cards: one choice, but each option carries a line of reasoning. Used
+       where the options are genuinely different diagnoses rather than points
+       on a scale, so the founder needs to read before picking. */
+    if (q.type === 'cards') {
+      return `<div class="choices" role="radiogroup" aria-label="${esc(q.title)}" id="q-cards">
+        ${q.options.map(o => `
+          <button type="button" class="choice choice--card" role="radio" data-value="${esc(o.id)}"
+                  aria-checked="${v === o.id ? 'true' : 'false'}">
+            <span class="choice-dot" aria-hidden="true"></span>
+            <span>
+              <span class="card-choice-label">${esc(o.label)}</span>
+              ${o.note ? `<span class="card-choice-note">${esc(o.note)}</span>` : ''}
+            </span>
+          </button>`).join('')}
+      </div>`;
+    }
+
+    /* Top three: ranking with a hard cap, so choosing is also discarding. */
+    if (q.type === 'top3') {
+      const order = Array.isArray(v) ? v : [];
+      return `<div class="rank-list" id="q-top3">
+        ${q.options.map(o => {
+          const at = order.indexOf(o.id);
+          return `<button type="button" class="rank-item" data-value="${esc(o.id)}"
+                          data-picked="${at >= 0 ? 1 : 0}"
+                          aria-pressed="${at >= 0 ? 'true' : 'false'}">
+            <span class="rank-badge">${at >= 0 ? num(at + 1) : ''}</span>
+            <span>${esc(numText(o.label))}</span>
+          </button>`;
+        }).join('')}
       </div>`;
     }
 
@@ -800,6 +902,28 @@
       return;
     }
 
+    if (q.type === 'cards') {
+      wireChoiceGroup($('#q-cards'), (value) => { writeAnswer(q, value); syncNext(q); });
+      return;
+    }
+
+    if (q.type === 'top3') {
+      const items = $$('#q-top3 .rank-item');
+      items.forEach(btn => btn.addEventListener('click', () => {
+        const cur = Array.isArray(answerOf(q)) ? [...answerOf(q)] : [];
+        const at = cur.indexOf(btn.dataset.value);
+        if (at >= 0) cur.splice(at, 1);
+        /* Silently ignoring the fourth tap would look broken. The cap is the
+           point of the question, so it is stated rather than enforced mutely. */
+        else if (cur.length >= (q.max || 3)) { FVUI.toast(`ثلاث أولويات فقط — ألغِ واحدة أولاً`); return; }
+        else cur.push(btn.dataset.value);
+        writeAnswer(q, cur);
+        repaintList('#q-top3', cur);
+        syncNext(q);
+      }));
+      return;
+    }
+
     if (q.type === 'rank') {
       const items = $$('#q-rank .rank-item');
       items.forEach(btn => btn.addEventListener('click', () => {
@@ -809,7 +933,7 @@
            rather than a restart. */
         if (at >= 0) cur.splice(at, 1); else cur.push(btn.dataset.value);
         writeAnswer(q, cur);
-        repaintRank(q, cur);
+        repaintList('#q-rank', cur);
         syncNext(q);
       }));
       return;
@@ -819,8 +943,8 @@
     if (box) box.addEventListener('input', () => { writeAnswer(q, box.value); syncNext(q); });
   }
 
-  function repaintRank(q, order) {
-    $$('#q-rank .rank-item').forEach(btn => {
+  function repaintList(sel, order) {
+    $$(`${sel} .rank-item`).forEach(btn => {
       const at = order.indexOf(btn.dataset.value);
       btn.dataset.picked = at >= 0 ? '1' : '0';
       btn.setAttribute('aria-pressed', at >= 0 ? 'true' : 'false');
@@ -851,7 +975,7 @@
 
   function renderDone() {
     const s = state.startup;
-    const d = FVRecommend.dashboardFor(s, state.answers);
+    const d = FVRecommend.dashboardFor(s, state.answers, state.startups);
 
     $('#done').innerHTML = `
       <div style="text-align:center">
@@ -860,28 +984,58 @@
         <p class="lede anim anim-1" style="margin-top:.5rem">تم إرسال إجاباتك بنجاح.</p>
       </div>
 
-      <div class="anim anim-2" style="display:grid;place-items:center;margin:2rem 0 1.4rem">
-        ${ringMarkup(d.score, 'جاهزية شركتك')}
+      <div class="gauges anim anim-2">
+        ${gaugeMarkup(d.score, 'درجة التحقق', 'score')}
+        ${gaugeMarkup(d.investment, 'جاهزية الاستثمار', 'invest')}
       </div>
 
+      ${d.benchmark ? `
+        <div class="card card--quiet anim anim-2" style="margin-top:1rem">
+          <p class="card-label">مقارنة مجهولة</p>
+          <p class="lede" style="color:var(--ink-1);font-size:1rem;margin-top:.2rem">
+            مؤشر جاهزية شركتك أعلى من <b style="color:var(--amber)">${num(d.benchmark.percentile)}٪</b>
+            من الشركات المشاركة في هذه الورشة.
+          </p>
+        </div>` : ''}
+
       ${d.focus ? `
-        <div class="card card--quiet anim anim-2" style="margin-bottom:1rem">
+        <div class="card card--quiet anim anim-2" style="margin-top:.6rem">
           <p class="card-label">أين طلبت الدعم</p>
           <p class="card-value" style="color:var(--amber)">${esc(d.focus)}</p>
         </div>` : ''}
 
-      <div class="card anim anim-3">
+      <div class="stack" style="margin-top:1rem">
+        ${finding('tone-strength', '✅', 'أكبر نقطة قوة',  d.strength,    'anim anim-3')}
+        ${finding('tone-risk',     '⚠️', 'أكبر مخاطرة',    d.risk,        'anim anim-3')}
+        ${finding('tone-next',     '🚀', 'أكبر فرصة',      d.opportunity, 'anim anim-4')}
+      </div>
+
+      <div class="card anim anim-4" style="margin-top:1rem">
         <p class="eyebrow" style="margin-bottom:.9rem">أهم ٣ أولويات لشركتك</p>
         <ol class="numbered">
           ${d.priorities.map(p => `<li><span>${esc(numText(p))}</span></li>`).join('')}
         </ol>
       </div>
 
-      <div class="stack" style="margin-top:1rem">
-        ${finding('tone-strength', '✅', 'أكبر نقطة قوة',  d.strength,    'anim anim-4')}
-        ${finding('tone-risk',     '⚠️', 'أهم مخاطرة',     d.risk,        'anim anim-4')}
-        ${finding('tone-next',     '🎯', 'أفضل خطوة قادمة', d.nextStep,   'anim anim-5')}
+      <div class="card anim anim-4" style="margin-top:1rem">
+        <p class="eyebrow" style="margin-bottom:.9rem">خطة الثلاثين يوماً</p>
+        <div class="plan">
+          ${d.plan.map(step => `
+            <div class="plan-step">
+              <span class="plan-when">${esc(step.when)}</span>
+              <span class="plan-task">${esc(numText(step.task))}</span>
+            </div>`).join('')}
+        </div>
       </div>
+
+      <div class="card anim anim-5" style="margin-top:1rem">
+        <p class="eyebrow" style="margin-bottom:.9rem">توصيات خاصة بشركتك</p>
+        <ol class="numbered">
+          ${d.recommendations.map(r => `<li><span>${esc(numText(r))}</span></li>`).join('')}
+        </ol>
+      </div>
+
+      ${finding('tone-next', '🎯', 'الخطوة التالية الموصى بها', d.nextStep, 'anim anim-5')}
 
       <div class="card card--quiet anim anim-5" style="margin-top:1.2rem">
         <p class="lede" style="font-size:.98rem">
@@ -899,9 +1053,9 @@
       </div>`;
 
     requestAnimationFrame(() => {
-      const fill = $('#done .fill');
-      if (fill) fill.style.strokeDashoffset = fill.dataset.target;
-      countUp($('#done .score-number'), d.score, { suffix: '٪' });
+      $$('#done .fill').forEach(f => { f.style.strokeDashoffset = f.dataset.target; });
+      countUp($('#done [data-gauge="score"] .score-number'), d.score, { suffix: '٪' });
+      countUp($('#done [data-gauge="invest"] .score-number'), d.investment, { suffix: '٪', duration: 1600 });
     });
 
     $('#done-finish').addEventListener('click', () => {
@@ -935,6 +1089,35 @@
     FVSession.resetAll();
     resetToSearch();
     FVUI.toast('تم بدء جلسة جديدة');
+  }
+
+  /** Two gauges side by side. Same ring, smaller, with a unique gradient id. */
+  function gaugeMarkup(value, caption, key) {
+    const size = 140, r = 60;
+    const c = 2 * Math.PI * r;
+    return `
+      <div class="score-ring" data-gauge="${key}" style="width:${size}px;height:${size}px"
+           role="img" aria-label="${esc(caption)} ${num(value)} بالمئة">
+        <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" aria-hidden="true">
+          <defs>
+            <linearGradient id="grad-${key}" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%"   stop-color="${key === 'invest' ? '#76B6B7' : '#F89C49'}"/>
+              <stop offset="100%" stop-color="${key === 'invest' ? '#4B5E69' : '#FBAE40'}"/>
+            </linearGradient>
+          </defs>
+          <circle class="track" cx="${size / 2}" cy="${size / 2}" r="${r}"/>
+          <circle class="fill"  cx="${size / 2}" cy="${size / 2}" r="${r}"
+                  stroke="url(#grad-${key})"
+                  stroke-dasharray="${c}" stroke-dashoffset="${c}"
+                  data-target="${c * (1 - value / 100)}"/>
+        </svg>
+        <div class="score-center">
+          <div>
+            <div class="score-number tabular" style="font-size:2rem">${num(0)}٪</div>
+            <div class="score-caption">${esc(caption)}</div>
+          </div>
+        </div>
+      </div>`;
   }
 
   function ringMarkup(score, caption) {

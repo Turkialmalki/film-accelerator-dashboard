@@ -220,23 +220,100 @@ const FVRecommend = (() => {
   }
 
   /**
-   * The closing dashboard payload.
-   * @returns { score, focus, strength, risk, nextStep, priorities, opportunity }
+   * جاهزية الاستثمار — a different question from validation.
+   *
+   * Validation asks "is this real?"; this asks "is it fundable?". They move
+   * apart deliberately: a company can have validated demand and still be
+   * unfundable because everything rests on one person or one contract.
    */
-  function dashboardFor(startup, response) {
+  function investmentReadiness(startup, response) {
+    const a = (response && response.assumptions) || {};
+    const r = (response && response.reflections) || {};
+    let score = Number(startup.readiness) || 40;
+
+    if (a.paid === 'yes') score += 10; else score -= 12;
+    if (r['model-proof'] === 'repeat') score += 8;
+    if (r['model-proof'] === 'untested') score -= 10;
+    if (r['licensing-repeat'] === 'renewing') score += 8;
+    if (r['licensing-repeat'] === 'none') score -= 8;
+    if (r['subscription-proof'] === 'unknown') score -= 6;
+
+    /* Concentration and key-person risk are what investors price in first. */
+    if (r['revenue-concentration'] === 'single') score -= 12;
+    if (r['revenue-concentration'] === 'high') score -= 6;
+    if (r['bus-factor'] === 'all') score -= 10;
+    if (r['bus-factor'] === 'nothing') score += 5;
+
+    const runway = Number(r.runway);
+    if (Number.isFinite(runway)) {
+      if (runway <= 3) score -= 14;
+      else if (runway >= 12) score += 6;
+    }
+
+    return Math.max(5, Math.min(97, Math.round(score)));
+  }
+
+  /**
+   * Where this company sits against the rest of the room, as a percentile.
+   *
+   * Computed from the cohort's own readiness figures, which are already in
+   * the file every device loads — so it needs no network call and reveals no
+   * company. It is a position, never a name.
+   */
+  function benchmark(startup, cohort) {
+    const others = (cohort || []).filter(c => c.id !== startup.id);
+    if (others.length < 4) return null;
+
+    /* Compares this company's reported readiness against the others' reported
+       readiness. Using the answer-adjusted score here would measure a founder
+       against a number nobody else was scored on, and would read as a high
+       percentile purely for having answered honestly. */
+    const mine = Number(startup.readiness) || 0;
+    const below = others.filter(c => (Number(c.readiness) || 0) < mine).length;
+    return { percentile: Math.round((below / others.length) * 100), total: others.length + 1 };
+  }
+
+  /** A concrete thirty-day plan, ordered the way it should be executed. */
+  function thirtyDayPlan(startup, response) {
+    const priorities = prioritiesFor(startup, response);
+    const recs = startup.recommendations_ar || [];
+
+    /* The first fortnight comes from what the founder just admitted; the
+       second from what the accelerator already recommended for them. */
+    return [
+      { when: 'الأسبوع الأول', task: priorities[0] || recs[0] },
+      { when: 'الأسبوعان الثاني والثالث', task: recs[0] && recs[0] !== priorities[0] ? recs[0] : (priorities[1] || recs[1]) },
+      { when: 'الأسبوع الرابع', task: recs[1] || priorities[2] || recs[2] }
+    ].filter(x => x.task);
+  }
+
+  /**
+   * The closing dashboard payload.
+   */
+  function dashboardFor(startup, response, cohort) {
     const base = forStartup(startup, response);
+    const score = window.FVStore
+      ? FVStore.readinessOf(response, startup)
+      : Number(startup.readiness) || 0;
+    const investment = investmentReadiness(startup, response);
+
     return {
-      score: window.FVStore ? FVStore.readinessOf(response, startup) : Number(startup.readiness) || 0,
+      score,
+      investment,
       focus: focusFor(response),
       strength: base.strength,
       risk: base.risk,
       nextStep: base.nextStep,
       priorities: prioritiesFor(startup, response),
-      opportunity: startup.growth_roadmap || base.nextStep
+      opportunity: startup.growth_roadmap || base.nextStep,
+      recommendations: startup.recommendations_ar || [],
+      plan: thirtyDayPlan(startup, response),
+      benchmark: benchmark(startup, cohort)
     };
   }
 
-  return { forStartup, dashboardFor, prioritiesFor, focusFor };
+  return { forStartup, dashboardFor, prioritiesFor, focusFor,
+           investmentReadiness, benchmark, thirtyDayPlan };
 })();
 
 window.FVRecommend = FVRecommend;

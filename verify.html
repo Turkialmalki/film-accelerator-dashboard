@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>فحص الاتصال بقاعدة البيانات — مسرعة الأعمال في الأفلام</title>
+<link rel="icon" href="assets/images/fba-mark.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/brand.css?v=20260729a">
+</head>
+<body>
+
+<div class="stage">
+  <header class="brandbar">
+    <div class="column column--wide brandbar-inner">
+      <div class="brand-lockup">
+        <img src="assets/images/fba-mark-light.svg" alt="" width="26" height="30">
+        <span class="brand-name">فحص الاتصال</span>
+      </div>
+      <a href="index.html" class="btn-back">← الرحلة</a>
+    </div>
+  </header>
+
+  <main class="column column--wide" style="padding-top:1.5rem;padding-bottom:3rem">
+    <h1 class="anim anim-1">فحص الاتصال بقاعدة البيانات</h1>
+    <p class="lede anim anim-1" style="margin-top:.6rem">
+      يتحقق هذا الفحص من السلسلة كاملة مقابل Supabase الحقيقي: التهيئة، الكتابة،
+      القراءة، منع التكرار، والتحديث اللحظي.
+    </p>
+
+    <div class="card card--quiet anim anim-2" style="margin-top:1.2rem">
+      <p class="lede" style="font-size:.95rem">
+        يكتب الفحص صفاً واحداً في ورشة تجريبية باسم
+        <code>__diagnostic__</code>، فلا يؤثر على أي ورشة حقيقية.
+        لحذفه لاحقاً نفّذ:<br>
+        <code style="font-size:.85rem">delete from public.workshop_responses where workshop_id = '__diagnostic__';</code>
+      </p>
+    </div>
+
+    <div class="actions anim anim-2">
+      <button class="btn btn--primary" id="run">ابدأ الفحص</button>
+    </div>
+
+    <div id="results" style="margin-top:1.5rem"></div>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.9/dist/umd/supabase.min.js"></script>
+<script src="assets/js/config.js?v=20260729a"></script>
+<script>
+/* ==========================================================================
+   Backend diagnostic.
+
+   Deliberately does not go through api.js: it talks to Supabase directly so
+   that a failure points at the database rather than at our own sync layer.
+   Every step reports the actual server response, never an assumption.
+   ========================================================================== */
+(() => {
+  const $ = (s) => document.querySelector(s);
+  const out = $('#results');
+  const WORKSHOP = '__diagnostic__';
+  const STARTUP = '__probe__';
+  const TABLE = 'workshop_responses';
+
+  let passed = 0, failed = 0;
+
+  function row(ok, title, detail) {
+    ok ? passed++ : failed++;
+    const el = document.createElement('div');
+    el.className = 'finding ' + (ok ? 'tone-strength' : 'tone-risk');
+    el.style.marginBottom = '.6rem';
+    el.innerHTML =
+      `<span class="finding-icon" aria-hidden="true">${ok ? '✅' : '❌'}</span>
+       <div>
+         <p class="finding-title">${title}</p>
+         <p class="finding-body" style="font-size:.92rem">${detail}</p>
+       </div>`;
+    out.appendChild(el);
+  }
+
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, c =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+  /* The page is Arabic; its numbers must be too. */
+  const AR = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+  const num = (v) => String(v).replace(/[0-9]/g, d => AR[+d]);
+
+  async function run() {
+    out.innerHTML = '';
+    passed = failed = 0;
+    $('#run').setAttribute('aria-disabled', 'true');
+    $('#run').textContent = 'جارٍ الفحص...';
+
+    /* ---- 1. Configuration ---- */
+    const missing = FVConfig.missing();
+    if (missing.length) {
+      row(false, '١. التهيئة',
+        `القيم الناقصة في assets/js/config.js: <b>${esc(missing.join('، '))}</b>. ` +
+        'لا يمكن إكمال الفحص قبل تعبئتها.');
+      return finish();
+    }
+    row(true, '١. التهيئة', `تمت قراءة المفاتيح. الرابط: <code>${esc(FVConfig.SUPABASE_URL)}</code>`);
+
+    /* ---- 2. Client library ---- */
+    if (typeof window.supabase?.createClient !== 'function') {
+      row(false, '٢. مكتبة الاتصال', 'لم تُحمّل مكتبة Supabase. تحقق من الاتصال بالإنترنت.');
+      return finish();
+    }
+    const db = window.supabase.createClient(FVConfig.SUPABASE_URL, FVConfig.SUPABASE_ANON_KEY, {
+      auth: { persistSession: false }
+    });
+    row(true, '٢. مكتبة الاتصال', 'تم إنشاء العميل بنجاح.');
+
+    /* ---- 3. Read access (RLS select policy) ---- */
+    const before = await db.from(TABLE).select('*').eq('workshop_id', WORKSHOP);
+    if (before.error) {
+      row(false, '٣. صلاحية القراءة',
+        `فشلت القراءة: <code>${esc(before.error.message)}</code>. ` +
+        'غالباً لم يُنفَّذ ملف supabase/schema.sql، أو سياسة القراءة للمستخدم المجهول غير مفعّلة.');
+      return finish();
+    }
+    const rowsBefore = before.data.length;
+    row(true, '٣. صلاحية القراءة', `نجحت. عدد الصفوف التجريبية قبل الكتابة: <b>${num(rowsBefore)}</b>`);
+
+    /* ---- 4. Realtime subscription, armed before the write ---- */
+    let realtimeEvent = null;
+    const channel = db.channel(`diag:${Date.now()}`)
+      .on('postgres_changes',
+          { event: '*', schema: 'public', table: TABLE, filter: `workshop_id=eq.${WORKSHOP}` },
+          (payload) => { realtimeEvent = payload.eventType; })
+      .subscribe();
+
+    /* Give the socket a moment to actually attach before writing. */
+    await new Promise(r => setTimeout(r, 2500));
+
+    /* ---- 5. Write — every column the app uses ---- */
+    const probe = {
+      workshop_id: WORKSHOP,
+      startup_id: STARTUP,
+      session_id: 'diagnostic-' + Date.now(),
+      participant_name: 'فحص تلقائي',
+      challenge: 'صف تجريبي للتحقق من الكتابة.',
+      challenge_tags: ['customers'],
+      reflection_answers: { probe: true, list: ['a', 'b'], scale: 3 },
+      assumption_status: { talked: 'yes', paid: 'no', problem: 'yes' },
+      commitment: 'التزام تجريبي.',
+      validation_score: 61,
+      completion_percentage: 100,
+      submitted: true,
+      updated_at: new Date().toISOString()
+    };
+
+    const w1 = await db.from(TABLE).upsert(probe, { onConflict: 'workshop_id,startup_id' });
+    if (w1.error) {
+      row(false, '٤. الكتابة',
+        `فشلت الكتابة: <code>${esc(w1.error.message)}</code>. ` +
+        'تحقق من سياسات الإدراج والتحديث للمستخدم المجهول، ومن تطابق أسماء الأعمدة.');
+      return finish(channel);
+    }
+    row(true, '٤. الكتابة', 'تم إدراج الصف التجريبي بكل الحقول التي يستخدمها التطبيق.');
+
+    /* ---- 6. Read back — proof the row exists, not just that upsert returned ---- */
+    const readBack = await db.from(TABLE).select('*')
+      .eq('workshop_id', WORKSHOP).eq('startup_id', STARTUP).maybeSingle();
+
+    if (readBack.error || !readBack.data) {
+      row(false, '٥. القراءة بعد الكتابة',
+        'لم يُعثر على الصف بعد كتابته. الكتابة لم تُحفظ فعلياً.');
+      return finish(channel);
+    }
+    const got = readBack.data;
+    const fieldsOk =
+      got.validation_score === 61 &&
+      got.submitted === true &&
+      got.assumption_status?.talked === 'yes' &&
+      Array.isArray(got.challenge_tags) &&
+      got.reflection_answers?.scale === 3;
+
+    row(fieldsOk, '٥. القراءة بعد الكتابة',
+      fieldsOk
+        ? 'تمت قراءة الصف وكل الحقول مطابقة، بما فيها الحقول من نوع jsonb.'
+        : `الصف موجود لكن بعض الحقول لم تُحفظ كما أُرسلت: <code>${esc(JSON.stringify(got).slice(0, 220))}</code>`);
+
+    /* ---- 7. Conflict resolution — the same key must update, never duplicate ---- */
+    const w2 = await db.from(TABLE).upsert(
+      { ...probe, validation_score: 77, updated_at: new Date().toISOString() },
+      { onConflict: 'workshop_id,startup_id' });
+
+    const after = await db.from(TABLE).select('*').eq('workshop_id', WORKSHOP);
+    const rowsAfter = after.data ? after.data.length : -1;
+    const updated = after.data?.find(r => r.startup_id === STARTUP);
+
+    const noDupes = rowsAfter === rowsBefore + (rowsBefore === 0 ? 1 : 0) || rowsAfter === 1;
+    row(!w2.error && noDupes && updated?.validation_score === 77,
+      '٦. منع التكرار عند التعديل',
+      w2.error
+        ? `فشل التعديل: <code>${esc(w2.error.message)}</code>`
+        : `الصفوف قبل: <b>${num(rowsBefore)}</b> · بعد كتابتين بنفس المفتاح: <b>${num(rowsAfter)}</b>. ` +
+          `القيمة بعد التعديل: <b>${num(updated?.validation_score)}</b> (كانت ٦١). ` +
+          'الكتابة الثانية عدّلت الصف نفسه ولم تنشئ صفاً جديداً.');
+
+    /* ---- 8. Realtime — did the event actually arrive? ---- */
+    await new Promise(r => setTimeout(r, 2500));
+    row(Boolean(realtimeEvent), '٧. التحديث اللحظي',
+      realtimeEvent
+        ? `وصل حدث <code>${esc(realtimeEvent)}</code> عبر الاشتراك اللحظي. لوحة المدرب ستتحدث دون إعادة تحميل.`
+        : 'لم يصل أي حدث لحظي. فعّل Realtime للجدول من Database → Replication، ' +
+          'وتأكد من تنفيذ <code>alter table … replica identity full</code>.');
+
+    finish(channel);
+  }
+
+  function finish(channel) {
+    if (channel) { try { channel.unsubscribe(); } catch { /* ignore */ } }
+    $('#run').removeAttribute('aria-disabled');
+    $('#run').textContent = 'إعادة الفحص';
+
+    const banner = document.createElement('div');
+    banner.className = 'card';
+    banner.style.marginTop = '1rem';
+    banner.innerHTML = failed === 0
+      ? `<p class="eyebrow">النتيجة</p>
+         <p class="card-value" style="color:var(--teal)">نجح الفحص بالكامل — ${num(passed)} من ${num(passed)}</p>
+         <p class="lede" style="font-size:.95rem;margin-top:.5rem">
+           الاتصال بقاعدة البيانات يعمل. يمكن تشغيل الورشة.</p>`
+      : `<p class="eyebrow">النتيجة</p>
+         <p class="card-value" style="color:var(--coral)">فشل ${num(failed)} من ${num(passed + failed)}</p>
+         <p class="lede" style="font-size:.95rem;margin-top:.5rem">
+           عالج الخطوات المعلّمة بالأحمر أعلاه ثم أعد الفحص.</p>`;
+    document.getElementById('results').appendChild(banner);
+  }
+
+  document.getElementById('run').addEventListener('click', run);
+})();
+</script>
+</body>
+</html>
