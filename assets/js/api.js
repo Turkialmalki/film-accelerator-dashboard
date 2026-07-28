@@ -23,8 +23,24 @@ const FVApi = (() => {
   let retryTimer = null;
   const statusListeners = new Set();
 
-  const workshopId = () => FVConfig.workshopId();
+  /* The active workshop.
+     Founders always take it from the URL or the configured default. The
+     mentor dashboard can point itself at a different one at runtime — that is
+     what makes starting a new cohort a button rather than a code change — so
+     the id is held here instead of being read from config on every call. */
+  let workshopOverride = null;
+
+  const workshopId = () => workshopOverride || FVConfig.workshopId();
   const sessionId  = () => FVConfig.sessionId();
+
+  /** Point every subsequent read, write and subscription at another workshop. */
+  function setWorkshop(id) {
+    const next = String(id || '').trim().toLowerCase();
+    if (!next || next === workshopId()) return workshopId();
+    workshopOverride = next;
+    unsubscribe();          // the old channel is filtered to the old workshop
+    return workshopId();
+  }
 
   /* ---------------------------- Setup ---------------------------- */
 
@@ -189,21 +205,71 @@ const FVApi = (() => {
    * neither can another cohort running at the same time.
    */
   async function clearWorkshop() {
-    if (!isLive()) return { ok: false, remaining: null, error: 'not-configured' };
+    if (!isLive()) {
+      return { ok: false, remaining: null, error: 'قاعدة البيانات غير مهيأة.' };
+    }
 
+    let dbError = null;
     try {
       const { error } = await client
         .from(TABLE)
         .delete()
         .eq('workshop_id', workshopId());
+      if (error) dbError = error;
+    } catch (err) {
+      dbError = err;
+    }
+
+    /* Confirmed by counting, not by status. A delete blocked by RLS removes
+       nothing and still answers 204, because zero rows matched the policy —
+       so the only truthful check is to read the workshop back. */
+    const remaining = await fetchAll();
+
+    if (remaining.length === 0) {
+      lastSeen = new Map();          // nothing left to reconcile against
+      return { ok: true, remaining: 0, error: null };
+    }
+
+    return {
+      ok: false,
+      remaining: remaining.length,
+      error: dbError
+        ? (dbError.message || String(dbError))
+        : 'رفضت قاعدة البيانات الحذف دون رسالة خطأ — سياسة الحذف (DELETE policy) غير مفعّلة.'
+    };
+  }
+
+  /**
+   * Every workshop that has responses, newest activity first.
+   *
+   * Derived from the responses themselves rather than a separate table: a
+   * workshop is not a record to maintain, it is simply a value some rows
+   * carry, and inventing a table for it would add a migration and a second
+   * thing to keep in step.
+   */
+  async function listWorkshops() {
+    if (!isLive()) return [];
+    try {
+      const { data, error } = await client
+        .from(TABLE)
+        .select('workshop_id, updated_at, submitted')
+        .order('updated_at', { ascending: false });
 
       if (error) throw error;
 
-      const remaining = await fetchAll();
-      return { ok: remaining.length === 0, remaining: remaining.length, error: null };
+      const seen = new Map();
+      (data || []).forEach(row => {
+        const at = seen.get(row.workshop_id) || { id: row.workshop_id, responses: 0, submitted: 0, lastAt: row.updated_at };
+        at.responses += 1;
+        if (row.submitted) at.submitted += 1;
+        if (row.updated_at > at.lastAt) at.lastAt = row.updated_at;
+        seen.set(row.workshop_id, at);
+      });
+
+      return [...seen.values()].sort((a, b) => (a.lastAt < b.lastAt ? 1 : -1));
     } catch (err) {
-      console.warn('FVApi: clearWorkshop failed', err?.message || err);
-      return { ok: false, remaining: null, error: err?.message || String(err) };
+      console.warn('FVApi: listWorkshops failed', err?.message || err);
+      return [];
     }
   }
 
@@ -412,7 +478,8 @@ const FVApi = (() => {
 
   return {
     init, isLive, get status() { return status; }, get reason() { return reason; }, onStatus,
-    save, fetchAll, fetchOne, clearWorkshop, subscribe, unsubscribe,
+    save, fetchAll, fetchOne, clearWorkshop, listWorkshops, subscribe, unsubscribe,
+    setWorkshop,
     flush, pendingCount, rowToResponse, workshopId, sessionId
   };
 })();

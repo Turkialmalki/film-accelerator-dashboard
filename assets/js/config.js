@@ -42,7 +42,7 @@ const FVConfig = (() => {
      fetched by script rather than referenced from the HTML, so it cannot get
      the ?v= stamp the other assets carry. Bump this whenever the cohort data
      changes, or founders will run new code against a stale roster. */
-  const DATA_VERSION = '20260729c';
+  const DATA_VERSION = '20260729d';
 
   const dataUrl = () => `data/startups.json?v=${DATA_VERSION}`;
 
@@ -105,7 +105,7 @@ const FVConfig = (() => {
   }
 
   return {
-    SUPABASE_URL, SUPABASE_ANON_KEY, DATA_VERSION,
+    SUPABASE_URL, SUPABASE_ANON_KEY, DATA_VERSION, DEFAULT_WORKSHOP_ID,
     isConfigured, missing, workshopId, sessionId, dataUrl
   };
 })();

@@ -103,6 +103,10 @@ create policy "anon can update responses"
   using (true)
   with check (true);
 
+-- ONE-TIME SETUP. Run this file once per Supabase project and never again
+-- before a workshop: the mentor dashboard starts new cohorts and clears
+-- responses on its own, so nothing here is a recurring task.
+--
 -- Delete is scoped, not open. The mentor dashboard needs to reset a workshop
 -- between cohorts without anyone opening the SQL editor, so anon may delete —
 -- but only rows that belong to a workshop, which is every row, so the real

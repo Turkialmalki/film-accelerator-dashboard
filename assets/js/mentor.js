@@ -22,8 +22,98 @@
     startups: [],
     responses: {},
     lastEventAt: null,
-    summaryOpen: false
+    summaryOpen: false,
+    workshop: null,       // the workshop this dashboard is showing
+    workshops: []         // every workshop known, newest first
   };
+
+  /* ------------------------------ الورش ------------------------------ */
+
+  /* A workshop that has just been created has no responses yet, so it cannot
+     be discovered from the data. It is remembered on this device until its
+     first response arrives, purely so the selector does not lose it — this is
+     facilitator preference, never analytics, and nothing on the dashboard is
+     ever computed from it. */
+  const CREATED_KEY = 'fvip:mentor-workshops';
+  const ACTIVE_KEY  = 'fvip:mentor-active-workshop';
+
+  function readCreated() {
+    try { return JSON.parse(localStorage.getItem(CREATED_KEY) || '[]'); }
+    catch { return []; }
+  }
+
+  function rememberCreated(id) {
+    try {
+      const all = readCreated().filter(x => x !== id);
+      all.unshift(id);
+      localStorage.setItem(CREATED_KEY, JSON.stringify(all.slice(0, 40)));
+    } catch { /* storage blocked — the selector just will not remember it */ }
+  }
+
+  function rememberActive(id) {
+    try { localStorage.setItem(ACTIVE_KEY, id); } catch { /* ignore */ }
+  }
+
+  function readActive() {
+    try { return localStorage.getItem(ACTIVE_KEY); } catch { return null; }
+  }
+
+  /**
+   * The next sequential id for this cohort: base-001, base-002, and so on.
+   *
+   * Starting a new workshop is offered instead of deleting, because a cleared
+   * workshop is gone and a new id keeps every previous cohort readable.
+   */
+  function nextWorkshopId(known) {
+    const base = FVConfig.DEFAULT_WORKSHOP_ID;
+    const pattern = new RegExp(`^${base}-(\\d+)$`);
+    const highest = known.reduce((max, id) => {
+      const m = pattern.exec(id);
+      return m ? Math.max(max, Number(m[1])) : max;
+    }, 0);
+    return `${base}-${String(highest + 1).padStart(3, '0')}`;
+  }
+
+  /** Every id worth showing: those with data, those created here, and the current one. */
+  function knownWorkshopIds() {
+    const ids = [
+      ...state.workshops.map(w => w.id),
+      ...readCreated(),
+      state.workshop,
+      FVConfig.DEFAULT_WORKSHOP_ID
+    ].filter(Boolean);
+
+    /* Ids wrapped in double underscores belong to tooling — verify.html
+       writes to __diagnostic__ — and are not cohorts anyone runs. The one
+       exception is when the dashboard is deliberately pointed at one. */
+    return [...new Set(ids)].filter(id => !/^__.*__$/.test(id) || id === state.workshop);
+  }
+
+  async function refreshWorkshops() {
+    state.workshops = await FVApi.listWorkshops();
+  }
+
+  /** Switch the whole dashboard to another workshop. */
+  async function switchTo(id) {
+    state.workshop = FVApi.setWorkshop(id);
+    rememberActive(state.workshop);
+
+    /* Keep the address bar honest: the URL is what a facilitator copies to a
+       second screen, and it must open the same workshop. */
+    try {
+      const url = new URL(location.href);
+      url.searchParams.set('workshop', state.workshop);
+      history.replaceState(null, '', url);
+    } catch { /* ignore */ }
+
+    state.responses = {};
+    state.summaryOpen = false;
+    clearNotices();
+    await loadResponses();
+    await refreshWorkshops();
+    render();
+    startRealtime();
+  }
 
   /* Earliest to latest. Mirrors the stage_ar values in data/startups.json,
      which follow the accelerator report's own vocabulary. */
@@ -102,6 +192,17 @@
         </div>`;
       return;
     }
+
+    /* Precedence: an explicit ?workshop= wins, then whatever this device was
+       last looking at, then the configured default. */
+    const fromUrl = new URLSearchParams(location.search).get('workshop');
+    await refreshWorkshops();
+    const remembered = readActive();
+    const latest = state.workshops.filter(w => !/^__.*__$/.test(w.id))[0]?.id;
+    state.workshop = FVApi.setWorkshop(
+      fromUrl || remembered || latest || FVConfig.DEFAULT_WORKSHOP_ID
+    );
+    rememberActive(state.workshop);
 
     await loadResponses();
     render();
@@ -576,11 +677,27 @@
   /* ------------------------------ الإدارة ------------------------------ */
 
   function wireAdmin(a) {
+    $('#workshop-select')?.addEventListener('change', async (e) => {
+      await switchTo(e.target.value);
+      toast(`تم التبديل إلى ${state.workshop}`);
+    });
+
+    $('#admin-new')?.addEventListener('click', async () => {
+      const id = nextWorkshopId(knownWorkshopIds());
+      rememberCreated(id);
+      await switchTo(id);
+      notify('warn',
+        `تم بدء ورشة جديدة: ${id}. البيانات السابقة محفوظة ويمكن مراجعتها من القائمة أعلاه. `
+        + 'حدّث رمز QR ليشير إلى رابط المشاركين الجديد الظاهر بالأسفل.');
+      toast('تم بدء ورشة جديدة');
+    });
+
     $('#admin-refresh')?.addEventListener('click', async (e) => {
       const btn = e.currentTarget;
       btn.setAttribute('aria-disabled', 'true');
       btn.textContent = '⏳ جارٍ التحديث...';
       await loadResponses();
+      await refreshWorkshops();
       render();
       toast('تم تحديث البيانات من قاعدة البيانات');
     });
@@ -657,7 +774,13 @@
       const result = await FVApi.clearWorkshop();
       box.remove();
 
+      /* Everything derived is discarded, not recomputed from what was held
+         in memory: the summary, the counts and the charts all rebuild from
+         the re-read database. */
+      state.responses = {};
+      state.summaryOpen = false;
       await loadResponses();
+      await refreshWorkshops();
       render();
 
       /* Verified by re-reading, not by trusting the status code: PostgREST
@@ -665,24 +788,57 @@
          policy would otherwise look like a success. */
       if (result.ok) {
         clearNotices();
-        toast('تم حذف جميع استجابات الورشة');
+        notify('warn', 'تم حذف جميع استجابات الورشة بنجاح.');
+        toast('تم حذف جميع استجابات الورشة بنجاح.');
       } else {
+        /* The database's own message, verbatim — a paraphrase would hide the
+           one detail that identifies the cause. */
         notify('error',
-          `لم تُحذف الاستجابات (ما زال هناك ${num(result.remaining ?? 0)}). `
-          + 'سياسة الحذف غير مفعّلة في قاعدة البيانات — شغّل ملف supabase/schema.sql '
-          + 'مرة أخرى لإضافتها، أو احذف من محرر SQL مباشرة.');
+          `لم تُحذف الاستجابات — ما زال هناك ${num(result.remaining ?? 0)}. `
+          + `رسالة قاعدة البيانات: «${result.error}». `
+          + 'الحل: شغّل ملف supabase/schema.sql مرة واحدة لإضافة سياسة الحذف، '
+          + 'أو استخدم «بدء ورشة جديدة» بدلاً من الحذف.');
       }
     });
   }
 
   function adminSection() {
+    const ids = knownWorkshopIds();
+    const meta = new Map(state.workshops.map(w => [w.id, w]));
+
+    const option = (id) => {
+      const w = meta.get(id);
+      const label = w ? `${id} — ${companies(w.responses)}` : `${id} — ورشة جديدة`;
+      return `<option value="${esc(id)}" ${id === state.workshop ? 'selected' : ''}>${esc(label)}</option>`;
+    };
+
+    /* The founder link is shown because starting a new workshop changes the
+       id, and a QR code pointing at the old one would quietly send the room
+       into the previous cohort. */
+    const founderUrl = `${location.origin}${location.pathname.replace(/mentor\.html$/, '')}?workshop=${encodeURIComponent(state.workshop)}`;
+
     return `
       <section class="section">
-        <div class="admin">
+        <div class="workshop-bar">
+          <label class="workshop-pick">
+            <span class="workshop-label">الورشة الحالية</span>
+            <select class="workshop-select" id="workshop-select" aria-label="اختيار الورشة">
+              ${ids.map(option).join('')}
+            </select>
+          </label>
+        </div>
+
+        <div class="admin" style="margin-top:.6rem">
           <button class="admin-btn" id="admin-refresh">🔄 تحديث البيانات</button>
-          <button class="admin-btn" id="admin-export">📥 تصدير الاستجابات (CSV)</button>
+          <button class="admin-btn" id="admin-new">✨ بدء ورشة جديدة</button>
+          <button class="admin-btn" id="admin-export">📥 تصدير (CSV)</button>
           <button class="admin-btn admin-btn--danger" id="admin-clear">🗑 حذف استجابات الورشة</button>
         </div>
+
+        <p class="muted" style="font-size:.78rem;margin-top:.6rem;line-height:1.7">
+          رابط المشاركين لهذه الورشة:
+          <a href="${esc(founderUrl)}" id="founder-link" style="color:var(--amber)">${esc(founderUrl)}</a>
+        </p>
       </section>`;
   }
 

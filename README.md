@@ -238,7 +238,33 @@ so the next founder's answers are never attributed to the previous one's row.
   `workshop_responses`. That is acceptable for a time-boxed workshop with non-sensitive
   content and is **not** acceptable for anything else.
 
-There is deliberately **no DELETE policy**, so no founder can wipe another
+### Running multiple cohorts
+
+The dashboard is self-service — you never touch SQL between workshops.
+
+| Action | What it does |
+|---|---|
+| **✨ بدء ورشة جديدة** | Creates the next id (`film-accelerator-2026-001`, `-002`, …) and switches to it instantly. Previous cohorts stay readable. |
+| **ورشة اليوم ▼** | Switch to any past workshop to review it. Defaults to the most recent. |
+| **📥 تصدير (CSV)** | Anonymous export — an index, never a name. UTF-8 BOM so Excel opens Arabic. |
+| **🗑 حذف استجابات الورشة** | Deletes only the current `workshop_id`. Requires the delete policy (below). |
+
+Starting a new workshop is safer than deleting and is the recommended flow:
+nothing is lost, and every cohort stays comparable afterwards.
+
+**Starting a new workshop changes the id, so update the QR code.** The founder
+link for the active workshop is shown under the admin bar for exactly that
+reason — an old QR would quietly send the room into the previous cohort.
+
+### The delete policy
+
+`supabase/schema.sql` is a **one-time install**, not a pre-workshop ritual.
+It includes the DELETE policy that the clear button needs. Until it has been
+run, clearing fails **loudly**: the dashboard re-reads the workshop, counts
+what survived, and prints the database's own error message rather than
+reporting a success that did not happen.
+
+There is deliberately **no DELETE policy for founders**, so no founder can wipe another
 team's answers mid-workshop. An anon `DELETE` is filtered away by RLS — note
 that PostgREST still answers `204`, because zero rows matched, so a successful
 status code there does **not** mean anything was removed.

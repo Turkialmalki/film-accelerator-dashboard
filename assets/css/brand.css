@@ -1138,6 +1138,41 @@ h3 {
 .admin-btn--danger { color: #FFB3AC; border-color: rgba(240, 91, 78, .3); }
 .admin-btn--danger:hover { background: rgba(240, 91, 78, .12); border-color: rgba(240, 91, 78, .5); color: #FFD9D4; }
 
+/* ---------------------------------------------------------------- Workshop bar */
+
+.workshop-bar { display: flex; gap: .6rem; align-items: center; flex-wrap: wrap; }
+
+.workshop-pick {
+  flex: 1 1 260px;
+  display: grid;
+  gap: .3rem;
+}
+
+.workshop-label { font-size: .76rem; color: var(--ink-3); }
+
+.workshop-select {
+  width: 100%;
+  min-height: 46px;
+  padding: .55rem 1rem;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--ink-1);
+  font-size: .95rem;
+  font-weight: 500;
+  appearance: none;
+  /* The caret is drawn rather than native so it sits on the correct side in
+     RTL; a native select arrow stays left and reads as a stray mark. */
+  background-image: linear-gradient(45deg, transparent 50%, var(--ink-3) 50%),
+                    linear-gradient(135deg, var(--ink-3) 50%, transparent 50%);
+  background-position: 1rem calc(50% - 2px), calc(1rem + 5px) calc(50% - 2px);
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+}
+
+.workshop-select:focus { outline: none; border-color: rgba(251, 174, 64, .55); }
+.workshop-select option { background: var(--navy-700); color: var(--ink-1); }
+
 /* ---------------------------------------------------------------- Toast */
 
 .toast {
