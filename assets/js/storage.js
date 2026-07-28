@@ -1,20 +1,21 @@
 /* ==========================================================================
-   Local draft cache.
+   الحفظ المحلي — local draft cache.
 
-   Supabase is the source of truth for responses (see api.js). This module is
-   the local mirror in front of it, and it exists for two reasons:
+   Supabase is the source of truth (see api.js). This is the mirror in front
+   of it: typing writes here and renders instantly, and nothing is lost when
+   twenty founders share one conference access point.
 
-   1. The UI must feel instant. Typing writes here and renders immediately;
-      the network round-trip happens behind that.
-   2. A founder on bad wifi must not lose answers. What is cached here is
-      re-sent by the outbox until the server confirms it.
+   The stored shape is unchanged from the previous build, deliberately — the
+   Supabase columns and the outbox both depend on it. Only the meaning of two
+   fields is narrower now:
 
-   It is a cache, not a database. On load, remote state overwrites it.
+     assumptions  →  the three step-2 answers, keyed 'talked' | 'paid' | 'problem'
+     challenge    →  { text: step-3 answer, tags: [step-1 challenge area] }
    ========================================================================== */
 
 const FVStore = (() => {
 
-  const KEY = 'fvip:drafts:v3';
+  const KEY = 'fvip:drafts:v4';
   const SESSION_KEY = 'fvip:current-startup';
 
   function readAll() {
@@ -39,8 +40,8 @@ const FVStore = (() => {
 
   function blank() {
     return {
-      assumptions: {},      // "group:index" -> 'not' | 'partial' | 'validated'
-      reflections: {},      // question index -> answer text
+      assumptions: {},                    // talked | paid | problem
+      reflections: {},                    // reserved; unused in the 5-step journey
       challenge: { text: '', tags: [] },
       commitment: '',
       submitted: false,
@@ -67,16 +68,15 @@ const FVStore = (() => {
 
   function setField(startupId, group, key, value) {
     const current = get(startupId);
-    const groupData = { ...(current[group] || {}), [key]: value };
-    return set(startupId, { [group]: groupData });
+    return set(startupId, { [group]: { ...(current[group] || {}), [key]: value } });
   }
 
   /**
-   * Replace the local draft with what the server has.
+   * Replace the local draft with the server's copy.
    *
-   * Called when a founder opens their journey. The server wins: it is the
-   * shared record for the whole team, so a teammate's answers from another
-   * phone should appear here rather than being masked by a stale local copy.
+   * The server wins: the row is shared by the whole team, so a co-founder's
+   * answers from another phone should surface here rather than being masked
+   * by a stale local draft.
    */
   function hydrate(startupId, remote) {
     if (!remote) return get(startupId);
@@ -90,7 +90,7 @@ const FVStore = (() => {
     return set(startupId, { submitted: true, completedAt: new Date().toISOString() });
   }
 
-  /* ---- Which startup this device is currently working as ---- */
+  /* ------------------ الشركة الحالية على هذا الجهاز ------------------ */
 
   function getSession() {
     try { return localStorage.getItem(SESSION_KEY); } catch { return null; }
@@ -102,40 +102,47 @@ const FVStore = (() => {
     try { localStorage.removeItem(SESSION_KEY); } catch { /* ignore */ }
   }
 
-  /* ---- Completion ---- */
+  /* ---------------------------- الإنجاز ---------------------------- */
 
-  function countAssumptions(startup) {
-    return ['customer_assumptions', 'business_assumptions',
-            'technical_assumptions', 'pricing_assumptions']
-      .reduce((n, k) => n + ((startup[k] || []).length), 0);
+  /* The five things a founder fills in, one per step. Equal weight, so the
+     progress a founder sees always matches the steps they have passed. */
+  function completionOf(response) {
+    const r = { ...blank(), ...(response || {}) };
+    const a = r.assumptions || {};
+    const parts = [
+      (r.challenge?.tags || []).length ? 1 : 0,                         // step 1
+      ['talked', 'paid', 'problem'].filter(k => a[k]).length / 3,       // step 2
+      (r.challenge?.text || '').trim() ? 1 : 0,                         // step 3
+      1,                                                                // step 4 is read-only
+      (r.commitment || '').trim() ? 1 : 0                               // step 5
+    ];
+    return Math.round((parts.reduce((x, y) => x + y, 0) / parts.length) * 100);
+  }
+
+  function completion(startupId) {
+    return completionOf(get(startupId));
   }
 
   /**
-   * Weighted across the five things a founder can fill in, so a half-finished
-   * journey reads as partial rather than zero. Works on any response-shaped
-   * object, which lets the mentor dashboard score remote rows with the same
-   * function the portal uses locally.
+   * جاهزية الشركة — the number on the final screen.
+   *
+   * It starts from the startup's baseline readiness and moves with the three
+   * step-2 answers, so it reflects what the founder just told us rather than
+   * only what the cohort file already knew. Deliberately blunt: this is a
+   * conversation starter for the room, not a valuation.
    */
-  function completionOf(response, startup) {
-    const r = { ...blank(), ...(response || {}) };
-    const totalAssumptions = countAssumptions(startup);
-    const answeredAssumptions = Object.keys(r.assumptions || {}).length;
-    const totalReflections = (startup.reflection_questions || []).length;
-    const answeredReflections = Object.values(r.reflections || {})
-      .filter(v => v && String(v).trim()).length;
+  const READINESS_WEIGHTS = {
+    talked:  { yes: 12, partly: 5, no: -8 },
+    paid:    { yes: 14, no: -10 },
+    problem: { yes: 8,  no: -12 }
+  };
 
-    const parts = [
-      totalAssumptions ? Math.min(answeredAssumptions / totalAssumptions, 1) : 0,
-      totalReflections ? Math.min(answeredReflections / totalReflections, 1) : 0,
-      (r.challenge?.text || '').trim() ? 1 : 0,
-      (r.challenge?.tags || []).length ? 1 : 0,
-      (r.commitment || '').trim() ? 1 : 0
-    ];
-    return Math.round((parts.reduce((a, b) => a + b, 0) / parts.length) * 100);
-  }
-
-  function completion(startupId, startup) {
-    return completionOf(get(startupId), startup);
+  function readinessOf(response, startup) {
+    const a = (response && response.assumptions) || {};
+    const base = Number(startup?.readiness) || 40;
+    const delta = Object.entries(READINESS_WEIGHTS)
+      .reduce((sum, [key, table]) => sum + (table[a[key]] || 0), 0);
+    return Math.max(5, Math.min(97, Math.round(base + delta)));
   }
 
   function reset(startupId) {
@@ -147,7 +154,7 @@ const FVStore = (() => {
   return {
     get, set, setField, hydrate, markSubmitted,
     getSession, setSession, clearSession,
-    completion, completionOf, countAssumptions, reset
+    completion, completionOf, readinessOf, reset
   };
 })();
 

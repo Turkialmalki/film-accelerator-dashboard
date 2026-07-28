@@ -230,7 +230,43 @@ const FVSearch = (() => {
     return out;
   }
 
-  return { buildIndex, query, normalize, coreForm, levenshtein, get index() { return INDEX; } };
+  /* ---------------------------- Silent resolve ---------------------------- */
+
+  /**
+   * The confidence a match needs before the journey will open on it.
+   *
+   * The first screen shows no suggestions and no dropdown — nobody may learn
+   * who else is in the room — so this decision is made once, invisibly, with
+   * no chance for the founder to correct a wrong guess from a list. That
+   * makes a false positive much worse than a false negative: it would open
+   * another company's profile. The bar therefore sits above the whole fuzzy
+   * tier and admits only exact, prefix, substring and whole-token matches.
+   */
+  const RESOLVE_MIN_SCORE = 70;
+
+  /**
+   * Below this, a query is not a name — it is the first keystroke of one.
+   *
+   * One or two letters will always prefix-match somebody in a cohort of this
+   * size and score highly for it, which would open a stranger's journey on a
+   * mistyped Enter. Length is the only signal that separates "أ" from "أحمد",
+   * because both are genuine prefixes.
+   */
+  const RESOLVE_MIN_LENGTH = 3;
+
+  /**
+   * Resolve free text to exactly one startup, or null.
+   * Returns { startup, startupId, label, type, score } on a confident match.
+   */
+  function resolve(text) {
+    if (normalize(text).replace(/\s/g, '').length < RESOLVE_MIN_LENGTH) return null;
+    const best = query(text, 1)[0];
+    if (!best || best.score < RESOLVE_MIN_SCORE) return null;
+    return best;
+  }
+
+  return { buildIndex, query, resolve, normalize, coreForm, levenshtein,
+           RESOLVE_MIN_SCORE, get index() { return INDEX; } };
 })();
 
 window.FVSearch = FVSearch;

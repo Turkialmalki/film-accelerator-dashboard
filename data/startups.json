@@ -10,12 +10,28 @@
     "revenue": "SAR 480K / year",
     "team_size": 7,
     "founders": [
-      { "name_ar": "أحمد الحويماني", "name_en": "Ahmed Alhuwaimani", "role": "Co-Founder & CEO" },
-      { "name_ar": "عبد الله با مجبور", "name_en": "Abdullah Bamajbour", "role": "Co-Founder & Head of Production" }
+      {
+        "name_ar": "أحمد الحويماني",
+        "name_en": "Ahmed Alhuwaimani",
+        "role": "Co-Founder & CEO"
+      },
+      {
+        "name_ar": "عبد الله با مجبور",
+        "name_en": "Abdullah Bamajbour",
+        "role": "Co-Founder & Head of Production"
+      }
     ],
     "team_members": [
-      { "name_ar": "ريم القحطاني", "name_en": "Reem Alqahtani", "role": "Producer" },
-      { "name_ar": "فهد الشمري", "name_en": "Fahad Alshamri", "role": "Director of Photography" }
+      {
+        "name_ar": "ريم القحطاني",
+        "name_en": "Reem Alqahtani",
+        "role": "Producer"
+      },
+      {
+        "name_ar": "فهد الشمري",
+        "name_en": "Fahad Alshamri",
+        "role": "Director of Photography"
+      }
     ],
     "logo": "specter",
     "cover_image": "gradient-violet",
@@ -24,7 +40,17 @@
     "problem_statement": "Enterprise marketing teams need high-quality Saudi-authentic video content but agencies deliver slowly, expensively, and with generic creative that fails locally.",
     "value_proposition": "Cinema-grade branded films with a Saudi creative voice, delivered in half the typical agency timeline at a transparent fixed price.",
     "traction": "14 paid projects delivered, 3 clients on retainer, 68% of revenue from repeat business, zero paid marketing spend.",
-    "validation_scores": { "problem": 78, "customer": 71, "solution": 74, "revenue": 66, "market": 58, "execution": 69, "team": 64, "investor": 41, "competition": 52 },
+    "validation_scores": {
+      "problem": 78,
+      "customer": 71,
+      "solution": 74,
+      "revenue": 66,
+      "market": 58,
+      "execution": 69,
+      "team": 64,
+      "investor": 41,
+      "competition": 52
+    },
     "strengths": [
       "Strong repeat-purchase rate proves clients are genuinely satisfied, not just experimenting.",
       "Founding team combines commercial production discipline with real directing craft.",
@@ -69,20 +95,52 @@
       }
     ],
     "customer_assumptions": [
-      { "title": "Clients buy on creative quality, not price", "description": "We assume marketing directors choose us for craft even when a cheaper vendor bids. If price actually dominates, our entire positioning is wrong.", "status": "partial" },
-      { "title": "Retainers are attractive to enterprise clients", "description": "We assume clients want ongoing monthly content rather than one-off campaign projects.", "status": "not" },
-      { "title": "The buyer is the marketing director", "description": "We assume the marketing director holds real budget authority rather than routing approval upward to a CMO or procurement.", "status": "validated" }
+      {
+        "title": "Clients buy on creative quality, not price",
+        "description": "We assume marketing directors choose us for craft even when a cheaper vendor bids. If price actually dominates, our entire positioning is wrong.",
+        "status": "partial"
+      },
+      {
+        "title": "Retainers are attractive to enterprise clients",
+        "description": "We assume clients want ongoing monthly content rather than one-off campaign projects.",
+        "status": "not"
+      },
+      {
+        "title": "The buyer is the marketing director",
+        "description": "We assume the marketing director holds real budget authority rather than routing approval upward to a CMO or procurement.",
+        "status": "validated"
+      }
     ],
     "business_assumptions": [
-      { "title": "40% gross margin is achievable at scale", "description": "We assume margins hold as we add staff rather than compress under fixed payroll.", "status": "not" },
-      { "title": "Repeat business will continue without sales effort", "description": "We assume word of mouth sustains pipeline as we grow beyond the founders' personal networks.", "status": "partial" }
+      {
+        "title": "40% gross margin is achievable at scale",
+        "description": "We assume margins hold as we add staff rather than compress under fixed payroll.",
+        "status": "not"
+      },
+      {
+        "title": "Repeat business will continue without sales effort",
+        "description": "We assume word of mouth sustains pipeline as we grow beyond the founders' personal networks.",
+        "status": "partial"
+      }
     ],
     "technical_assumptions": [
-      { "title": "Our production workflow can handle 3 concurrent projects", "description": "We assume current crew, equipment and post-production capacity supports parallel delivery without quality loss.", "status": "not" }
+      {
+        "title": "Our production workflow can handle 3 concurrent projects",
+        "description": "We assume current crew, equipment and post-production capacity supports parallel delivery without quality loss.",
+        "status": "not"
+      }
     ],
     "pricing_assumptions": [
-      { "title": "Clients will accept a published rate card", "description": "We assume moving from bespoke quotes to standard packages will not lose deals.", "status": "not" },
-      { "title": "A 20% price increase would not reduce demand", "description": "We assume we are currently under-priced relative to delivered value.", "status": "not" }
+      {
+        "title": "Clients will accept a published rate card",
+        "description": "We assume moving from bespoke quotes to standard packages will not lose deals.",
+        "status": "not"
+      },
+      {
+        "title": "A 20% price increase would not reduce demand",
+        "description": "We assume we are currently under-priced relative to delivered value.",
+        "status": "not"
+      }
     ],
     "investor_questions": [
       "What is your revenue per founder-hour, and how does that change as you grow?",
@@ -100,28 +158,84 @@
     ],
     "mentor_notes": "You have something rare — real revenue and real repeat customers. The danger is comfort. A profitable services business feels like success but caps out at the founders' capacity. The strategic question this quarter is not how to get more clients; it is whether you are building an agency or a product company, because the two require opposite decisions. Pick one deliberately.",
     "recommended_books": [
-      { "title": "Built to Sell", "author": "John Warrillow", "why": "Directly addresses the founder-dependency trap in service businesses." },
-      { "title": "The E-Myth Revisited", "author": "Michael Gerber", "why": "On systemising delivery so the business runs without you." },
-      { "title": "Profit First", "author": "Mike Michalowicz", "why": "Practical cash discipline for lumpy project revenue." }
+      {
+        "title": "Built to Sell",
+        "author": "John Warrillow",
+        "why": "Directly addresses the founder-dependency trap in service businesses."
+      },
+      {
+        "title": "The E-Myth Revisited",
+        "author": "Michael Gerber",
+        "why": "On systemising delivery so the business runs without you."
+      },
+      {
+        "title": "Profit First",
+        "author": "Mike Michalowicz",
+        "why": "Practical cash discipline for lumpy project revenue."
+      }
     ],
     "recommended_frameworks": [
-      { "name": "Value-Based Pricing", "why": "Move from cost-plus quoting to pricing against client outcomes." },
-      { "name": "Jobs To Be Done", "why": "Understand what clients actually hire a production house to accomplish." },
-      { "name": "Productised Service Model", "why": "Convert bespoke projects into repeatable packages." }
+      {
+        "name": "Value-Based Pricing",
+        "why": "Move from cost-plus quoting to pricing against client outcomes."
+      },
+      {
+        "name": "Jobs To Be Done",
+        "why": "Understand what clients actually hire a production house to accomplish."
+      },
+      {
+        "name": "Productised Service Model",
+        "why": "Convert bespoke projects into repeatable packages."
+      }
     ],
     "recommended_tools": [
-      { "name": "Notion", "why": "Build the production playbook and SOP library." },
-      { "name": "Harvest", "why": "Track true hours per project to expose real margin." },
-      { "name": "HubSpot CRM", "why": "Manage a named enterprise pipeline instead of relying on inbound." }
+      {
+        "name": "Notion",
+        "why": "Build the production playbook and SOP library."
+      },
+      {
+        "name": "Harvest",
+        "why": "Track true hours per project to expose real margin."
+      },
+      {
+        "name": "HubSpot CRM",
+        "why": "Manage a named enterprise pipeline instead of relying on inbound."
+      }
     ],
     "recommended_videos": [
-      { "title": "How to Start a Startup — Lecture 2: Ideas, Products, Teams", "source": "Y Combinator", "why": "On choosing between service and product paths." },
-      { "title": "The Productized Service Playbook", "source": "Indie Hackers", "why": "Concrete tactics for packaging creative work." }
+      {
+        "title": "How to Start a Startup — Lecture 2: Ideas, Products, Teams",
+        "source": "Y Combinator",
+        "why": "On choosing between service and product paths."
+      },
+      {
+        "title": "The Productized Service Playbook",
+        "source": "Indie Hackers",
+        "why": "Concrete tactics for packaging creative work."
+      }
     ],
     "action_plan": [
-      { "task": "Build a costed pricing model for your three most common project types", "reason": "You cannot manage margin you cannot measure, and pricing is your fastest lever on profit.", "impact": "Expected 10–15 point gross margin improvement within two quarters.", "metric": "Documented cost model with gross margin calculated for every active project.", "deadline": "14 days" },
-      { "task": "Run one project end-to-end with neither founder in the delivery seat", "reason": "This is the only real test of whether the business can exist independently of you.", "impact": "Proves or disproves the scalability thesis before you hire against it.", "metric": "Project delivered at normal quality with founder involvement under 5 hours.", "deadline": "30 days" },
-      { "task": "Interview 8 enterprise marketing directors about retainer appetite", "reason": "Your retainer assumption is unvalidated and it is the core of your predictable-revenue plan.", "impact": "Either unlocks recurring revenue or saves you a wasted quarter.", "metric": "8 completed interviews with documented willingness-to-pay for monthly retainers.", "deadline": "21 days" }
+      {
+        "task": "Build a costed pricing model for your three most common project types",
+        "reason": "You cannot manage margin you cannot measure, and pricing is your fastest lever on profit.",
+        "impact": "Expected 10–15 point gross margin improvement within two quarters.",
+        "metric": "Documented cost model with gross margin calculated for every active project.",
+        "deadline": "14 days"
+      },
+      {
+        "task": "Run one project end-to-end with neither founder in the delivery seat",
+        "reason": "This is the only real test of whether the business can exist independently of you.",
+        "impact": "Proves or disproves the scalability thesis before you hire against it.",
+        "metric": "Project delivered at normal quality with founder involvement under 5 hours.",
+        "deadline": "30 days"
+      },
+      {
+        "task": "Interview 8 enterprise marketing directors about retainer appetite",
+        "reason": "Your retainer assumption is unvalidated and it is the core of your predictable-revenue plan.",
+        "impact": "Either unlocks recurring revenue or saves you a wasted quarter.",
+        "metric": "8 completed interviews with documented willingness-to-pay for monthly retainers.",
+        "deadline": "21 days"
+      }
     ],
     "discussion_topics": [
       "Services versus product: which business are you actually building?",
@@ -129,12 +243,36 @@
       "Removing the founder from the delivery critical path"
     ],
     "kpis": [
-      { "name": "Gross margin per project", "target": "Above 40%", "why": "The single clearest signal of pricing health." },
-      { "name": "Revenue from largest client", "target": "Below 25%", "why": "Protects against concentration collapse." },
-      { "name": "Founder hours per project", "target": "Under 10", "why": "Measures progress toward a scalable operation." },
-      { "name": "Retainer ARR", "target": "SAR 600K", "why": "Converts lumpy revenue into predictable income." }
+      {
+        "name": "Gross margin per project",
+        "target": "Above 40%",
+        "why": "The single clearest signal of pricing health."
+      },
+      {
+        "name": "Revenue from largest client",
+        "target": "Below 25%",
+        "why": "Protects against concentration collapse."
+      },
+      {
+        "name": "Founder hours per project",
+        "target": "Under 10",
+        "why": "Measures progress toward a scalable operation."
+      },
+      {
+        "name": "Retainer ARR",
+        "target": "SAR 600K",
+        "why": "Converts lumpy revenue into predictable income."
+      }
     ],
-    "current_status": "Profitable but founder-dependent; the strategic question is whether to systemise services or build owned IP."
+    "current_status": "Profitable but founder-dependent; the strategic question is whether to systemise services or build owned IP.",
+    "stage_ar": "أول إيراد",
+    "category_ar": "بيت إنتاج",
+    "stage_summary_ar": "لديك عملاء يدفعون فعلاً، وهذه أصعب خطوة وقد تجاوزتها. التحدي الآن ليس إيجاد عملاء جدد، بل بناء شركة تعمل دون أن تكون أنت في كل مشروع.",
+    "recommendation_ar": {
+      "strength": "٦٨٪ من إيرادك يأتي من عملاء متكررين، وبدون أي إنفاق تسويقي. هذا دليل حقيقي على أن العميل راضٍ، لا مجرد مُجرِّب.",
+      "risk": "الشركة لا تكبر خارج ساعات المؤسسين. كل مشروع يمر عبركما شخصياً، فسقف الإيراد هو تقويمكما لا حجم السوق.",
+      "next_step": "ابنِ نموذج تسعير مُكلَّف لأكثر ثلاثة أنواع مشاريع تكراراً، ثم سلّم مشروعاً واحداً كاملاً لمنتج أول دون تدخلكما — لتختبر النظام لا الأشخاص."
+    }
   },
   {
     "id": "senaryohat",
@@ -147,18 +285,40 @@
     "revenue": "Pre-revenue",
     "team_size": 4,
     "founders": [
-      { "name_ar": "نورة العتيبي", "name_en": "Noura Alotaibi", "role": "Founder & CEO" }
+      {
+        "name_ar": "نورة العتيبي",
+        "name_en": "Noura Alotaibi",
+        "role": "Founder & CEO"
+      }
     ],
     "team_members": [
-      { "name_ar": "سعد المطيري", "name_en": "Saad Almutairi", "role": "Full-Stack Engineer" },
-      { "name_ar": "لمى الدوسري", "name_en": "Lama Aldosari", "role": "Community Lead" }
+      {
+        "name_ar": "سعد المطيري",
+        "name_en": "Saad Almutairi",
+        "role": "Full-Stack Engineer"
+      },
+      {
+        "name_ar": "لمى الدوسري",
+        "name_en": "Lama Aldosari",
+        "role": "Community Lead"
+      }
     ],
     "business_model": "Marketplace take rate (12% on script licensing) plus premium writer subscriptions",
     "target_customer": "Independent Arabic screenwriters seeking paid work, and production companies sourcing original material.",
     "problem_statement": "Arabic screenwriters have no visible market for their work, and producers waste months searching for original scripts through personal networks.",
     "value_proposition": "A trusted marketplace where verified producers discover original Arabic scripts and writers get paid, discovered, and credited.",
     "traction": "310 writers registered, 44 scripts uploaded, 6 producer accounts, zero completed transactions.",
-    "validation_scores": { "problem": 72, "customer": 48, "solution": 45, "revenue": 18, "market": 51, "execution": 46, "team": 42, "investor": 24, "competition": 38 },
+    "validation_scores": {
+      "problem": 72,
+      "customer": 48,
+      "solution": 45,
+      "revenue": 18,
+      "market": 51,
+      "execution": 46,
+      "team": 42,
+      "investor": 24,
+      "competition": 38
+    },
     "strengths": [
       "Genuine writer-side enthusiasm with organic signups and no paid acquisition.",
       "Founder has deep credibility inside the Arabic screenwriting community.",
@@ -203,19 +363,47 @@
       }
     ],
     "customer_assumptions": [
-      { "title": "Producers will trust an online platform for script sourcing", "description": "We assume producers will consider unsolicited scripts from writers they do not personally know.", "status": "not" },
-      { "title": "Writers will pay for premium visibility", "description": "We assume writers will subscribe for better placement before the marketplace has proven demand.", "status": "not" },
-      { "title": "Writers want a public marketplace", "description": "We assume writers are comfortable listing work publicly rather than fearing idea theft.", "status": "partial" }
+      {
+        "title": "Producers will trust an online platform for script sourcing",
+        "description": "We assume producers will consider unsolicited scripts from writers they do not personally know.",
+        "status": "not"
+      },
+      {
+        "title": "Writers will pay for premium visibility",
+        "description": "We assume writers will subscribe for better placement before the marketplace has proven demand.",
+        "status": "not"
+      },
+      {
+        "title": "Writers want a public marketplace",
+        "description": "We assume writers are comfortable listing work publicly rather than fearing idea theft.",
+        "status": "partial"
+      }
     ],
     "business_assumptions": [
-      { "title": "A 12% take rate is acceptable to both sides", "description": "We assume neither side finds the fee high enough to transact privately.", "status": "not" },
-      { "title": "Supply attracts demand", "description": "We assume producers come because we have many scripts, rather than because of specific quality.", "status": "not" }
+      {
+        "title": "A 12% take rate is acceptable to both sides",
+        "description": "We assume neither side finds the fee high enough to transact privately.",
+        "status": "not"
+      },
+      {
+        "title": "Supply attracts demand",
+        "description": "We assume producers come because we have many scripts, rather than because of specific quality.",
+        "status": "not"
+      }
     ],
     "technical_assumptions": [
-      { "title": "Rights and IP protection can be handled digitally", "description": "We assume timestamped uploads give writers enough legal comfort to share full scripts.", "status": "partial" }
+      {
+        "title": "Rights and IP protection can be handled digitally",
+        "description": "We assume timestamped uploads give writers enough legal comfort to share full scripts.",
+        "status": "partial"
+      }
     ],
     "pricing_assumptions": [
-      { "title": "Scripts will license in the SAR 15K–50K range", "description": "We assume market pricing supports meaningful take-rate revenue per transaction.", "status": "not" }
+      {
+        "title": "Scripts will license in the SAR 15K–50K range",
+        "description": "We assume market pricing supports meaningful take-rate revenue per transaction.",
+        "status": "not"
+      }
     ],
     "investor_questions": [
       "How many transactions have completed on the platform, and what was the total value?",
@@ -233,28 +421,84 @@
     ],
     "mentor_notes": "Your community credibility is a genuine asset, but it has pulled you toward the easy side of the marketplace. Three hundred writers is not traction — it is a liability that grows more disappointed each week. The entire company right now is one question: can you make a producer pay for a script? Stop building product and go close a deal by hand. Everything else is premature.",
     "recommended_books": [
-      { "title": "Platform Revolution", "author": "Parker, Van Alstyne & Choudary", "why": "The definitive treatment of marketplace cold-start dynamics." },
-      { "title": "The Cold Start Problem", "author": "Andrew Chen", "why": "Specifically about getting the first network effects moving." },
-      { "title": "The Mom Test", "author": "Rob Fitzpatrick", "why": "How to interview producers without getting polite, useless answers." }
+      {
+        "title": "Platform Revolution",
+        "author": "Parker, Van Alstyne & Choudary",
+        "why": "The definitive treatment of marketplace cold-start dynamics."
+      },
+      {
+        "title": "The Cold Start Problem",
+        "author": "Andrew Chen",
+        "why": "Specifically about getting the first network effects moving."
+      },
+      {
+        "title": "The Mom Test",
+        "author": "Rob Fitzpatrick",
+        "why": "How to interview producers without getting polite, useless answers."
+      }
     ],
     "recommended_frameworks": [
-      { "name": "Single-Sided Focus (Hard Side First)", "why": "Concentrate all effort on the scarce side of the marketplace." },
-      { "name": "Concierge MVP", "why": "Manually broker transactions before automating anything." },
-      { "name": "Marketplace Liquidity Metrics", "why": "Measure what actually predicts marketplace survival." }
+      {
+        "name": "Single-Sided Focus (Hard Side First)",
+        "why": "Concentrate all effort on the scarce side of the marketplace."
+      },
+      {
+        "name": "Concierge MVP",
+        "why": "Manually broker transactions before automating anything."
+      },
+      {
+        "name": "Marketplace Liquidity Metrics",
+        "why": "Measure what actually predicts marketplace survival."
+      }
     ],
     "recommended_tools": [
-      { "name": "Airtable", "why": "Run manual matchmaking before building marketplace features." },
-      { "name": "DocuSign", "why": "Standardised licensing contracts to keep deals on-platform." },
-      { "name": "Calendly", "why": "Remove friction from producer discovery calls." }
+      {
+        "name": "Airtable",
+        "why": "Run manual matchmaking before building marketplace features."
+      },
+      {
+        "name": "DocuSign",
+        "why": "Standardised licensing contracts to keep deals on-platform."
+      },
+      {
+        "name": "Calendly",
+        "why": "Remove friction from producer discovery calls."
+      }
     ],
     "recommended_videos": [
-      { "title": "Do Things That Don't Scale", "source": "Y Combinator / Paul Graham", "why": "Exactly the strategy your stage requires." },
-      { "title": "How to Build a Marketplace", "source": "a16z", "why": "On sequencing supply and demand correctly." }
+      {
+        "title": "Do Things That Don't Scale",
+        "source": "Y Combinator / Paul Graham",
+        "why": "Exactly the strategy your stage requires."
+      },
+      {
+        "title": "How to Build a Marketplace",
+        "source": "a16z",
+        "why": "On sequencing supply and demand correctly."
+      }
     ],
     "action_plan": [
-      { "task": "Close one paid script transaction manually within 45 days", "reason": "Nothing about your business is validated until money moves between the two sides.", "impact": "Converts a theoretical marketplace into a proven one and unlocks every subsequent decision.", "metric": "One completed transaction with money transferred and a signed licensing agreement.", "deadline": "45 days" },
-      { "task": "Personally recruit 20 verified producers", "reason": "Demand is your scarce side; writer growth without producers actively harms you.", "impact": "Creates the liquidity needed for organic transactions to begin.", "metric": "20 producers onboarded who have each viewed at least three scripts.", "deadline": "60 days" },
-      { "task": "Pause all writer acquisition and product development", "reason": "Adding supply to an illiquid marketplace increases disappointment and burns community goodwill.", "impact": "Redirects 100% of team capacity to the actual bottleneck.", "metric": "Zero new writer marketing spend; engineering time reallocated to producer tools.", "deadline": "7 days" }
+      {
+        "task": "Close one paid script transaction manually within 45 days",
+        "reason": "Nothing about your business is validated until money moves between the two sides.",
+        "impact": "Converts a theoretical marketplace into a proven one and unlocks every subsequent decision.",
+        "metric": "One completed transaction with money transferred and a signed licensing agreement.",
+        "deadline": "45 days"
+      },
+      {
+        "task": "Personally recruit 20 verified producers",
+        "reason": "Demand is your scarce side; writer growth without producers actively harms you.",
+        "impact": "Creates the liquidity needed for organic transactions to begin.",
+        "metric": "20 producers onboarded who have each viewed at least three scripts.",
+        "deadline": "60 days"
+      },
+      {
+        "task": "Pause all writer acquisition and product development",
+        "reason": "Adding supply to an illiquid marketplace increases disappointment and burns community goodwill.",
+        "impact": "Redirects 100% of team capacity to the actual bottleneck.",
+        "metric": "Zero new writer marketing spend; engineering time reallocated to producer tools.",
+        "deadline": "7 days"
+      }
     ],
     "discussion_topics": [
       "Which side of a marketplace to build first, and why it is almost never the easy side",
@@ -262,12 +506,36 @@
       "Doing things that do not scale as deliberate strategy"
     ],
     "kpis": [
-      { "name": "Completed transactions", "target": "5 in 90 days", "why": "The only metric that proves the marketplace works." },
-      { "name": "Active producers", "target": "20", "why": "Demand-side liquidity is your binding constraint." },
-      { "name": "Time to first match", "target": "Under 14 days", "why": "Measures marketplace responsiveness." },
-      { "name": "Off-platform leakage", "target": "Below 20%", "why": "Tests whether your take rate is defensible." }
+      {
+        "name": "Completed transactions",
+        "target": "5 in 90 days",
+        "why": "The only metric that proves the marketplace works."
+      },
+      {
+        "name": "Active producers",
+        "target": "20",
+        "why": "Demand-side liquidity is your binding constraint."
+      },
+      {
+        "name": "Time to first match",
+        "target": "Under 14 days",
+        "why": "Measures marketplace responsiveness."
+      },
+      {
+        "name": "Off-platform leakage",
+        "target": "Below 20%",
+        "why": "Tests whether your take rate is defensible."
+      }
     ],
-    "current_status": "Pre-revenue MVP with strong supply-side interest but no demand and no completed transactions."
+    "current_status": "Pre-revenue MVP with strong supply-side interest but no demand and no completed transactions.",
+    "stage_ar": "المنتج الأولي",
+    "category_ar": "منصة وساطة",
+    "stage_summary_ar": "لديك منتج أولي يعمل ومستخدمون يسجلون، لكن لم تنتقل أي أموال بعد. مرحلة الـ MVP تنتهي عندما يثبت أن أحدهم مستعد للدفع، لا عندما يكتمل المنتج.",
+    "recommendation_ar": {
+      "strength": "٣١٠ كاتب سجّلوا بشكل عضوي دون تسويق مدفوع، ولديك مصداقية حقيقية داخل مجتمع كتّاب السيناريو العربي.",
+      "risk": "أنت تبني الجانب الخطأ من السوق. العرض ينمو والطلب شبه غائب، وصفر عملية مكتملة يعني أن النموذج بأكمله غير مُثبت.",
+      "next_step": "أوقف نمو الكتّاب تماماً، وأغلق صفقة سيناريو واحدة مدفوعة يدوياً خلال ٤٥ يوماً — عبر الواتساب إن لزم، ودون أي دور للمنصة."
+    }
   },
   {
     "id": "blacklight-films",
@@ -280,18 +548,40 @@
     "revenue": "Pre-revenue",
     "team_size": 3,
     "founders": [
-      { "name_ar": "خالد الغامدي", "name_en": "Khalid Alghamdi", "role": "Founder & Director" },
-      { "name_ar": "مشاعل الزهراني", "name_en": "Mashael Alzahrani", "role": "Co-Founder & Executive Producer" }
+      {
+        "name_ar": "خالد الغامدي",
+        "name_en": "Khalid Alghamdi",
+        "role": "Founder & Director"
+      },
+      {
+        "name_ar": "مشاعل الزهراني",
+        "name_en": "Mashael Alzahrani",
+        "role": "Co-Founder & Executive Producer"
+      }
     ],
     "team_members": [
-      { "name_ar": "يوسف الحربي", "name_en": "Yousef Alharbi", "role": "Development Executive" }
+      {
+        "name_ar": "يوسف الحربي",
+        "name_en": "Yousef Alharbi",
+        "role": "Development Executive"
+      }
     ],
     "business_model": "IP development and licensing to streaming platforms, plus co-production equity",
     "target_customer": "Regional streaming commissioners (Shahid, Netflix MENA) and theatrical distributors seeking Saudi genre content.",
     "problem_statement": "Saudi audiences consume enormous amounts of genre content but almost none of it reflects local culture, while platforms struggle to source credible Saudi genre projects.",
     "value_proposition": "Saudi genre films built for commercial appeal rather than festival prestige, developed by a team that understands both local culture and international genre conventions.",
     "traction": "2 screenplays in development, 1 proof-of-concept short with 400K organic views, informal interest from one commissioner.",
-    "validation_scores": { "problem": 61, "customer": 38, "solution": 42, "revenue": 12, "market": 55, "execution": 33, "team": 47, "investor": 21, "competition": 44 },
+    "validation_scores": {
+      "problem": 61,
+      "customer": 38,
+      "solution": 42,
+      "revenue": 12,
+      "market": 55,
+      "execution": 33,
+      "team": 47,
+      "investor": 21,
+      "competition": 44
+    },
     "strengths": [
       "The proof-of-concept short proves audience appetite with real organic viewership.",
       "Genre focus is a clear, defensible positioning in an underserved niche.",
@@ -336,19 +626,47 @@
       }
     ],
     "customer_assumptions": [
-      { "title": "Commissioners want Saudi genre content", "description": "We assume platforms are actively seeking horror and thriller from Saudi creators rather than prestige drama.", "status": "partial" },
-      { "title": "Our short film is sufficient proof of capability", "description": "We assume the proof-of-concept convinces buyers we can deliver a feature.", "status": "not" },
-      { "title": "Saudi audiences will watch local genre films", "description": "We assume the audience appetite shown online converts to viewership at scale.", "status": "validated" }
+      {
+        "title": "Commissioners want Saudi genre content",
+        "description": "We assume platforms are actively seeking horror and thriller from Saudi creators rather than prestige drama.",
+        "status": "partial"
+      },
+      {
+        "title": "Our short film is sufficient proof of capability",
+        "description": "We assume the proof-of-concept convinces buyers we can deliver a feature.",
+        "status": "not"
+      },
+      {
+        "title": "Saudi audiences will watch local genre films",
+        "description": "We assume the audience appetite shown online converts to viewership at scale.",
+        "status": "validated"
+      }
     ],
     "business_assumptions": [
-      { "title": "IP licensing can sustain the studio", "description": "We assume licensing revenue arrives fast enough to fund ongoing operations.", "status": "not" },
-      { "title": "We can develop two projects in parallel", "description": "We assume a three-person team has the capacity for parallel development.", "status": "not" }
+      {
+        "title": "IP licensing can sustain the studio",
+        "description": "We assume licensing revenue arrives fast enough to fund ongoing operations.",
+        "status": "not"
+      },
+      {
+        "title": "We can develop two projects in parallel",
+        "description": "We assume a three-person team has the capacity for parallel development.",
+        "status": "not"
+      }
     ],
     "technical_assumptions": [
-      { "title": "Genre production is achievable at regional budget levels", "description": "We assume we can deliver convincing genre production value within a realistic Saudi budget.", "status": "partial" }
+      {
+        "title": "Genre production is achievable at regional budget levels",
+        "description": "We assume we can deliver convincing genre production value within a realistic Saudi budget.",
+        "status": "partial"
+      }
     ],
     "pricing_assumptions": [
-      { "title": "Platforms will license at SAR 3M+ per feature", "description": "We assume licensing fees support a viable production budget and margin.", "status": "not" }
+      {
+        "title": "Platforms will license at SAR 3M+ per feature",
+        "description": "We assume licensing fees support a viable production budget and margin.",
+        "status": "not"
+      }
     ],
     "investor_questions": [
       "What is signed, and what is merely interest?",
@@ -366,28 +684,84 @@
     ],
     "mentor_notes": "The short film is real validation and you should take confidence from it — audience appetite is proven. But you have confused two different customers. Your audience is the viewer; your customer is the commissioner, and you have not validated that one at all. Film development kills companies through time, not through bad ideas. Your priority is not a better script; it is surviving long enough to sell it. Build the bridge revenue now.",
     "recommended_books": [
-      { "title": "The Lean Startup", "author": "Eric Ries", "why": "On validating before committing large irreversible investment." },
-      { "title": "Rebel Without a Crew", "author": "Robert Rodriguez", "why": "On making films within brutal resource constraints." },
-      { "title": "Venture Deals", "author": "Brad Feld", "why": "Understand IP, equity and co-production terms before you sign." }
+      {
+        "title": "The Lean Startup",
+        "author": "Eric Ries",
+        "why": "On validating before committing large irreversible investment."
+      },
+      {
+        "title": "Rebel Without a Crew",
+        "author": "Robert Rodriguez",
+        "why": "On making films within brutal resource constraints."
+      },
+      {
+        "title": "Venture Deals",
+        "author": "Brad Feld",
+        "why": "Understand IP, equity and co-production terms before you sign."
+      }
     ],
     "recommended_frameworks": [
-      { "name": "Customer vs User Distinction", "why": "Separate who watches from who pays — the core confusion in your model." },
-      { "name": "Runway & Burn Discipline", "why": "Development businesses die of time, not of ideas." },
-      { "name": "Parallel Pipeline Selling", "why": "Never let one buyer's decision be existential." }
+      {
+        "name": "Customer vs User Distinction",
+        "why": "Separate who watches from who pays — the core confusion in your model."
+      },
+      {
+        "name": "Runway & Burn Discipline",
+        "why": "Development businesses die of time, not of ideas."
+      },
+      {
+        "name": "Parallel Pipeline Selling",
+        "why": "Never let one buyer's decision be existential."
+      }
     ],
     "recommended_tools": [
-      { "name": "Celtx", "why": "Development and production planning in one place." },
-      { "name": "Notion", "why": "Track a commissioner pipeline like a real sales funnel." },
-      { "name": "Streamtime", "why": "Manage bridge service work alongside development." }
+      {
+        "name": "Celtx",
+        "why": "Development and production planning in one place."
+      },
+      {
+        "name": "Notion",
+        "why": "Track a commissioner pipeline like a real sales funnel."
+      },
+      {
+        "name": "Streamtime",
+        "why": "Manage bridge service work alongside development."
+      }
     ],
     "recommended_videos": [
-      { "title": "How to Talk to Users", "source": "Y Combinator", "why": "Apply customer discovery rigour to commissioner conversations." },
-      { "title": "Financing Independent Film", "source": "Sundance Institute", "why": "Practical alternatives to single-buyer dependency." }
+      {
+        "title": "How to Talk to Users",
+        "source": "Y Combinator",
+        "why": "Apply customer discovery rigour to commissioner conversations."
+      },
+      {
+        "title": "Financing Independent Film",
+        "source": "Sundance Institute",
+        "why": "Practical alternatives to single-buyer dependency."
+      }
     ],
     "action_plan": [
-      { "task": "Establish a bridge revenue line targeting SAR 40K per month", "reason": "Development timelines are long and unpredictable; without revenue the team disbands before a deal lands.", "impact": "Extends runway indefinitely and removes desperation from negotiations.", "metric": "SAR 40K monthly recurring service revenue by day 90.", "deadline": "90 days" },
-      { "task": "Formally pitch six commissioners in parallel", "reason": "One informal conversation is not a pipeline, and parallel pitching removes existential dependency on any single yes.", "impact": "Creates real optionality and generates honest feedback on what buyers need.", "metric": "6 formal pitch meetings completed with written feedback captured.", "deadline": "60 days" },
-      { "task": "Interview 8 commissioners about how greenlight decisions actually work", "reason": "You are building a package based on assumptions about a decision process you have never seen from the inside.", "impact": "Reshapes your pitch around real decision criteria instead of guesses.", "metric": "8 interviews documenting budget bands, evidence required, and timing.", "deadline": "45 days" }
+      {
+        "task": "Establish a bridge revenue line targeting SAR 40K per month",
+        "reason": "Development timelines are long and unpredictable; without revenue the team disbands before a deal lands.",
+        "impact": "Extends runway indefinitely and removes desperation from negotiations.",
+        "metric": "SAR 40K monthly recurring service revenue by day 90.",
+        "deadline": "90 days"
+      },
+      {
+        "task": "Formally pitch six commissioners in parallel",
+        "reason": "One informal conversation is not a pipeline, and parallel pitching removes existential dependency on any single yes.",
+        "impact": "Creates real optionality and generates honest feedback on what buyers need.",
+        "metric": "6 formal pitch meetings completed with written feedback captured.",
+        "deadline": "60 days"
+      },
+      {
+        "task": "Interview 8 commissioners about how greenlight decisions actually work",
+        "reason": "You are building a package based on assumptions about a decision process you have never seen from the inside.",
+        "impact": "Reshapes your pitch around real decision criteria instead of guesses.",
+        "metric": "8 interviews documenting budget bands, evidence required, and timing.",
+        "deadline": "45 days"
+      }
     ],
     "discussion_topics": [
       "The difference between your user and your customer",
@@ -395,12 +769,36 @@
       "Why parallel pitching beats sequential pitching"
     ],
     "kpis": [
-      { "name": "Months of runway", "target": "Above 12", "why": "Time is the binding constraint in development businesses." },
-      { "name": "Formal pitches delivered", "target": "6 per quarter", "why": "Pipeline volume drives greenlight probability." },
-      { "name": "Bridge revenue", "target": "SAR 40K per month", "why": "Funds development independence." },
-      { "name": "Signed development agreements", "target": "1", "why": "Converts interest into contractual commitment." }
+      {
+        "name": "Months of runway",
+        "target": "Above 12",
+        "why": "Time is the binding constraint in development businesses."
+      },
+      {
+        "name": "Formal pitches delivered",
+        "target": "6 per quarter",
+        "why": "Pipeline volume drives greenlight probability."
+      },
+      {
+        "name": "Bridge revenue",
+        "target": "SAR 40K per month",
+        "why": "Funds development independence."
+      },
+      {
+        "name": "Signed development agreements",
+        "target": "1",
+        "why": "Converts interest into contractual commitment."
+      }
     ],
-    "current_status": "Strong creative validation with proven audience appetite, but no validated buyer and no revenue to survive the sales cycle."
+    "current_status": "Strong creative validation with proven audience appetite, but no validated buyer and no revenue to survive the sales cycle.",
+    "stage_ar": "التحقق من المشكلة",
+    "category_ar": "استوديو أفلام",
+    "stage_summary_ar": "أنت تتحقق من وجود المشكلة والجمهور قبل بناء أي شيء كبير. الهدف في هذه المرحلة هو دليل، لا منتج.",
+    "recommendation_ar": {
+      "strength": "الفيلم القصير التجريبي حقق ٤٠٠ ألف مشاهدة عضوية، وهذا إثبات مباشر لوجود جمهور لنوعك السينمائي.",
+      "risk": "شركتك بالكامل تعتمد على قرار لا تملكه. لا يوجد التزام موقّع من أي مشترٍ، والاهتمام كله غير رسمي.",
+      "next_step": "ابنِ مصدر دخل جسري (إعلانات أو إنتاج خدمي) بهدف ٤٠ ألف ريال شهرياً، وقدّم عرضك رسمياً لستة مشترين بالتوازي حتى لا يكون الرفض الواحد قاتلاً."
+    }
   },
   {
     "id": "tashbeek",
@@ -413,19 +811,45 @@
     "revenue": "SAR 36K / year",
     "team_size": 5,
     "founders": [
-      { "name_ar": "عبد الله با مجبور", "name_en": "Abdullah Bamajbour", "role": "Co-Founder & CPO" },
-      { "name_ar": "هند السبيعي", "name_en": "Hind Alsubaie", "role": "Co-Founder & CEO" }
+      {
+        "name_ar": "عبد الله با مجبور",
+        "name_en": "Abdullah Bamajbour",
+        "role": "Co-Founder & CPO"
+      },
+      {
+        "name_ar": "هند السبيعي",
+        "name_en": "Hind Alsubaie",
+        "role": "Co-Founder & CEO"
+      }
     ],
     "team_members": [
-      { "name_ar": "ماجد العنزي", "name_en": "Majed Alanazi", "role": "Backend Engineer" },
-      { "name_ar": "جواهر الرشيد", "name_en": "Jawaher Alrashid", "role": "Operations" }
+      {
+        "name_ar": "ماجد العنزي",
+        "name_en": "Majed Alanazi",
+        "role": "Backend Engineer"
+      },
+      {
+        "name_ar": "جواهر الرشيد",
+        "name_en": "Jawaher Alrashid",
+        "role": "Operations"
+      }
     ],
     "business_model": "SaaS subscription for production companies plus booking commission",
     "target_customer": "Production managers at Saudi production houses staffing 5–40 person crews on short notice.",
     "problem_statement": "Production managers staff crews through fragmented WhatsApp groups and personal contacts, causing delays, unverified quality, and last-minute failures.",
     "value_proposition": "A verified crew database with availability, rates, and reviews, so a production manager can staff a full crew in hours instead of days.",
     "traction": "620 crew profiles, 18 production companies signed up, 3 paying subscribers, 40 bookings completed.",
-    "validation_scores": { "problem": 81, "customer": 66, "solution": 58, "revenue": 31, "market": 62, "execution": 57, "team": 59, "investor": 34, "competition": 49 },
+    "validation_scores": {
+      "problem": 81,
+      "customer": 66,
+      "solution": 58,
+      "revenue": 31,
+      "market": 62,
+      "execution": 57,
+      "team": 59,
+      "investor": 34,
+      "competition": 49
+    },
     "strengths": [
       "The problem is intensely felt — every production manager describes it unprompted.",
       "Real completed bookings prove the core loop works end-to-end.",
@@ -470,20 +894,52 @@
       }
     ],
     "customer_assumptions": [
-      { "title": "Production managers will pay a subscription", "description": "We assume the problem is painful enough to justify a recurring cost rather than free workarounds.", "status": "not" },
-      { "title": "Crew will keep availability updated", "description": "We assume freelancers maintain accurate calendars without constant prompting.", "status": "partial" },
-      { "title": "The problem is severe and universal", "description": "We assume crew staffing is a top-three operational pain for production managers.", "status": "validated" }
+      {
+        "title": "Production managers will pay a subscription",
+        "description": "We assume the problem is painful enough to justify a recurring cost rather than free workarounds.",
+        "status": "not"
+      },
+      {
+        "title": "Crew will keep availability updated",
+        "description": "We assume freelancers maintain accurate calendars without constant prompting.",
+        "status": "partial"
+      },
+      {
+        "title": "The problem is severe and universal",
+        "description": "We assume crew staffing is a top-three operational pain for production managers.",
+        "status": "validated"
+      }
     ],
     "business_assumptions": [
-      { "title": "The Saudi market is large enough for vertical SaaS", "description": "We assume enough production companies exist to build a subscription business.", "status": "not" },
-      { "title": "Commission and subscription can coexist", "description": "We assume customers accept paying both a subscription and a booking fee.", "status": "not" }
+      {
+        "title": "The Saudi market is large enough for vertical SaaS",
+        "description": "We assume enough production companies exist to build a subscription business.",
+        "status": "not"
+      },
+      {
+        "title": "Commission and subscription can coexist",
+        "description": "We assume customers accept paying both a subscription and a booking fee.",
+        "status": "not"
+      }
     ],
     "technical_assumptions": [
-      { "title": "Real-time availability can stay accurate", "description": "We assume the data stays fresh enough to be trusted for urgent bookings.", "status": "partial" }
+      {
+        "title": "Real-time availability can stay accurate",
+        "description": "We assume the data stays fresh enough to be trusted for urgent bookings.",
+        "status": "partial"
+      }
     ],
     "pricing_assumptions": [
-      { "title": "SAR 500/month is the right price point", "description": "We assume current pricing reflects delivered value rather than being an arbitrary guess.", "status": "not" },
-      { "title": "Larger productions would pay 5x more", "description": "We assume an enterprise tier is viable for high-volume productions.", "status": "not" }
+      {
+        "title": "SAR 500/month is the right price point",
+        "description": "We assume current pricing reflects delivered value rather than being an arbitrary guess.",
+        "status": "not"
+      },
+      {
+        "title": "Larger productions would pay 5x more",
+        "description": "We assume an enterprise tier is viable for high-volume productions.",
+        "status": "not"
+      }
     ],
     "investor_questions": [
       "Why do 15 of your 18 signed-up companies not pay?",
@@ -501,28 +957,84 @@
     ],
     "mentor_notes": "You have found a genuinely severe problem, which is the hardest part and you should not undervalue it. But severe problems do not automatically become businesses. Your 17% payment conversion is the single most important number in your company and it is telling you something you have not yet listened to. Do not build more features. Go find out precisely why fifteen companies decided your product was not worth SAR 500, and be prepared for the answer to change your pricing model entirely.",
     "recommended_books": [
-      { "title": "Monetizing Innovation", "author": "Madhavan Ramanujam", "why": "On designing the product around the price rather than the reverse." },
-      { "title": "The Mom Test", "author": "Rob Fitzpatrick", "why": "How to ask about payment without eliciting polite lies." },
-      { "title": "Crossing the Chasm", "author": "Geoffrey Moore", "why": "Moving from enthusiastic early users to a mainstream paying market." }
+      {
+        "title": "Monetizing Innovation",
+        "author": "Madhavan Ramanujam",
+        "why": "On designing the product around the price rather than the reverse."
+      },
+      {
+        "title": "The Mom Test",
+        "author": "Rob Fitzpatrick",
+        "why": "How to ask about payment without eliciting polite lies."
+      },
+      {
+        "title": "Crossing the Chasm",
+        "author": "Geoffrey Moore",
+        "why": "Moving from enthusiastic early users to a mainstream paying market."
+      }
     ],
     "recommended_frameworks": [
-      { "name": "Van Westendorp Price Sensitivity", "why": "Structured method to find the acceptable price range." },
-      { "name": "Unit Economics (LTV/CAC)", "why": "Test whether the business is arithmetically viable at all." },
-      { "name": "Sean Ellis PMF Survey", "why": "Measure how disappointed users would be without you." }
+      {
+        "name": "Van Westendorp Price Sensitivity",
+        "why": "Structured method to find the acceptable price range."
+      },
+      {
+        "name": "Unit Economics (LTV/CAC)",
+        "why": "Test whether the business is arithmetically viable at all."
+      },
+      {
+        "name": "Sean Ellis PMF Survey",
+        "why": "Measure how disappointed users would be without you."
+      }
     ],
     "recommended_tools": [
-      { "name": "Stripe", "why": "Enables transaction revenue layered on subscription." },
-      { "name": "Mixpanel", "why": "Understand which behaviours predict conversion to paid." },
-      { "name": "Typeform", "why": "Run structured pricing sensitivity research." }
+      {
+        "name": "Stripe",
+        "why": "Enables transaction revenue layered on subscription."
+      },
+      {
+        "name": "Mixpanel",
+        "why": "Understand which behaviours predict conversion to paid."
+      },
+      {
+        "name": "Typeform",
+        "why": "Run structured pricing sensitivity research."
+      }
     ],
     "recommended_videos": [
-      { "title": "How to Set Pricing", "source": "Y Combinator", "why": "Directly addresses your central open question." },
-      { "title": "Vertical SaaS and the Payments Layer", "source": "a16z", "why": "On escaping small-market subscription ceilings." }
+      {
+        "title": "How to Set Pricing",
+        "source": "Y Combinator",
+        "why": "Directly addresses your central open question."
+      },
+      {
+        "title": "Vertical SaaS and the Payments Layer",
+        "source": "a16z",
+        "why": "On escaping small-market subscription ceilings."
+      }
     ],
     "action_plan": [
-      { "task": "Interview all 15 non-paying companies about the payment decision", "reason": "Your 17% conversion rate is the clearest signal in your business and you do not yet know why it is low.", "impact": "Directly determines whether to change price, product, or target customer.", "metric": "15 interviews completed with documented reasons for not paying.", "deadline": "30 days" },
-      { "task": "Model unit economics at three different price points", "reason": "Current revenue per customer cannot support a five-person team at any realistic volume.", "impact": "Reveals whether the business is viable as designed or needs a structural change.", "metric": "Written model showing customers needed for breakeven at each price.", "deadline": "21 days" },
-      { "task": "Test a transaction-fee revenue model on 5 productions", "reason": "Subscription alone may not scale in a market this size; transaction revenue grows with customer value.", "impact": "Could multiply revenue per customer without needing more customers.", "metric": "5 productions completed under a commission model with measured revenue.", "deadline": "60 days" }
+      {
+        "task": "Interview all 15 non-paying companies about the payment decision",
+        "reason": "Your 17% conversion rate is the clearest signal in your business and you do not yet know why it is low.",
+        "impact": "Directly determines whether to change price, product, or target customer.",
+        "metric": "15 interviews completed with documented reasons for not paying.",
+        "deadline": "30 days"
+      },
+      {
+        "task": "Model unit economics at three different price points",
+        "reason": "Current revenue per customer cannot support a five-person team at any realistic volume.",
+        "impact": "Reveals whether the business is viable as designed or needs a structural change.",
+        "metric": "Written model showing customers needed for breakeven at each price.",
+        "deadline": "21 days"
+      },
+      {
+        "task": "Test a transaction-fee revenue model on 5 productions",
+        "reason": "Subscription alone may not scale in a market this size; transaction revenue grows with customer value.",
+        "impact": "Could multiply revenue per customer without needing more customers.",
+        "metric": "5 productions completed under a commission model with measured revenue.",
+        "deadline": "60 days"
+      }
     ],
     "discussion_topics": [
       "Why severe problems do not automatically become paid products",
@@ -530,12 +1042,36 @@
       "Escaping small-market ceilings with transaction revenue"
     ],
     "kpis": [
-      { "name": "Free-to-paid conversion", "target": "Above 40%", "why": "The clearest measure of whether value justifies price." },
-      { "name": "Average revenue per customer", "target": "SAR 2,000/month", "why": "Required for unit economics to support the team." },
-      { "name": "Monthly retention", "target": "Above 90%", "why": "Proves the product becomes part of the workflow." },
-      { "name": "Bookings per active customer", "target": "8 per month", "why": "Measures genuine workflow adoption over trial usage." }
+      {
+        "name": "Free-to-paid conversion",
+        "target": "Above 40%",
+        "why": "The clearest measure of whether value justifies price."
+      },
+      {
+        "name": "Average revenue per customer",
+        "target": "SAR 2,000/month",
+        "why": "Required for unit economics to support the team."
+      },
+      {
+        "name": "Monthly retention",
+        "target": "Above 90%",
+        "why": "Proves the product becomes part of the workflow."
+      },
+      {
+        "name": "Bookings per active customer",
+        "target": "8 per month",
+        "why": "Measures genuine workflow adoption over trial usage."
+      }
     ],
-    "current_status": "Strong problem validation with real usage, but weak willingness to pay and unit economics that do not yet support the team."
+    "current_status": "Strong problem validation with real usage, but weak willingness to pay and unit economics that do not yet support the team.",
+    "stage_ar": "اكتشاف العملاء",
+    "category_ar": "منصة تقنية",
+    "stage_summary_ar": "أنت تتحدث مع العملاء وتتعلم منهم، وقد بدأت تفهم المشكلة بعمق. الهدف الآن هو إثبات أن العميل مستعد للدفع، لا أنه يحب الفكرة.",
+    "recommendation_ar": {
+      "strength": "٤٠ حجزاً مكتملاً تثبت أن الحلقة الأساسية تعمل من أولها لآخرها، والمشكلة يصفها كل مدير إنتاج دون أن تسأله.",
+      "risk": "الاستعداد للدفع غير مُثبت. ٣ فقط من أصل ١٨ شركة مسجلة تدفع، وهذه أوضح إشارة في شركتك ولا تعرف سببها بعد.",
+      "next_step": "قابل الخمس عشرة شركة غير الدافعة خلال ٣٠ يوماً واسألهم عن قرار الدفع تحديداً، ثم اختبر ثلاثة نماذج تسعير مختلفة على المسجلين الجدد."
+    }
   },
   {
     "id": "filmla",
@@ -548,17 +1084,35 @@
     "revenue": "Pre-revenue",
     "team_size": 2,
     "founders": [
-      { "name_ar": "سارة القحطاني", "name_en": "Sarah Alqahtani", "role": "Founder" }
+      {
+        "name_ar": "سارة القحطاني",
+        "name_en": "Sarah Alqahtani",
+        "role": "Founder"
+      }
     ],
     "team_members": [
-      { "name_ar": "تركي المالكي", "name_en": "Turki Almalki", "role": "Technical Advisor" }
+      {
+        "name_ar": "تركي المالكي",
+        "name_en": "Turki Almalki",
+        "role": "Technical Advisor"
+      }
     ],
     "business_model": "Consumer subscription (SAR 29/month) with licensed catalogue",
     "target_customer": "Arabic-speaking cinephiles aged 25–45 who actively seek independent film and are underserved by mainstream platforms.",
     "problem_statement": "Arabic independent cinema is nearly invisible — films screen at festivals and then disappear, while the audience that wants them has nowhere to watch.",
     "value_proposition": "A curated home for Arabic independent cinema, where films remain available and discoverable long after their festival run.",
     "traction": "Landing page with 190 email signups, no content licensed, no product built.",
-    "validation_scores": { "problem": 44, "customer": 26, "solution": 21, "revenue": 8, "market": 29, "execution": 18, "team": 24, "investor": 11, "competition": 31 },
+    "validation_scores": {
+      "problem": 44,
+      "customer": 26,
+      "solution": 21,
+      "revenue": 8,
+      "market": 29,
+      "execution": 18,
+      "team": 24,
+      "investor": 11,
+      "competition": 31
+    },
     "strengths": [
       "Founder has genuine, credible passion and deep knowledge of the space.",
       "Clear cultural gap that people in the industry recognise immediately.",
@@ -603,19 +1157,47 @@
       }
     ],
     "customer_assumptions": [
-      { "title": "Cinephiles will pay for a niche subscription", "description": "We assume the audience will add another subscription specifically for Arabic independent film.", "status": "not" },
-      { "title": "The audience is large enough to sustain licensing", "description": "We assume enough Arabic arthouse viewers exist to cover fixed content costs.", "status": "not" },
-      { "title": "People want Arabic independent film", "description": "We assume there is genuine unmet appetite rather than a small festival niche.", "status": "partial" }
+      {
+        "title": "Cinephiles will pay for a niche subscription",
+        "description": "We assume the audience will add another subscription specifically for Arabic independent film.",
+        "status": "not"
+      },
+      {
+        "title": "The audience is large enough to sustain licensing",
+        "description": "We assume enough Arabic arthouse viewers exist to cover fixed content costs.",
+        "status": "not"
+      },
+      {
+        "title": "People want Arabic independent film",
+        "description": "We assume there is genuine unmet appetite rather than a small festival niche.",
+        "status": "partial"
+      }
     ],
     "business_assumptions": [
-      { "title": "Content can be licensed affordably", "description": "We assume rights holders will license older independent films at low cost to a new platform.", "status": "not" },
-      { "title": "SAR 29/month covers content and infrastructure", "description": "We assume the price supports the cost structure at achievable subscriber counts.", "status": "not" }
+      {
+        "title": "Content can be licensed affordably",
+        "description": "We assume rights holders will license older independent films at low cost to a new platform.",
+        "status": "not"
+      },
+      {
+        "title": "SAR 29/month covers content and infrastructure",
+        "description": "We assume the price supports the cost structure at achievable subscriber counts.",
+        "status": "not"
+      }
     ],
     "technical_assumptions": [
-      { "title": "We can build or license streaming infrastructure cheaply", "description": "We assume white-label platforms make the technical side affordable for a two-person team.", "status": "not" }
+      {
+        "title": "We can build or license streaming infrastructure cheaply",
+        "description": "We assume white-label platforms make the technical side affordable for a two-person team.",
+        "status": "not"
+      }
     ],
     "pricing_assumptions": [
-      { "title": "SAR 29/month is acceptable to the audience", "description": "We assume this price point sits comfortably alongside existing subscriptions.", "status": "not" }
+      {
+        "title": "SAR 29/month is acceptable to the audience",
+        "description": "We assume this price point sits comfortably alongside existing subscriptions.",
+        "status": "not"
+      }
     ],
     "investor_questions": [
       "How many of your 190 signups have paid you anything?",
@@ -633,28 +1215,84 @@
     ],
     "mentor_notes": "Your instinct about the cultural gap is probably right, and that matters. But you have chosen the most expensive possible way to test it. Streaming is a capital business wearing a creative costume. The honest question is not how to build Filmla — it is how to find out whether the audience will pay without spending a riyal on content. Run a paid screening series or a paid newsletter first. If two hundred people will pay for that, you have a business worth funding. If they will not, you have saved yourself two years.",
     "recommended_books": [
-      { "title": "The Lean Startup", "author": "Eric Ries", "why": "Core to finding the cheapest possible test of your thesis." },
-      { "title": "The Mom Test", "author": "Rob Fitzpatrick", "why": "Your signups are telling you what you want to hear." },
-      { "title": "Blue Ocean Strategy", "author": "Kim & Mauborgne", "why": "On competing where incumbents are not." }
+      {
+        "title": "The Lean Startup",
+        "author": "Eric Ries",
+        "why": "Core to finding the cheapest possible test of your thesis."
+      },
+      {
+        "title": "The Mom Test",
+        "author": "Rob Fitzpatrick",
+        "why": "Your signups are telling you what you want to hear."
+      },
+      {
+        "title": "Blue Ocean Strategy",
+        "author": "Kim & Mauborgne",
+        "why": "On competing where incumbents are not."
+      }
     ],
     "recommended_frameworks": [
-      { "name": "Smoke Test / Pre-Sales", "why": "Charge before you build to find real demand." },
-      { "name": "Minimum Viable Product", "why": "Find the smallest version that tests the core assumption." },
-      { "name": "Unit Economics", "why": "Understand the subscriber count required for viability." }
+      {
+        "name": "Smoke Test / Pre-Sales",
+        "why": "Charge before you build to find real demand."
+      },
+      {
+        "name": "Minimum Viable Product",
+        "why": "Find the smallest version that tests the core assumption."
+      },
+      {
+        "name": "Unit Economics",
+        "why": "Understand the subscriber count required for viability."
+      }
     ],
     "recommended_tools": [
-      { "name": "Substack", "why": "Test paid curation at near-zero cost." },
-      { "name": "Eventbrite", "why": "Run paid screening events to validate willingness to pay." },
-      { "name": "Vimeo OTT", "why": "White-label streaming without building infrastructure." }
+      {
+        "name": "Substack",
+        "why": "Test paid curation at near-zero cost."
+      },
+      {
+        "name": "Eventbrite",
+        "why": "Run paid screening events to validate willingness to pay."
+      },
+      {
+        "name": "Vimeo OTT",
+        "why": "White-label streaming without building infrastructure."
+      }
     ],
     "recommended_videos": [
-      { "title": "How to Get and Evaluate Startup Ideas", "source": "Y Combinator", "why": "On testing an idea before committing to it." },
-      { "title": "Do Things That Don't Scale", "source": "Y Combinator / Paul Graham", "why": "The manual path to validating an audience." }
+      {
+        "title": "How to Get and Evaluate Startup Ideas",
+        "source": "Y Combinator",
+        "why": "On testing an idea before committing to it."
+      },
+      {
+        "title": "Do Things That Don't Scale",
+        "source": "Y Combinator / Paul Graham",
+        "why": "The manual path to validating an audience."
+      }
     ],
     "action_plan": [
-      { "task": "Ask your 190 signups to pre-pay SAR 29 today", "reason": "Email signups cost nothing and prove nothing; pre-payment is the only honest demand signal available to you.", "impact": "Converts a vanity metric into a real market answer within two weeks.", "metric": "Number of signups who actually pay — target above 20.", "deadline": "14 days" },
-      { "task": "Get written licensing terms for 10 films", "reason": "Your product is the catalogue, and nobody has confirmed the catalogue is obtainable.", "impact": "Either proves the business is possible or ends it before you spend more.", "metric": "10 written licensing quotes from rights holders.", "deadline": "45 days" },
-      { "task": "Run one paid screening event", "reason": "It tests the same audience thesis as streaming at a fraction of the cost and risk.", "impact": "Real revenue, real audience data, and a community you can build on.", "metric": "One event with 50+ paying attendees.", "deadline": "60 days" }
+      {
+        "task": "Ask your 190 signups to pre-pay SAR 29 today",
+        "reason": "Email signups cost nothing and prove nothing; pre-payment is the only honest demand signal available to you.",
+        "impact": "Converts a vanity metric into a real market answer within two weeks.",
+        "metric": "Number of signups who actually pay — target above 20.",
+        "deadline": "14 days"
+      },
+      {
+        "task": "Get written licensing terms for 10 films",
+        "reason": "Your product is the catalogue, and nobody has confirmed the catalogue is obtainable.",
+        "impact": "Either proves the business is possible or ends it before you spend more.",
+        "metric": "10 written licensing quotes from rights holders.",
+        "deadline": "45 days"
+      },
+      {
+        "task": "Run one paid screening event",
+        "reason": "It tests the same audience thesis as streaming at a fraction of the cost and risk.",
+        "impact": "Real revenue, real audience data, and a community you can build on.",
+        "metric": "One event with 50+ paying attendees.",
+        "deadline": "60 days"
+      }
     ],
     "discussion_topics": [
       "Finding the cheapest possible test of an expensive idea",
@@ -662,12 +1300,36 @@
       "Starting with community before starting with product"
     ],
     "kpis": [
-      { "name": "Pre-paying customers", "target": "20", "why": "The only real proof of demand at this stage." },
-      { "name": "Licensing quotes secured", "target": "10", "why": "Tests whether the core asset is obtainable." },
-      { "name": "Cost per validation test", "target": "Under SAR 5,000", "why": "Keeps learning cheap while the thesis is unproven." },
-      { "name": "Paid event attendance", "target": "50", "why": "Validates audience willingness to pay in the real world." }
+      {
+        "name": "Pre-paying customers",
+        "target": "20",
+        "why": "The only real proof of demand at this stage."
+      },
+      {
+        "name": "Licensing quotes secured",
+        "target": "10",
+        "why": "Tests whether the core asset is obtainable."
+      },
+      {
+        "name": "Cost per validation test",
+        "target": "Under SAR 5,000",
+        "why": "Keeps learning cheap while the thesis is unproven."
+      },
+      {
+        "name": "Paid event attendance",
+        "target": "50",
+        "why": "Validates audience willingness to pay in the real world."
+      }
     ],
-    "current_status": "Pure idea stage with an untested audience thesis and a capital-intensive model that does not match available resources."
+    "current_status": "Pure idea stage with an untested audience thesis and a capital-intensive model that does not match available resources.",
+    "stage_ar": "الفكرة",
+    "category_ar": "منصة بث",
+    "stage_summary_ar": "أنت في مرحلة الفكرة: الرؤية واضحة لكن لم يُختبر منها شيء بعد. أهم شيء الآن هو أرخص تجربة تثبت أن أحداً سيدفع.",
+    "recommendation_ar": {
+      "strength": "لديك شغف ومعرفة عميقة بالمجال، و١٩٠ تسجيلاً مبكراً يشيرون إلى فجوة ثقافية يتعرف عليها أهل الصناعة فوراً.",
+      "risk": "البث المرئي أحد أكثر النماذج استهلاكاً لرأس المال، ولديك فريق من شخصين بلا خبرة ترخيص محتوى ولا محتوى ولا منتج.",
+      "next_step": "اطلب من الـ١٩٠ مسجلاً الدفع المسبق ٢٩ ريالاً اليوم. عدد من يدفع فعلاً هو الإجابة الوحيدة الصادقة، وستحصل عليها خلال أسبوعين."
+    }
   },
   {
     "id": "mashhad-studios",
@@ -680,20 +1342,50 @@
     "revenue": "SAR 1.4M / year",
     "team_size": 12,
     "founders": [
-      { "name_ar": "طلال الشهري", "name_en": "Talal Alshehri", "role": "Founder & CEO" },
-      { "name_ar": "دانة الفيصل", "name_en": "Dana Alfaisal", "role": "Co-Founder & Head of VFX" }
+      {
+        "name_ar": "طلال الشهري",
+        "name_en": "Talal Alshehri",
+        "role": "Founder & CEO"
+      },
+      {
+        "name_ar": "دانة الفيصل",
+        "name_en": "Dana Alfaisal",
+        "role": "Co-Founder & Head of VFX"
+      }
     ],
     "team_members": [
-      { "name_ar": "عمر باوزير", "name_en": "Omar Bawazir", "role": "Colourist" },
-      { "name_ar": "شهد النجار", "name_en": "Shahad Alnajjar", "role": "Sound Designer" },
-      { "name_ar": "راكان الثنيان", "name_en": "Rakan Althunayan", "role": "Pipeline Engineer" }
+      {
+        "name_ar": "عمر باوزير",
+        "name_en": "Omar Bawazir",
+        "role": "Colourist"
+      },
+      {
+        "name_ar": "شهد النجار",
+        "name_en": "Shahad Alnajjar",
+        "role": "Sound Designer"
+      },
+      {
+        "name_ar": "راكان الثنيان",
+        "name_en": "Rakan Althunayan",
+        "role": "Pipeline Engineer"
+      }
     ],
     "business_model": "Per-project post-production services with tiered packages and capacity retainers",
     "target_customer": "Production companies, agencies and streaming productions needing fast, high-quality post-production in Saudi Arabia.",
     "problem_statement": "Saudi productions send post-production abroad because local capacity is limited, causing long turnaround times, high costs and communication friction.",
     "value_proposition": "International-standard post-production delivered locally in half the time, with an AI-accelerated pipeline that cuts turnaround without cutting quality.",
     "traction": "SAR 1.4M annual revenue, 62% repeat clients, capacity booked 8 weeks out, 3 streaming productions delivered.",
-    "validation_scores": { "problem": 88, "customer": 84, "solution": 86, "revenue": 79, "market": 72, "execution": 81, "team": 76, "investor": 63, "competition": 68 },
+    "validation_scores": {
+      "problem": 88,
+      "customer": 84,
+      "solution": 86,
+      "revenue": 79,
+      "market": 72,
+      "execution": 81,
+      "team": 76,
+      "investor": 63,
+      "competition": 68
+    },
     "strengths": [
       "Clear product-market fit with demand exceeding capacity for eight weeks out.",
       "AI-accelerated pipeline is a genuine, measurable differentiator on turnaround.",
@@ -738,20 +1430,52 @@
       }
     ],
     "customer_assumptions": [
-      { "title": "Clients will pay a premium for speed", "description": "We assume turnaround time justifies pricing above international alternatives.", "status": "validated" },
-      { "title": "Clients would follow us into other markets", "description": "We assume our reputation transfers to UAE and Egypt expansions.", "status": "not" },
-      { "title": "Local delivery matters more than price", "description": "We assume proximity and communication outweigh cost advantages abroad.", "status": "validated" }
+      {
+        "title": "Clients will pay a premium for speed",
+        "description": "We assume turnaround time justifies pricing above international alternatives.",
+        "status": "validated"
+      },
+      {
+        "title": "Clients would follow us into other markets",
+        "description": "We assume our reputation transfers to UAE and Egypt expansions.",
+        "status": "not"
+      },
+      {
+        "title": "Local delivery matters more than price",
+        "description": "We assume proximity and communication outweigh cost advantages abroad.",
+        "status": "validated"
+      }
     ],
     "business_assumptions": [
-      { "title": "Margins hold as we add senior headcount", "description": "We assume unit economics survive the higher fixed cost of senior staff.", "status": "partial" },
-      { "title": "The AI pipeline can be productised", "description": "We assume the internal workflow could be sold as software to other studios.", "status": "not" }
+      {
+        "title": "Margins hold as we add senior headcount",
+        "description": "We assume unit economics survive the higher fixed cost of senior staff.",
+        "status": "partial"
+      },
+      {
+        "title": "The AI pipeline can be productised",
+        "description": "We assume the internal workflow could be sold as software to other studios.",
+        "status": "not"
+      }
     ],
     "technical_assumptions": [
-      { "title": "The pipeline scales to 3x current volume", "description": "We assume the technical workflow holds up at triple throughput without quality degradation.", "status": "partial" },
-      { "title": "AI quality meets streaming delivery standards", "description": "We assume AI-accelerated output continues to pass platform QC at scale.", "status": "validated" }
+      {
+        "title": "The pipeline scales to 3x current volume",
+        "description": "We assume the technical workflow holds up at triple throughput without quality degradation.",
+        "status": "partial"
+      },
+      {
+        "title": "AI quality meets streaming delivery standards",
+        "description": "We assume AI-accelerated output continues to pass platform QC at scale.",
+        "status": "validated"
+      }
     ],
     "pricing_assumptions": [
-      { "title": "A 25% price increase would not reduce demand", "description": "With an eight-week queue, we assume we are meaningfully under-priced.", "status": "not" }
+      {
+        "title": "A 25% price increase would not reduce demand",
+        "description": "With an eight-week queue, we assume we are meaningfully under-priced.",
+        "status": "not"
+      }
     ],
     "investor_questions": [
       "If you are booked eight weeks out, why have you not raised prices?",
@@ -769,28 +1493,84 @@
     ],
     "mentor_notes": "You are the most advanced company in this cohort and you have a real problem that most founders would envy: more demand than capacity. But excess demand is not a trophy, it is an unpriced signal. You are almost certainly under-priced, and raising prices is the fastest, cheapest capacity expansion available to you. The deeper strategic question is your AI pipeline. Right now it is a temporary operational edge. You have roughly eighteen months to turn it into either owned IP or locked-in contracts before it becomes table stakes.",
     "recommended_books": [
-      { "title": "Monetizing Innovation", "author": "Madhavan Ramanujam", "why": "You have an eight-week queue and have not raised prices." },
-      { "title": "Good Strategy Bad Strategy", "author": "Richard Rumelt", "why": "Choosing between services scale and software IP." },
-      { "title": "Scaling Up", "author": "Verne Harnish", "why": "Operational discipline for the growth stage you are entering." }
+      {
+        "title": "Monetizing Innovation",
+        "author": "Madhavan Ramanujam",
+        "why": "You have an eight-week queue and have not raised prices."
+      },
+      {
+        "title": "Good Strategy Bad Strategy",
+        "author": "Richard Rumelt",
+        "why": "Choosing between services scale and software IP."
+      },
+      {
+        "title": "Scaling Up",
+        "author": "Verne Harnish",
+        "why": "Operational discipline for the growth stage you are entering."
+      }
     ],
     "recommended_frameworks": [
-      { "name": "Capacity-Constrained Pricing", "why": "Price is your fastest lever when demand exceeds supply." },
-      { "name": "Services-to-Product Transition", "why": "Framework for productising an internal advantage." },
-      { "name": "Key-Person Risk Mapping", "why": "Systematically reduce dependency on individual craft talent." }
+      {
+        "name": "Capacity-Constrained Pricing",
+        "why": "Price is your fastest lever when demand exceeds supply."
+      },
+      {
+        "name": "Services-to-Product Transition",
+        "why": "Framework for productising an internal advantage."
+      },
+      {
+        "name": "Key-Person Risk Mapping",
+        "why": "Systematically reduce dependency on individual craft talent."
+      }
     ],
     "recommended_tools": [
-      { "name": "Ftrack", "why": "Production tracking built for post-production pipelines at scale." },
-      { "name": "Float", "why": "Capacity planning and resource forecasting." },
-      { "name": "Causal", "why": "Model capital-to-capacity scenarios before raising." }
+      {
+        "name": "Ftrack",
+        "why": "Production tracking built for post-production pipelines at scale."
+      },
+      {
+        "name": "Float",
+        "why": "Capacity planning and resource forecasting."
+      },
+      {
+        "name": "Causal",
+        "why": "Model capital-to-capacity scenarios before raising."
+      }
     ],
     "recommended_videos": [
-      { "title": "How to Set Pricing", "source": "Y Combinator", "why": "Directly relevant to your under-pricing problem." },
-      { "title": "Turning Services into Products", "source": "SaaStr", "why": "On productising an internal pipeline advantage." }
+      {
+        "title": "How to Set Pricing",
+        "source": "Y Combinator",
+        "why": "Directly relevant to your under-pricing problem."
+      },
+      {
+        "title": "Turning Services into Products",
+        "source": "SaaStr",
+        "why": "On productising an internal pipeline advantage."
+      }
     ],
     "action_plan": [
-      { "task": "Raise prices 20% on all new bookings and measure demand", "reason": "An eight-week queue is direct evidence of under-pricing, and price is the fastest capacity lever you have.", "impact": "Potential SAR 280K additional annual revenue at zero additional cost.", "metric": "New pricing live with booking rate tracked weekly for six weeks.", "deadline": "21 days" },
-      { "task": "Build a capital-to-capacity model for a growth raise", "reason": "Growth is now constrained by capacity rather than demand, and that requires financing to solve.", "impact": "Turns an unserved queue into servable revenue.", "metric": "Written model showing revenue capacity added per SAR 1M invested.", "deadline": "45 days" },
-      { "task": "Decide whether the AI pipeline becomes a product", "reason": "Your workflow advantage has roughly eighteen months before it becomes standard across the industry.", "impact": "Determines whether you build a durable asset or remain a services business.", "metric": "Written strategic decision with a resourcing plan attached.", "deadline": "60 days" }
+      {
+        "task": "Raise prices 20% on all new bookings and measure demand",
+        "reason": "An eight-week queue is direct evidence of under-pricing, and price is the fastest capacity lever you have.",
+        "impact": "Potential SAR 280K additional annual revenue at zero additional cost.",
+        "metric": "New pricing live with booking rate tracked weekly for six weeks.",
+        "deadline": "21 days"
+      },
+      {
+        "task": "Build a capital-to-capacity model for a growth raise",
+        "reason": "Growth is now constrained by capacity rather than demand, and that requires financing to solve.",
+        "impact": "Turns an unserved queue into servable revenue.",
+        "metric": "Written model showing revenue capacity added per SAR 1M invested.",
+        "deadline": "45 days"
+      },
+      {
+        "task": "Decide whether the AI pipeline becomes a product",
+        "reason": "Your workflow advantage has roughly eighteen months before it becomes standard across the industry.",
+        "impact": "Determines whether you build a durable asset or remain a services business.",
+        "metric": "Written strategic decision with a resourcing plan attached.",
+        "deadline": "60 days"
+      }
     ],
     "discussion_topics": [
       "Pricing when demand exceeds capacity",
@@ -798,12 +1578,36 @@
       "When to raise capital as a profitable company"
     ],
     "kpis": [
-      { "name": "Revenue per employee", "target": "SAR 180K", "why": "Core efficiency measure for a services business." },
-      { "name": "Booking lead time", "target": "3–4 weeks", "why": "Too long signals under-pricing; too short signals weak demand." },
-      { "name": "Gross margin", "target": "Above 50%", "why": "Must hold as senior headcount increases." },
-      { "name": "Senior talent retention", "target": "100% annually", "why": "Directly protects delivery capacity and quality." }
+      {
+        "name": "Revenue per employee",
+        "target": "SAR 180K",
+        "why": "Core efficiency measure for a services business."
+      },
+      {
+        "name": "Booking lead time",
+        "target": "3–4 weeks",
+        "why": "Too long signals under-pricing; too short signals weak demand."
+      },
+      {
+        "name": "Gross margin",
+        "target": "Above 50%",
+        "why": "Must hold as senior headcount increases."
+      },
+      {
+        "name": "Senior talent retention",
+        "target": "100% annually",
+        "why": "Directly protects delivery capacity and quality."
+      }
     ],
-    "current_status": "Clear product-market fit, constrained by capacity and capital rather than demand; under-priced relative to market position."
+    "current_status": "Clear product-market fit, constrained by capacity and capital rather than demand; under-priced relative to market position.",
+    "stage_ar": "ملاءمة المنتج للسوق",
+    "category_ar": "ما بعد الإنتاج",
+    "stage_summary_ar": "وصلت إلى ملاءمة المنتج للسوق: الطلب يفوق طاقتك، والعملاء يعودون. المعادلة تغيّرت من كيف أبيع أكثر إلى كيف أُسلّم أكثر.",
+    "recommendation_ar": {
+      "strength": "طاقتك محجوزة ٨ أسابيع مقدماً و٦٢٪ عملاء متكررون — دليل قاطع على ملاءمة حقيقية للسوق وجودة ثابتة.",
+      "risk": "النمو صار مقيداً برأس المال لا بالطلب. تكاليفك الثابتة عالية، وكوادر الألوان والمؤثرات النادرة تجعل التوسع أبطأ من السوق.",
+      "next_step": "ارفع الأسعار ٢٠٪ على كل الحجوزات الجديدة وراقب الطلب ستة أسابيع. طابور ثمانية أسابيع دليل مباشر على أنك أقل سعراً مما تستحق."
+    }
   },
   {
     "id": "riwaya-labs",
@@ -816,18 +1620,40 @@
     "revenue": "SAR 22K / year",
     "team_size": 4,
     "founders": [
-      { "name_ar": "بدر القرني", "name_en": "Badr Alqarni", "role": "Founder & CTO" },
-      { "name_ar": "أمل السديري", "name_en": "Amal Alsudairi", "role": "Co-Founder & Head of Product" }
+      {
+        "name_ar": "بدر القرني",
+        "name_en": "Badr Alqarni",
+        "role": "Founder & CTO"
+      },
+      {
+        "name_ar": "أمل السديري",
+        "name_en": "Amal Alsudairi",
+        "role": "Co-Founder & Head of Product"
+      }
     ],
     "team_members": [
-      { "name_ar": "زياد العمري", "name_en": "Ziad Alamri", "role": "ML Engineer" }
+      {
+        "name_ar": "زياد العمري",
+        "name_en": "Ziad Alamri",
+        "role": "ML Engineer"
+      }
     ],
     "business_model": "SaaS subscription (SAR 79/month) with a free tier",
     "target_customer": "Arabic screenwriters and development executives who write daily and struggle with generic AI tools that mangle dialect and cultural nuance.",
     "problem_statement": "General-purpose AI writing tools handle Arabic poorly — flattening dialect, misreading cultural context, and producing dialogue no Arabic speaker would say.",
     "value_proposition": "Script development tools that genuinely understand Arabic dialects and cultural context, built by people who write in Arabic.",
     "traction": "1,100 free users, 24 paying subscribers, 41% weekly active rate among paying users.",
-    "validation_scores": { "problem": 69, "customer": 57, "solution": 61, "revenue": 34, "market": 47, "execution": 54, "team": 58, "investor": 29, "competition": 26 },
+    "validation_scores": {
+      "problem": 69,
+      "customer": 57,
+      "solution": 61,
+      "revenue": 34,
+      "market": 47,
+      "execution": 54,
+      "team": 58,
+      "investor": 29,
+      "competition": 26
+    },
     "strengths": [
       "Genuine technical differentiation in Arabic dialect handling.",
       "Strong weekly active rate among paying users indicates real utility.",
@@ -872,20 +1698,52 @@
       }
     ],
     "customer_assumptions": [
-      { "title": "Writers will pay for AI assistance", "description": "We assume screenwriters see AI as a tool worth paying for rather than a threat to their craft.", "status": "partial" },
-      { "title": "Dialect accuracy is the deciding factor", "description": "We assume dialect quality is why users choose us over general tools.", "status": "partial" },
-      { "title": "Writers use the tool weekly", "description": "We assume the product fits into a regular writing workflow.", "status": "validated" }
+      {
+        "title": "Writers will pay for AI assistance",
+        "description": "We assume screenwriters see AI as a tool worth paying for rather than a threat to their craft.",
+        "status": "partial"
+      },
+      {
+        "title": "Dialect accuracy is the deciding factor",
+        "description": "We assume dialect quality is why users choose us over general tools.",
+        "status": "partial"
+      },
+      {
+        "title": "Writers use the tool weekly",
+        "description": "We assume the product fits into a regular writing workflow.",
+        "status": "validated"
+      }
     ],
     "business_assumptions": [
-      { "title": "Inference costs stay below subscription revenue", "description": "We assume unit economics survive as free-tier usage grows.", "status": "not" },
-      { "title": "Screenwriting is a large enough beachhead", "description": "We assume the Arabic screenwriting market alone can sustain the company.", "status": "not" }
+      {
+        "title": "Inference costs stay below subscription revenue",
+        "description": "We assume unit economics survive as free-tier usage grows.",
+        "status": "not"
+      },
+      {
+        "title": "Screenwriting is a large enough beachhead",
+        "description": "We assume the Arabic screenwriting market alone can sustain the company.",
+        "status": "not"
+      }
     ],
     "technical_assumptions": [
-      { "title": "Our dialect advantage is defensible", "description": "We assume fine-tuning and data give us a lasting edge over general models.", "status": "not" },
-      { "title": "Quality holds across all major dialects", "description": "We assume performance is consistent beyond Gulf Arabic.", "status": "partial" }
+      {
+        "title": "Our dialect advantage is defensible",
+        "description": "We assume fine-tuning and data give us a lasting edge over general models.",
+        "status": "not"
+      },
+      {
+        "title": "Quality holds across all major dialects",
+        "description": "We assume performance is consistent beyond Gulf Arabic.",
+        "status": "partial"
+      }
     ],
     "pricing_assumptions": [
-      { "title": "SAR 79/month matches perceived value", "description": "We assume the price reflects value delivered to a working screenwriter.", "status": "not" }
+      {
+        "title": "SAR 79/month matches perceived value",
+        "description": "We assume the price reflects value delivered to a working screenwriter.",
+        "status": "not"
+      }
     ],
     "investor_questions": [
       "What happens to your business if a major model provider ships excellent Arabic next quarter?",
@@ -903,28 +1761,84 @@
     ],
     "mentor_notes": "You have real technical differentiation and a healthy weekly active rate, which means the product genuinely works for the people who use it. Two things need your attention urgently. First, your 2% conversion says your free tier is too generous and you are subsidising non-customers with real inference costs. Second, and more seriously, your moat is currently rented. Arabic quality is exactly the kind of gap that foundation model providers close on their own schedule. Start building the thing they cannot copy — proprietary data and workflow — starting now, not after it becomes urgent.",
     "recommended_books": [
-      { "title": "Competing in the Age of AI", "author": "Iansiti & Lakhani", "why": "On where defensibility actually comes from in AI products." },
-      { "title": "Hooked", "author": "Nir Eyal", "why": "Building workflow habit that outlasts model advantages." },
-      { "title": "Monetizing Innovation", "author": "Madhavan Ramanujam", "why": "Directly addresses your conversion and pricing problem." }
+      {
+        "title": "Competing in the Age of AI",
+        "author": "Iansiti & Lakhani",
+        "why": "On where defensibility actually comes from in AI products."
+      },
+      {
+        "title": "Hooked",
+        "author": "Nir Eyal",
+        "why": "Building workflow habit that outlasts model advantages."
+      },
+      {
+        "title": "Monetizing Innovation",
+        "author": "Madhavan Ramanujam",
+        "why": "Directly addresses your conversion and pricing problem."
+      }
     ],
     "recommended_frameworks": [
-      { "name": "Moat Analysis for AI Products", "why": "Distinguish rented advantages from owned ones." },
-      { "name": "Freemium Conversion Design", "why": "Design the free tier to create rather than remove urgency." },
-      { "name": "Beachhead Market Strategy", "why": "Decide whether screenwriting is the market or the entry point." }
+      {
+        "name": "Moat Analysis for AI Products",
+        "why": "Distinguish rented advantages from owned ones."
+      },
+      {
+        "name": "Freemium Conversion Design",
+        "why": "Design the free tier to create rather than remove urgency."
+      },
+      {
+        "name": "Beachhead Market Strategy",
+        "why": "Decide whether screenwriting is the market or the entry point."
+      }
     ],
     "recommended_tools": [
-      { "name": "PostHog", "why": "Understand which behaviours precede conversion to paid." },
-      { "name": "LangSmith", "why": "Track model performance and cost per user." },
-      { "name": "Stripe", "why": "Run pricing and packaging experiments quickly." }
+      {
+        "name": "PostHog",
+        "why": "Understand which behaviours precede conversion to paid."
+      },
+      {
+        "name": "LangSmith",
+        "why": "Track model performance and cost per user."
+      },
+      {
+        "name": "Stripe",
+        "why": "Run pricing and packaging experiments quickly."
+      }
     ],
     "recommended_videos": [
-      { "title": "Building Defensible AI Products", "source": "a16z", "why": "Squarely addresses your central strategic risk." },
-      { "title": "How to Price Your SaaS", "source": "SaaStr", "why": "Practical tactics for freemium conversion." }
+      {
+        "title": "Building Defensible AI Products",
+        "source": "a16z",
+        "why": "Squarely addresses your central strategic risk."
+      },
+      {
+        "title": "How to Price Your SaaS",
+        "source": "SaaStr",
+        "why": "Practical tactics for freemium conversion."
+      }
     ],
     "action_plan": [
-      { "task": "Redesign the free tier around usage limits", "reason": "At 2% conversion your free tier fully satisfies users while you carry real inference costs for them.", "impact": "Target 8% conversion, roughly quadrupling revenue with no new users.", "metric": "New free tier live with conversion tracked over six weeks.", "deadline": "30 days" },
-      { "task": "Build a proprietary Arabic dialect dataset", "reason": "Your only durable defence against foundation models improving is data they do not have.", "impact": "Converts a rented advantage into an owned asset.", "metric": "10,000 reviewed dialect samples collected and structured.", "deadline": "90 days" },
-      { "task": "Interview 20 active free users about payment", "reason": "You do not know what would make a satisfied free user become a paying one.", "impact": "Directly informs both pricing and free-tier design.", "metric": "20 interviews with documented conversion triggers.", "deadline": "30 days" }
+      {
+        "task": "Redesign the free tier around usage limits",
+        "reason": "At 2% conversion your free tier fully satisfies users while you carry real inference costs for them.",
+        "impact": "Target 8% conversion, roughly quadrupling revenue with no new users.",
+        "metric": "New free tier live with conversion tracked over six weeks.",
+        "deadline": "30 days"
+      },
+      {
+        "task": "Build a proprietary Arabic dialect dataset",
+        "reason": "Your only durable defence against foundation models improving is data they do not have.",
+        "impact": "Converts a rented advantage into an owned asset.",
+        "metric": "10,000 reviewed dialect samples collected and structured.",
+        "deadline": "90 days"
+      },
+      {
+        "task": "Interview 20 active free users about payment",
+        "reason": "You do not know what would make a satisfied free user become a paying one.",
+        "impact": "Directly informs both pricing and free-tier design.",
+        "metric": "20 interviews with documented conversion triggers.",
+        "deadline": "30 days"
+      }
     ],
     "discussion_topics": [
       "Owned versus rented moats in AI products",
@@ -932,12 +1846,36 @@
       "Competing in a category that changes monthly"
     ],
     "kpis": [
-      { "name": "Free-to-paid conversion", "target": "Above 8%", "why": "Current 2% makes the model economically unviable." },
-      { "name": "Inference cost per free user", "target": "Under SAR 3/month", "why": "Free-tier costs must not scale faster than revenue." },
-      { "name": "3-month paid retention", "target": "Above 70%", "why": "Proves durable workflow value rather than novelty." },
-      { "name": "Proprietary dataset size", "target": "10,000 samples", "why": "The measurable proxy for a defensible moat." }
+      {
+        "name": "Free-to-paid conversion",
+        "target": "Above 8%",
+        "why": "Current 2% makes the model economically unviable."
+      },
+      {
+        "name": "Inference cost per free user",
+        "target": "Under SAR 3/month",
+        "why": "Free-tier costs must not scale faster than revenue."
+      },
+      {
+        "name": "3-month paid retention",
+        "target": "Above 70%",
+        "why": "Proves durable workflow value rather than novelty."
+      },
+      {
+        "name": "Proprietary dataset size",
+        "target": "10,000 samples",
+        "why": "The measurable proxy for a defensible moat."
+      }
     ],
-    "current_status": "Working MVP with real technical differentiation, undermined by weak conversion and a moat dependent on external model providers."
+    "current_status": "Working MVP with real technical differentiation, undermined by weak conversion and a moat dependent on external model providers.",
+    "stage_ar": "المنتج الأولي",
+    "category_ar": "أدوات ذكاء اصطناعي",
+    "stage_summary_ar": "منتجك الأولي يعمل ولديك مستخدمون يدفعون، لكن الاقتصاد لم يثبت بعد. المرحلة تنتهي حين يصبح التحويل والاحتفاظ قابلين للتكرار.",
+    "recommendation_ar": {
+      "strength": "٤١٪ نشاط أسبوعي بين المشتركين الدافعين — مؤشر قوي على منفعة حقيقية، مع تميّز تقني فعلي في معالجة اللهجات العربية.",
+      "risk": "حاجزك التنافسي مبني على خارطة طريق شركة أخرى. اعتمادك عميق على نماذج أساسية لا تملكها، ونسبة التحويل ٢٪ فقط.",
+      "next_step": "أعد تصميم الباقة المجانية حول حدود استخدام واضحة، واستهدف رفع التحويل إلى ٨٪ خلال ستة أسابيع — أربعة أضعاف الإيراد بلا مستخدم جديد."
+    }
   },
   {
     "id": "khayal-vr",
@@ -950,19 +1888,45 @@
     "revenue": "SAR 890K / year",
     "team_size": 9,
     "founders": [
-      { "name_ar": "ليان المهنا", "name_en": "Layan Almuhanna", "role": "Founder & CEO" }
+      {
+        "name_ar": "ليان المهنا",
+        "name_en": "Layan Almuhanna",
+        "role": "Founder & CEO"
+      }
     ],
     "team_members": [
-      { "name_ar": "سلطان الدوسري", "name_en": "Sultan Aldosari", "role": "Unity Developer" },
-      { "name_ar": "غادة الخالد", "name_en": "Ghada Alkhalid", "role": "Creative Director" },
-      { "name_ar": "نايف البقمي", "name_en": "Naif Albaqami", "role": "3D Artist" }
+      {
+        "name_ar": "سلطان الدوسري",
+        "name_en": "Sultan Aldosari",
+        "role": "Unity Developer"
+      },
+      {
+        "name_ar": "غادة الخالد",
+        "name_en": "Ghada Alkhalid",
+        "role": "Creative Director"
+      },
+      {
+        "name_ar": "نايف البقمي",
+        "name_en": "Naif Albaqami",
+        "role": "3D Artist"
+      }
     ],
     "business_model": "B2B/B2G project contracts plus venue revenue share",
     "target_customer": "Museums, cultural authorities, event organisers and tourism destinations commissioning visitor experiences.",
     "problem_statement": "Cultural institutions want to engage younger visitors with heritage content but static exhibits fail to hold attention or convey narrative.",
     "value_proposition": "Immersive heritage experiences that make Saudi history genuinely engaging, delivered as turnkey installations with measurable visitor engagement.",
     "traction": "SAR 890K revenue, 6 installations delivered, 2 government contracts, 84% average visitor completion rate.",
-    "validation_scores": { "problem": 76, "customer": 73, "solution": 79, "revenue": 71, "market": 54, "execution": 72, "team": 66, "investor": 57, "competition": 61 },
+    "validation_scores": {
+      "problem": 76,
+      "customer": 73,
+      "solution": 79,
+      "revenue": 71,
+      "market": 54,
+      "execution": 72,
+      "team": 66,
+      "investor": 57,
+      "competition": 61
+    },
     "strengths": [
       "Government contracts provide credibility and substantial contract values.",
       "84% completion rate is strong evidence the experiences genuinely work.",
@@ -1007,19 +1971,47 @@
       }
     ],
     "customer_assumptions": [
-      { "title": "Private venues will pay commercial rates", "description": "We assume malls and entertainment venues will buy at rates comparable to institutional clients.", "status": "not" },
-      { "title": "Institutions will renew and expand installations", "description": "We assume delivered installations lead to follow-on contracts.", "status": "partial" },
-      { "title": "Visitors engage with VR heritage content", "description": "We assume the format holds attention, evidenced by completion rates.", "status": "validated" }
+      {
+        "title": "Private venues will pay commercial rates",
+        "description": "We assume malls and entertainment venues will buy at rates comparable to institutional clients.",
+        "status": "not"
+      },
+      {
+        "title": "Institutions will renew and expand installations",
+        "description": "We assume delivered installations lead to follow-on contracts.",
+        "status": "partial"
+      },
+      {
+        "title": "Visitors engage with VR heritage content",
+        "description": "We assume the format holds attention, evidenced by completion rates.",
+        "status": "validated"
+      }
     ],
     "business_assumptions": [
-      { "title": "Content can be licensed across venues", "description": "We assume experiences built for one venue can be resold to others with modest adaptation.", "status": "not" },
-      { "title": "Margins improve with platform reuse", "description": "We assume the technical platform reduces cost per project over time.", "status": "partial" }
+      {
+        "title": "Content can be licensed across venues",
+        "description": "We assume experiences built for one venue can be resold to others with modest adaptation.",
+        "status": "not"
+      },
+      {
+        "title": "Margins improve with platform reuse",
+        "description": "We assume the technical platform reduces cost per project over time.",
+        "status": "partial"
+      }
     ],
     "technical_assumptions": [
-      { "title": "Hardware remains viable for public venues", "description": "We assume VR headsets stay practical for high-throughput public installations.", "status": "partial" }
+      {
+        "title": "Hardware remains viable for public venues",
+        "description": "We assume VR headsets stay practical for high-throughput public installations.",
+        "status": "partial"
+      }
     ],
     "pricing_assumptions": [
-      { "title": "A revenue-share model works for commercial venues", "description": "We assume private venues prefer revenue share over upfront project fees.", "status": "not" }
+      {
+        "title": "A revenue-share model works for commercial venues",
+        "description": "We assume private venues prefer revenue share over upfront project fees.",
+        "status": "not"
+      }
     ],
     "investor_questions": [
       "What percentage of revenue comes from government, and what is your plan if that halves?",
@@ -1037,28 +2029,84 @@
     ],
     "mentor_notes": "You are further along than most and the 84% completion rate is real, hard evidence that the experiences work. Two structural issues will determine whether this becomes a large company. First, government concentration is a risk you can only solve before you need to. Second, and more important, if every installation is custom you have a projects business that grows linearly with headcount forever. The company becomes valuable the moment content becomes licensable rather than bespoke. That is the strategic shift worth making this year.",
     "recommended_books": [
-      { "title": "Good Strategy Bad Strategy", "author": "Richard Rumelt", "why": "On choosing between projects and platform decisively." },
-      { "title": "Built to Sell", "author": "John Warrillow", "why": "Escaping the bespoke-project trap." },
-      { "title": "The Great CEO Within", "author": "Matt Mochary", "why": "Delegation and hiring at your exact stage." }
+      {
+        "title": "Good Strategy Bad Strategy",
+        "author": "Richard Rumelt",
+        "why": "On choosing between projects and platform decisively."
+      },
+      {
+        "title": "Built to Sell",
+        "author": "John Warrillow",
+        "why": "Escaping the bespoke-project trap."
+      },
+      {
+        "title": "The Great CEO Within",
+        "author": "Matt Mochary",
+        "why": "Delegation and hiring at your exact stage."
+      }
     ],
     "recommended_frameworks": [
-      { "name": "Projects-to-Platform Transition", "why": "Turn bespoke work into a licensable content library." },
-      { "name": "Revenue Concentration Analysis", "why": "Quantify and reduce dependence on government budgets." },
-      { "name": "Founder Delegation Mapping", "why": "Identify what only the founder can do, and hand over the rest." }
+      {
+        "name": "Projects-to-Platform Transition",
+        "why": "Turn bespoke work into a licensable content library."
+      },
+      {
+        "name": "Revenue Concentration Analysis",
+        "why": "Quantify and reduce dependence on government budgets."
+      },
+      {
+        "name": "Founder Delegation Mapping",
+        "why": "Identify what only the founder can do, and hand over the rest."
+      }
     ],
     "recommended_tools": [
-      { "name": "Unity Cloud", "why": "Manage a reusable content and build pipeline." },
-      { "name": "HubSpot", "why": "Institutionalise a pipeline that does not live in the founder's head." },
-      { "name": "Causal", "why": "Model margin under project versus licensing scenarios." }
+      {
+        "name": "Unity Cloud",
+        "why": "Manage a reusable content and build pipeline."
+      },
+      {
+        "name": "HubSpot",
+        "why": "Institutionalise a pipeline that does not live in the founder's head."
+      },
+      {
+        "name": "Causal",
+        "why": "Model margin under project versus licensing scenarios."
+      }
     ],
     "recommended_videos": [
-      { "title": "How to Hire and Delegate", "source": "Y Combinator", "why": "Directly relevant to single-founder commercial dependency." },
-      { "title": "From Services to Products", "source": "SaaStr", "why": "On building the licensable layer." }
+      {
+        "title": "How to Hire and Delegate",
+        "source": "Y Combinator",
+        "why": "Directly relevant to single-founder commercial dependency."
+      },
+      {
+        "title": "From Services to Products",
+        "source": "SaaStr",
+        "why": "On building the licensable layer."
+      }
     ],
     "action_plan": [
-      { "task": "Win two private-sector commercial contracts", "reason": "Government concentration is your largest structural risk and must be reduced before a budget cycle forces it.", "impact": "Diversifies revenue and validates commercial pricing.", "metric": "2 signed private-sector contracts.", "deadline": "90 days" },
-      { "task": "Extract a reusable content layer from existing installations", "reason": "Bespoke projects mean margin never compounds and growth requires proportional hiring.", "impact": "Could cut delivery cost per installation by 30–40%.", "metric": "One existing experience packaged and licensed to a second venue.", "deadline": "90 days" },
-      { "task": "Hire a commercial lead to own the pipeline", "reason": "A nine-person company cannot depend on one person for all business development and strategy.", "impact": "Frees founder capacity for the private-sector and licensing strategy.", "metric": "Commercial lead hired and owning the pipeline independently.", "deadline": "60 days" }
+      {
+        "task": "Win two private-sector commercial contracts",
+        "reason": "Government concentration is your largest structural risk and must be reduced before a budget cycle forces it.",
+        "impact": "Diversifies revenue and validates commercial pricing.",
+        "metric": "2 signed private-sector contracts.",
+        "deadline": "90 days"
+      },
+      {
+        "task": "Extract a reusable content layer from existing installations",
+        "reason": "Bespoke projects mean margin never compounds and growth requires proportional hiring.",
+        "impact": "Could cut delivery cost per installation by 30–40%.",
+        "metric": "One existing experience packaged and licensed to a second venue.",
+        "deadline": "90 days"
+      },
+      {
+        "task": "Hire a commercial lead to own the pipeline",
+        "reason": "A nine-person company cannot depend on one person for all business development and strategy.",
+        "impact": "Frees founder capacity for the private-sector and licensing strategy.",
+        "metric": "Commercial lead hired and owning the pipeline independently.",
+        "deadline": "60 days"
+      }
     ],
     "discussion_topics": [
       "Reducing government revenue concentration before it becomes urgent",
@@ -1066,11 +2114,35 @@
       "When founder-led sales becomes the constraint"
     ],
     "kpis": [
-      { "name": "Private-sector revenue share", "target": "40%", "why": "Reduces dependence on government budget cycles." },
-      { "name": "Content reuse rate", "target": "Above 50%", "why": "The core measure of the platform transition." },
-      { "name": "Gross margin per installation", "target": "Above 45%", "why": "Proves reuse is translating into economics." },
-      { "name": "Pipeline not founder-sourced", "target": "50%", "why": "Measures real commercial delegation." }
+      {
+        "name": "Private-sector revenue share",
+        "target": "40%",
+        "why": "Reduces dependence on government budget cycles."
+      },
+      {
+        "name": "Content reuse rate",
+        "target": "Above 50%",
+        "why": "The core measure of the platform transition."
+      },
+      {
+        "name": "Gross margin per installation",
+        "target": "Above 45%",
+        "why": "Proves reuse is translating into economics."
+      },
+      {
+        "name": "Pipeline not founder-sourced",
+        "target": "50%",
+        "why": "Measures real commercial delegation."
+      }
     ],
-    "current_status": "Growing with real revenue and proven engagement, but constrained by government concentration and a bespoke project model that does not compound."
+    "current_status": "Growing with real revenue and proven engagement, but constrained by government concentration and a bespoke project model that does not compound.",
+    "stage_ar": "النمو",
+    "category_ar": "الوسائط الغامرة",
+    "stage_summary_ar": "أنت في مرحلة النمو: النموذج مُثبت والإيراد يتكرر. الخطر هنا ليس البقاء، بل التركّز — أن يعتمد كل شيء على مصدر واحد.",
+    "recommendation_ar": {
+      "strength": "٨٤٪ من الزوار يكملون التجربة، وعقدان حكوميان يمنحانك مصداقية وقيمة تعاقدية كبيرة.",
+      "risk": "تركّز إيرادك في الجهات الحكومية بدورات شراء طويلة لا تتحكم بها، مع مؤسس واحد يحمل العبء التجاري والاستراتيجي معاً.",
+      "next_step": "اربح عقدين من القطاع الخاص خلال ٩٠ يوماً (مولات، وجهات ترفيهية، مشغلو سياحة) بهدف ٤٠٪ من الإيراد من مشترين خاصين خلال سنة."
+    }
   }
 ]
