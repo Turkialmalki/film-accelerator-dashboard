@@ -34,6 +34,24 @@ const FVUI = (() => {
     return String(value).replace(/[0-9]/g, d => AR_DIGITS[+d]);
   }
 
+  /**
+   * Arabic-Indic numerals for free prose, leaving Latin identifiers intact.
+   *
+   * `num()` is for values we produce and therefore control. This is for
+   * report text we did not write, where a digit run may belong to a name
+   * rather than a quantity: "B2B", "B2G" and "bingolab51" must survive, while
+   * "2014", "80%" and "70/30" should convert. Adjacency to a Latin letter is
+   * what separates the two.
+   */
+  function numText(value) {
+    return String(value ?? '').replace(/\d+/g, (run, at, whole) => {
+      const before = whole[at - 1] || '';
+      const after  = whole[at + run.length] || '';
+      if (/[A-Za-z]/.test(before) || /[A-Za-z]/.test(after)) return run;
+      return num(run);
+    });
+  }
+
   /** "٦ دقائق" — Arabic pluralisation is not a suffix, so it is spelled out. */
   function minutes(n) {
     if (n <= 0) return 'أقل من دقيقة';
@@ -119,7 +137,7 @@ const FVUI = (() => {
     return `<span dir="${hasArabic(name) ? 'rtl' : 'ltr'}">${esc(name)}</span>`;
   }
 
-  return { $, $$, esc, num, minutes, companies, times, countUp, debounce, toast,
+  return { $, $$, esc, num, numText, minutes, companies, times, countUp, debounce, toast,
            hasArabic, nameSpan, reducedMotion };
 })();
 

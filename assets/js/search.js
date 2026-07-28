@@ -108,6 +108,11 @@ const FVSearch = (() => {
         startup,
         norm: normalize(label),
         core: coreForm(label),
+        /* Space-free form. Arabic compound names are written both joined and
+           separated — عبد الله / عبدالله, با مجبور / بامجبور — and the writer
+           picks by habit, not by rule. Comparing without spaces makes the two
+           spellings the same string instead of a fuzzy near-miss. */
+        compact: normalize(label).replace(/\s+/g, ''),
         tokens: tokenize(label)
       });
     };
@@ -138,12 +143,17 @@ const FVSearch = (() => {
    * Returns 0–100. Tiers are deliberately wide apart so a weak fuzzy hit can
    * never outrank a genuine prefix match.
    */
-  function scoreEntry(entry, qNorm, qCore, qTokens) {
+  function scoreEntry(entry, qNorm, qCore, qTokens, qCompact) {
     if (!qNorm) return 0;
 
     // Tier 1 — exact
     if (entry.norm === qNorm) return 100;
     if (entry.core && entry.core === qCore) return 98;
+    /* Same name, different spacing habit. Equality only — a compact *prefix*
+       tier would let "شركة" match شركة فتيل and "عبد" match عبد الملك, because
+       collapsing spaces also collapses the word boundary that keeps a generic
+       word from standing in for a name. */
+    if (qCompact && entry.compact === qCompact) return 97;
 
     // Tier 2 — prefix
     if (entry.norm.startsWith(qNorm)) return 92;
@@ -207,13 +217,21 @@ const FVSearch = (() => {
     const qNorm = normalize(text);
     if (qNorm.length < 1) return [];
 
+    /* A query made only of stopwords identifies nobody. It has to be rejected
+       here rather than scored, because every company in this cohort is
+       recorded as "شركة …" or "منصة …", so the prefix tier would happily
+       return whichever one happens to sort first. */
+    if (!coreForm(text)) return [];
+
     const qCore = coreForm(text) || qNorm;
     const qTokens = tokenize(text).filter(t => !STOPWORDS.has(t));
     const tokensForScoring = qTokens.length ? qTokens : tokenize(text);
 
+    const qCompact = qNorm.replace(/\s+/g, '');
+
     const scored = [];
     for (const entry of INDEX) {
-      const score = scoreEntry(entry, qNorm, qCore, tokensForScoring);
+      const score = scoreEntry(entry, qNorm, qCore, tokensForScoring, qCompact);
       if (score >= MIN_SCORE) scored.push({ ...entry, score });
     }
 
@@ -264,8 +282,19 @@ const FVSearch = (() => {
    */
   function resolve(text) {
     if (normalize(text).replace(/\s/g, '').length < RESOLVE_MIN_LENGTH) return null;
-    const best = query(text, 1)[0];
+
+    const [best, runnerUp] = query(text, 2);
     if (!best || best.score < RESOLVE_MIN_SCORE) return null;
+
+    /* Ambiguity is a failure, not a coin toss.
+       This cohort has two founders called أحمد and five whose name begins
+       عبد, so a bare first name prefix-matches several companies at an
+       identical score. With no suggestion list to disambiguate against,
+       picking the first would silently open a stranger's company — the exact
+       outcome the no-autocomplete rule exists to prevent. */
+    if (runnerUp && runnerUp.score === best.score) {
+      return { ambiguous: true, startup: null, startupId: null, score: best.score };
+    }
     return best;
   }
 

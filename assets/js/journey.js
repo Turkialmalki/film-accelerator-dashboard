@@ -5,15 +5,19 @@
    thirteen-section dashboard entirely.
 
    Screen order:
-     search → welcome → ١ المرحلة → ٢ الفرضيات → ٣ التحدي
-                      → ٤ التوصيات → ٥ الالتزام → النهاية
+     search → analyzing → welcome → ١ المرحلة → ٢ الفرضيات → ٣ التحدي
+                                  → ٤ التوصيات → ٥ الالتزام → النهاية
+
+   `analyzing` and `welcome` carry the product's central claim: before the
+   founder answers anything, the platform shows what it already knows about
+   their company. That is what buys the next ten minutes of attention.
 
    The sync layer (api.js), the search engine (search.js), the draft cache
    (storage.js) and the Supabase schema survive the redesign untouched.
    ========================================================================== */
 
 (() => {
-  const { $, $$, esc, num, minutes, countUp, debounce } = FVUI;
+  const { $, $$, esc, num, numText, minutes, countUp, debounce } = FVUI;
 
   /* ------------------------------ الحالة ------------------------------ */
 
@@ -209,13 +213,29 @@
     input.addEventListener('input', () => {
       error.classList.remove('show');
       input.classList.remove('error');
+      if (button.dataset.retry === '1') {
+        button.dataset.retry = '';
+        button.textContent = 'التالي';
+      }
     });
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const text = input.value.trim();
 
-      if (!text) return fail('يرجى كتابة اسمك أو اسم شركتك.');
+      /* In the retry state the button's job is to clear the failed attempt,
+         not to search the same text again. */
+      if (button.dataset.retry === '1') {
+        button.dataset.retry = '';
+        button.textContent = 'التالي';
+        error.classList.remove('show');
+        input.classList.remove('error');
+        input.value = '';
+        input.focus();
+        return;
+      }
+
+      const text = input.value.trim();
+      if (!text) { input.focus(); return; }
 
       button.setAttribute('aria-disabled', 'true');
       button.textContent = 'جارٍ البحث...';
@@ -232,17 +252,22 @@
 
       /* Nothing about the cohort leaks on failure: no count, no near-miss, no
          "did you mean". The founder learns only that this text did not match. */
-      if (!match) {
-        return fail('لم يتم العثور على الاسم.<br>يرجى التأكد من كتابة اسمك أو اسم الشركة بشكل صحيح.');
-      }
+      if (!match) return fail('لم يتم العثور على بيانات مطابقة.');
+
+      /* A first name alone can fit several people here. Asking for the full
+         name reveals nothing — no count, no names — and is far better than
+         silently opening someone else's company. */
+      if (match.ambiguous) return fail('يرجى كتابة الاسم كاملاً.');
 
       await openStartup(match.startup, text);
     });
 
-    function fail(html) {
-      error.innerHTML = html;
+    function fail(message) {
+      error.textContent = message;
       error.classList.add('show');
       input.classList.add('error');
+      button.dataset.retry = '1';
+      button.textContent = 'إعادة المحاولة';
       input.focus();
     }
   }
@@ -256,57 +281,148 @@
     state.participantName = typedName || state.participantName;
     FVStore.setSession(startup.id);
 
+    /* Resuming on the same device is not a first impression — the founder has
+       already seen the reveal, so skip straight back to where they stopped. */
+    if (resuming) {
+      state.answers = await loadAnswers(startup);
+      renderAll(resuming);
+      if (state.answers.submitted) { renderDone(); show('done'); }
+      else show('welcome');
+      return;
+    }
+
+    show('analyzing');
+    await runAnalysis(startup);
+
+    renderAll(false);
+    show('welcome');
+  }
+
+  async function loadAnswers(startup) {
     /* The server holds the team's shared answers — a co-founder may already
        have filled part of this in from another phone. */
     const row = await FVApi.fetchOne(startup.id);
-    state.answers = row
+    return row
       ? FVStore.hydrate(startup.id, FVApi.rowToResponse(row))
       : FVStore.get(startup.id);
+  }
 
+  function renderAll(resuming) {
     renderWelcome(resuming);
     renderStage();
     renderAssumptions();
     renderChallenge();
     renderCommitment();
+  }
 
-    if (state.answers.submitted) { renderDone(); show('done'); }
-    else show('welcome');
+  /* ------------------------ الشاشة ٢ — التحليل ------------------------ */
+
+  /* Each line is work that actually happens here. The pacing exists so the
+     founder can read what was done on their behalf, not to manufacture a
+     wait — and the real work is awaited, so a slow network extends the step
+     rather than being papered over by a fixed timer. */
+  const ANALYSIS_STEPS = [
+    { label: 'التعرف على الشركة',        run: async () => {} },
+    { label: 'قراءة ملف شركتك',          run: async (s) => { state.answers = await loadAnswers(s); } },
+    { label: 'تجهيز توصياتك الخاصة',     run: async (s) => { FVRecommend.forStartup(s, state.answers); } }
+  ];
+
+  async function runAnalysis(startup) {
+    const host = $('#analyzing');
+
+    host.innerHTML = `
+      <p class="eyebrow anim anim-1">لحظة واحدة</p>
+      <h2 class="anim anim-1" style="margin-top:.5rem">نقرأ ملف شركتك</h2>
+
+      <div class="analysis anim anim-2" style="margin-top:2rem" aria-live="polite">
+        ${ANALYSIS_STEPS.map((s, i) => `
+          <div class="analysis-line" data-line="${i}">
+            <span class="analysis-tick" aria-hidden="true">✓</span>
+            <span>${esc(s.label)}</span>
+          </div>`).join('')}
+      </div>`;
+
+    const lines = $$('.analysis-line', host);
+
+    for (let i = 0; i < ANALYSIS_STEPS.length; i++) {
+      lines[i].classList.add('in');
+      /* Both the real work and a readable minimum must finish before the tick
+         lands, so the line never blinks past faster than it can be read. */
+      await Promise.all([
+        ANALYSIS_STEPS[i].run(startup),
+        wait(FVUI.reducedMotion ? 0 : 420)
+      ]);
+      lines[i].classList.add('done');
+    }
+
+    await wait(FVUI.reducedMotion ? 0 : 260);
   }
 
   /* ------------------------ الشاشة ٢ — الترحيب ------------------------ */
 
+  /**
+   * The reveal.
+   *
+   * Everything here is already known before the founder answers anything, and
+   * that is the whole point: the platform earns the next ten minutes by
+   * showing it did its reading first. Read-only, no inputs, scannable in
+   * about fifteen seconds.
+   */
   function renderWelcome(resuming) {
     const s = state.startup;
 
     $('#welcome').innerHTML = `
-      <p class="eyebrow anim anim-1">${resuming ? 'مرحباً بعودتك' : 'مرحباً 👋'}</p>
+      <p class="eyebrow anim anim-1">
+        ${resuming ? 'مرحباً بعودتك' : 'تم التعرف على شركتك'}
+      </p>
 
-      <h1 class="anim anim-1" style="margin-top:.5rem">
-        أهلاً بك في ورشة<br>التحقق من الشركات الناشئة.
+      <h1 class="reveal-name anim anim-1" style="margin-top:.5rem">
+        ${esc(s.startup_name_ar)}
       </h1>
 
-      <div class="stack anim anim-2" style="margin-top:2rem">
-        <div class="card">
-          <p class="card-label">الشركة</p>
-          <p class="card-value">${esc(s.startup_name_ar)}</p>
-        </div>
+      <div class="chips anim anim-1" style="margin-top:.9rem">
+        <span class="chip chip--accent">${esc(s.stage_ar)}</span>
+        <span class="chip">${esc(s.category)}</span>
+        ${s.location ? `<span class="chip">${esc(s.location)}</span>` : ''}
+      </div>
 
-        <div class="card card--quiet">
-          <p class="card-label">هدف هذه الرحلة</p>
-          <p class="lede" style="color:var(--ink-1);margin-top:.2rem">
-            سنساعدك في معرفة أهم خطوة يجب تنفيذها بعد هذه الورشة.
-          </p>
-        </div>
+      <div class="card anim anim-2" style="margin-top:1.4rem">
+        <p class="card-label">ما نعرفه عن شركتك</p>
+        <p class="lede" style="color:var(--ink-1);font-size:1rem;margin-top:.35rem">
+          ${esc(numText(s.description))}
+        </p>
+      </div>
 
-        <div class="card card--quiet">
-          <p class="card-label">مدة التمرين</p>
-          <p class="card-value">حوالي ${minutes(10)}</p>
+      <div class="facts anim anim-3" style="margin-top:.6rem">
+        <div class="fact">
+          <p class="fact-label">الإيراد السنوي</p>
+          <p class="fact-value">${esc(numText(s.revenue))}</p>
+        </div>
+        <div class="fact">
+          <p class="fact-label">حجم الفريق</p>
+          <p class="fact-value">${esc(numText(s.team_size_label || s.team_size))}</p>
         </div>
       </div>
 
-      <div class="actions anim anim-3">
+      ${s.key_strengths?.[0] ? `
+        <div class="finding tone-strength anim anim-4" style="margin-top:.6rem">
+          <span class="finding-icon" aria-hidden="true">✅</span>
+          <div>
+            <p class="finding-title">أبرز ما يميزك</p>
+            <p class="finding-body">${esc(numText(s.key_strengths[0]))}</p>
+          </div>
+        </div>` : ''}
+
+      <div class="card card--quiet anim anim-4" style="margin-top:1.2rem">
+        <p class="card-label">هدف هذه الرحلة</p>
+        <p class="lede" style="color:var(--ink-1);font-size:1rem;margin-top:.2rem">
+          خلال ${minutes(10)} سنساعدك في تحديد أهم خطوة يجب تنفيذها بعد هذه الورشة.
+        </p>
+      </div>
+
+      <div class="actions anim anim-5">
         <p class="muted" style="font-size:.82rem;text-align:center">
-          الخطوة ${num(1)} من ${num(TOTAL_STEPS)}
+          ${num(TOTAL_STEPS)} خطوات · تبدأ الآن
         </p>
         <button class="btn btn--primary" id="welcome-start">
           ${resuming ? 'أكمل رحلتك' : 'ابدأ'}
@@ -338,7 +454,7 @@
       <div class="card anim anim-2" style="margin-top:1.2rem">
         <p class="card-label">أين تقف شركتك اليوم</p>
         <p class="card-value" style="color:var(--amber);font-size:1.42rem">${esc(s.stage_ar)}</p>
-        <p class="lede" style="margin-top:.8rem;font-size:1rem">${esc(s.stage_summary_ar)}</p>
+        <p class="lede" style="margin-top:.8rem;font-size:1rem">${esc(numText(s.stage_summary_ar))}</p>
       </div>
 
       <hr class="rule anim anim-3">
@@ -358,7 +474,9 @@
 
     wireChoiceGroup($('#stage-choices'), (id) => {
       record({ challenge: { ...state.answers.challenge, tags: [id] } });
-      $('#stage-next').removeAttribute('aria-disabled');
+      const btn = $('#stage-next');
+      btn.removeAttribute('aria-disabled');
+      markReady(btn, true);
     });
 
     $('#stage-next').addEventListener('click', () => show('assumptions'));
@@ -415,6 +533,7 @@
        the dimmed style and the pointer-events guard would silently no-op. */
     if (done) btn.removeAttribute('aria-disabled');
     else btn.setAttribute('aria-disabled', 'true');
+    markReady(btn, done);
   }
 
   /* ---------------------- الخطوة ٣ — تحديك الحالي ---------------------- */
@@ -459,13 +578,13 @@
       <h2 class="anim anim-1">توصيات خاصة بشركتك</h2>
       <p class="lede anim anim-1" style="margin-top:.5rem">بناءً على مرحلتك وإجاباتك.</p>
 
-      <div class="stack anim anim-2" style="margin-top:1.6rem">
-        ${finding('tone-strength', '✅', 'نقطة قوة',        rec.strength)}
-        ${finding('tone-risk',     '⚠️', 'أكبر مخاطرة',     rec.risk)}
-        ${finding('tone-next',     '🎯', 'أفضل خطوة تالية', rec.nextStep)}
+      <div class="stack" style="margin-top:1.6rem">
+        ${finding('tone-strength', '✅', 'نقطة قوة',        rec.strength,  'anim anim-2')}
+        ${finding('tone-risk',     '⚠️', 'أكبر مخاطرة',     rec.risk,      'anim anim-3')}
+        ${finding('tone-next',     '🎯', 'أفضل خطوة تالية', rec.nextStep,  'anim anim-4')}
       </div>
 
-      <div class="actions anim anim-3">
+      <div class="actions anim anim-5">
         <button class="btn btn--primary" id="insights-next">التالي</button>
         <button class="btn-back" id="insights-back" style="align-self:center">رجوع</button>
       </div>`;
@@ -474,15 +593,32 @@
     $('#insights-back').addEventListener('click', () => show('challenge'));
   }
 
-  function finding(tone, icon, title, body) {
+  function finding(tone, icon, title, body, anim = '') {
     return `
-      <div class="finding ${tone}">
+      <div class="finding ${tone} ${anim}">
         <span class="finding-icon" aria-hidden="true">${icon}</span>
         <div>
           <p class="finding-title">${esc(title)}</p>
-          <p class="finding-body">${esc(body)}</p>
+          <p class="finding-body">${esc(numText(body))}</p>
         </div>
       </div>`;
+  }
+
+  /**
+   * Fire the completion cue on a step's primary button, once.
+   *
+   * It marks the transition from "incomplete" to "done" — re-firing it on
+   * every subsequent tap would turn a confirmation into a nag, so the flag
+   * is latched and only cleared when the step becomes incomplete again.
+   */
+  function markReady(btn, complete) {
+    if (!btn) return;
+    if (!complete) { btn.dataset.ready = ''; return; }
+    if (btn.dataset.ready === '1') return;
+    btn.dataset.ready = '1';
+    btn.classList.remove('is-ready');
+    void btn.offsetWidth;                       // restart the animation
+    btn.classList.add('is-ready');
   }
 
   /* ----------------------- الخطوة ٥ — التزامك ----------------------- */
@@ -546,9 +682,9 @@
         ${ringMarkup(score)}
       </div>
 
-      <div class="stack anim anim-3">
-        ${finding('tone-risk', '⚠️', 'أهم مخاطرة',      rec.risk)}
-        ${finding('tone-next', '🎯', 'أفضل خطوة قادمة', rec.nextStep)}
+      <div class="stack">
+        ${finding('tone-risk', '⚠️', 'أهم مخاطرة',      rec.risk,      'anim anim-3')}
+        ${finding('tone-next', '🎯', 'أفضل خطوة قادمة', rec.nextStep,  'anim anim-4')}
       </div>
 
       <div class="card card--quiet anim anim-4" style="margin-top:1.4rem">
