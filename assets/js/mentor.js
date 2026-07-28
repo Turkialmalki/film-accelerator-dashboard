@@ -25,8 +25,10 @@
     summaryOpen: false
   };
 
-  const STAGE_ORDER = ['الفكرة', 'التحقق من المشكلة', 'اكتشاف العملاء', 'المنتج الأولي',
-                       'أول إيراد', 'ملاءمة المنتج للسوق', 'النمو', 'التوسع'];
+  /* Earliest to latest. Mirrors the stage_ar values in data/startups.json,
+     which follow the accelerator report's own vocabulary. */
+  const STAGE_ORDER = ['ما قبل التأسيس', 'المنتج الأولي', 'التأسيس',
+                       'ما قبل الجولة أ', 'الجولة أ'];
 
   const AREA_LABELS = {
     customers: 'العملاء', marketing: 'التسويق', product: 'المنتج',
@@ -77,7 +79,7 @@
     mountConnectionBadge();
 
     try {
-      const res = await fetch('data/startups.json');
+      const res = await fetch(FVConfig.dataUrl());
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       state.startups = await res.json();
     } catch (err) {

@@ -124,7 +124,7 @@
     FVApi.init();
 
     try {
-      const res = await fetch('data/startups.json');
+      const res = await fetch(FVConfig.dataUrl());
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       state.startups = await res.json();
     } catch (err) {

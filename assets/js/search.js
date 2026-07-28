@@ -115,6 +115,10 @@ const FVSearch = (() => {
     startups.forEach(s => {
       push(s.startup_name_en, 'startup', s);
       push(s.startup_name_ar, 'startup', s);
+      /* Sub-brands and bare forms: several companies are recorded as
+         "شركة bingolab51 (منصة بسر)" or "منصة NAS (شركة Empire Pictures)",
+         and founders search for whichever half they think of first. */
+      (s.aliases || []).forEach(a => push(a, 'startup', s));
       (s.founders || []).forEach(f => {
         push(f.name_en, 'founder', s, f.role);
         push(f.name_ar, 'founder', s, f.role);

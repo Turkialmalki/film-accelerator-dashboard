@@ -23,6 +23,15 @@ const FVConfig = (() => {
 
   const SESSION_KEY = 'fvip:session-id';
 
+  /* Cache-buster for data/startups.json.
+     GitHub Pages serves every file with max-age=600, and the cohort file is
+     fetched by script rather than referenced from the HTML, so it cannot get
+     the ?v= stamp the other assets carry. Bump this whenever the cohort data
+     changes, or founders will run new code against a stale roster. */
+  const DATA_VERSION = '20260728c';
+
+  const dataUrl = () => `data/startups.json?v=${DATA_VERSION}`;
+
   function isConfigured() {
     return !SUPABASE_URL.includes('YOUR-PROJECT-REF') &&
            !SUPABASE_ANON_KEY.includes('YOUR-ANON-KEY') &&
@@ -61,8 +70,8 @@ const FVConfig = (() => {
   }
 
   return {
-    SUPABASE_URL, SUPABASE_ANON_KEY,
-    isConfigured, workshopId, sessionId
+    SUPABASE_URL, SUPABASE_ANON_KEY, DATA_VERSION,
+    isConfigured, workshopId, sessionId, dataUrl
   };
 })();
 

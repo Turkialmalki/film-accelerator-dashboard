@@ -21,8 +21,10 @@
 const FVRecommend = (() => {
 
   /* Stages where "nobody has paid yet" is expected rather than alarming. The
-     advice still changes, but the framing does not treat it as a failure. */
-  const EARLY_STAGES = ['Idea', 'Problem Validation', 'Customer Discovery'];
+     advice still changes, but the framing does not treat it as a failure.
+     These match the `stage` values in data/startups.json, which come from the
+     accelerator report — keep them in step if that vocabulary changes. */
+  const EARLY_STAGES = ['Pre-Seed', 'MVP'];
 
   /* ---------------------------- المخاطر ---------------------------- */
 
