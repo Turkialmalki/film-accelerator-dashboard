@@ -11,10 +11,10 @@
      cache-control: max-age=600, so without this a founder can end up holding
      a fresh index.html and a stale journey.js — which does not degrade, it
      throws. BUMP THIS ON EVERY DEPLOY, in both index.html and mentor.html. -->
-<link rel="icon" href="assets/images/fba-mark.svg?v=20260728d" type="image/svg+xml">
+<link rel="icon" href="assets/images/fba-mark.svg?v=20260728e" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="assets/css/brand.css?v=20260728d">
+<link rel="stylesheet" href="assets/css/brand.css?v=20260728e">
 </head>
 <body>
 
@@ -24,7 +24,7 @@
   <header class="brandbar">
     <div class="column brandbar-inner">
       <div class="brand-lockup">
-        <img src="assets/images/fba-mark-light.svg?v=20260728d" alt="" width="26" height="30">
+        <img src="assets/images/fba-mark-light.svg?v=20260728e" alt="" width="26" height="30">
         <span class="brand-name">مسرعة الأعمال في الأفلام</span>
       </div>
       <span class="savestate" data-savestate aria-live="polite"></span>
@@ -52,7 +52,7 @@
     <section class="screen active" data-screen="search">
       <div class="column screen-body">
         <div style="text-align:center">
-          <img class="anim anim-1" src="assets/images/fba-mark-light.svg?v=20260728d" alt=""
+          <img class="anim anim-1" src="assets/images/fba-mark-light.svg?v=20260728e" alt=""
                width="42" height="49" style="opacity:.55;margin-bottom:1.8rem">
 
           <h1 class="anim anim-1">ورشة التحقق من الشركات الناشئة</h1>
@@ -87,29 +87,19 @@
       <div class="column screen-body" id="welcome"></div>
     </section>
 
-    <!-- الخطوة ١ — مرحلتك الحالية -->
-    <section class="screen" data-screen="stage">
-      <div class="column screen-body" id="stage"></div>
+    <!-- ٤ — المرشد يتحدث قبل أي سؤال -->
+    <section class="screen" data-screen="coach">
+      <div class="column screen-body" id="coach"></div>
     </section>
 
-    <!-- الخطوة ٢ — التحقق من الفرضيات -->
-    <section class="screen" data-screen="assumptions">
-      <div class="column screen-body" id="assumptions"></div>
+    <!-- ٥ — لقطة الشركة -->
+    <section class="screen" data-screen="snapshot">
+      <div class="column screen-body" id="snapshot"></div>
     </section>
 
-    <!-- الخطوة ٣ — تحديك الحالي -->
-    <section class="screen" data-screen="challenge">
-      <div class="column screen-body" id="challenge"></div>
-    </section>
-
-    <!-- الخطوة ٤ — التوصيات -->
-    <section class="screen" data-screen="insights">
-      <div class="column screen-body" id="insights"></div>
-    </section>
-
-    <!-- الخطوة ٥ — التزامك -->
-    <section class="screen" data-screen="commitment">
-      <div class="column screen-body" id="commitment"></div>
+    <!-- ٦ — الأسئلة، سؤال واحد في كل شاشة -->
+    <section class="screen" data-screen="question">
+      <div class="column screen-body" id="question"></div>
     </section>
 
     <!-- النهاية -->
@@ -120,19 +110,21 @@
   </main>
 
   <footer class="column" style="padding-top:1rem;padding-bottom:2rem;text-align:center">
-    <img src="assets/images/film-commission-light.svg?v=20260728d" alt="هيئة الأفلام"
+    <img src="assets/images/film-commission-light.svg?v=20260728e" alt="هيئة الأفلام"
          style="height:20px;width:auto;opacity:.32">
   </footer>
 
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="assets/js/config.js?v=20260728d"></script>
-<script src="assets/js/api.js?v=20260728d"></script>
-<script src="assets/js/search.js?v=20260728d"></script>
-<script src="assets/js/storage.js?v=20260728d"></script>
-<script src="assets/js/ui.js?v=20260728d"></script>
-<script src="assets/js/recommend.js?v=20260728d"></script>
-<script src="assets/js/journey.js?v=20260728d"></script>
+<script src="assets/js/config.js?v=20260728e"></script>
+<script src="assets/js/api.js?v=20260728e"></script>
+<script src="assets/js/search.js?v=20260728e"></script>
+<script src="assets/js/storage.js?v=20260728e"></script>
+<script src="assets/js/ui.js?v=20260728e"></script>
+<script src="assets/js/questions.js?v=20260728e"></script>
+<script src="assets/js/coach.js?v=20260728e"></script>
+<script src="assets/js/recommend.js?v=20260728e"></script>
+<script src="assets/js/journey.js?v=20260728e"></script>
 </body>
 </html>

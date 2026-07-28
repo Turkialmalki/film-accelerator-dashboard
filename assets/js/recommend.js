@@ -135,7 +135,108 @@ const FVRecommend = (() => {
     };
   }
 
-  return { forStartup };
+  /* ==========================================================================
+     لوحة النهاية — the closing dashboard for one company.
+
+     Built from the company's record crossed with what it just answered, so no
+     two founders see the same page and nobody sees a page that ignores what
+     they said five minutes ago.
+     ========================================================================== */
+
+  const AREA_LABEL = {
+    customers: 'العملاء', marketing: 'التسويق', product: 'المنتج',
+    pricing: 'التسعير', investment: 'الاستثمار', team: 'الفريق'
+  };
+
+  const UNTESTED_LABEL = {
+    willingness: 'استعداد العميل للدفع بالسعر الحالي',
+    channel:     'قناة وصول متكررة للعملاء',
+    retention:   'بقاء العميل بعد أول تجربة',
+    problem:     'أن المشكلة مؤلمة بما يكفي',
+    margin:      'أن الهامش يصمد عند التوسع',
+    ops:         'قدرة التشغيل على الحمل الأكبر'
+  };
+
+  /**
+   * The three priorities to leave with.
+   *
+   * Ordered by what the founder just told us, not by what the file said:
+   * anything they marked untested outranks anything merely reported, because
+   * an admitted gap is better evidence than an analyst's note.
+   */
+  function prioritiesFor(startup, response) {
+    const a = (response && response.assumptions) || {};
+    const r = (response && response.reflections) || {};
+    const out = [];
+
+    if (a.talked === 'no') out.push({ w: 100, text: 'ابدأ بخمس محادثات عملاء قبل أي قرار منتج أو تسعير.' });
+    if (a.problem === 'no') out.push({ w: 95, text: 'اكتب المشكلة في جملة واحدة يتعرف عليها العميل دون شرح.' });
+    if (a.paid === 'no') out.push({ w: 90, text: 'أغلق أول عملية دفع حقيقية، مهما كانت صغيرة أو يدوية.' });
+
+    /* Their own multi-select answer, echoed back as work to do. */
+    const untested = Array.isArray(r.untested) ? r.untested : [];
+    untested.slice(0, 2).forEach((key, i) => {
+      if (UNTESTED_LABEL[key]) out.push({ w: 80 - i, text: `اختبر ${UNTESTED_LABEL[key]} خلال المرحلة القادمة.` });
+    });
+
+    /* The challenge they personally ranked first, in their own words. */
+    const ranked = Array.isArray(r['rank-challenges']) ? r['rank-challenges'] : [];
+    const own = startup.current_challenges || [];
+    if (ranked.length) {
+      const first = ranked[0];
+      const idx = /^own(\d+)$/.exec(first);
+      if (idx && own[+idx[1]]) out.push({ w: 75, text: own[+idx[1]] });
+      else if (first === 'cash') out.push({ w: 75, text: 'عالج التدفق النقدي قبل أي التزام توسّعي جديد.' });
+      else if (first === 'talent') out.push({ w: 75, text: 'أغلق فجوة الكوادر الحرجة قبل زيادة الحمل.' });
+    }
+
+    if (Number(r['moat-confidence']) <= 2) {
+      out.push({ w: 70, text: 'ميزتك التنافسية هشة بتقديرك — ابنِ ما لا يُقلّد: بيانات، أو تكامل، أو مجتمع.' });
+    }
+    if (r['model-proof'] === 'untested' || r['model-proof'] === 'testing') {
+      out.push({ w: 68, text: 'أثبت نموذج الإيراد بتكرار حقيقي مع أكثر من عميل، لا بحالة واحدة.' });
+    }
+    if (r['bus-factor'] === 'all' || r['bus-factor'] === 'delivery') {
+      out.push({ w: 66, text: 'وثّق عملية التسليم حتى لا تتوقف الشركة بغياب شخص واحد.' });
+    }
+    if (Number(r.runway) <= 3) {
+      out.push({ w: 98, text: 'رصيدك النقدي قصير — عالج التمويل أو الإيراد قبل أي شيء آخر.' });
+    }
+
+    /* Fall back to the report's own priorities so the list is never thin. */
+    (startup.accelerator_priorities || []).forEach((p, i) => out.push({ w: 40 - i, text: p }));
+
+    const seen = new Set();
+    return out.sort((x, y) => y.w - x.w)
+      .filter(o => o.text && !seen.has(o.text) && seen.add(o.text))
+      .slice(0, 3)
+      .map(o => o.text);
+  }
+
+  /** Where the founder asked for help, in words. */
+  function focusFor(response) {
+    const tag = ((response && response.challenge && response.challenge.tags) || [])[0];
+    return AREA_LABEL[tag] || null;
+  }
+
+  /**
+   * The closing dashboard payload.
+   * @returns { score, focus, strength, risk, nextStep, priorities, opportunity }
+   */
+  function dashboardFor(startup, response) {
+    const base = forStartup(startup, response);
+    return {
+      score: window.FVStore ? FVStore.readinessOf(response, startup) : Number(startup.readiness) || 0,
+      focus: focusFor(response),
+      strength: base.strength,
+      risk: base.risk,
+      nextStep: base.nextStep,
+      priorities: prioritiesFor(startup, response),
+      opportunity: startup.growth_roadmap || base.nextStep
+    };
+  }
+
+  return { forStartup, dashboardFor, prioritiesFor, focusFor };
 })();
 
 window.FVRecommend = FVRecommend;

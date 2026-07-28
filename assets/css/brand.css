@@ -518,6 +518,182 @@ h3 {
   box-shadow: 0 8px 22px rgba(251, 174, 64, .2);
 }
 
+/* ---------------------------------------------------------------- Question types */
+
+.q-title { font-size: clamp(1.24rem, 4.6vw, 1.55rem); font-weight: 600; line-height: 1.55; }
+
+.q-hint { font-size: .92rem; color: var(--ink-3); margin-top: .55rem; line-height: 1.7; }
+
+/* A line quoted back from the company's own record. */
+.q-quote {
+  margin-top: 1rem;
+  padding: .95rem 1.1rem;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, .04);
+  border: 1px solid var(--line);
+  border-inline-start: 3px solid var(--teal);
+  font-size: .98rem;
+  line-height: 1.8;
+  color: var(--ink-2);
+}
+
+/* --- Multi-select: a check, not a dot, so it reads as "several allowed" --- */
+.choice-check {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
+  border: 1.5px solid var(--line-strong);
+  display: grid;
+  place-items: center;
+  font-size: .72rem;
+  color: transparent;
+  transition: border-color var(--fast) var(--ease), background var(--fast) var(--ease),
+              color var(--fast) var(--ease);
+}
+
+.choice[aria-checked="true"] .choice-check {
+  border-color: var(--amber);
+  background: var(--amber);
+  color: #14212b;
+}
+
+/* --- Scale: five stops, labelled at both ends --- */
+.scale { display: grid; gap: .7rem; }
+
+.scale-row { display: flex; gap: .45rem; }
+
+.scale-step {
+  flex: 1;
+  min-height: 62px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, .04);
+  border: 1px solid var(--line);
+  color: var(--ink-2);
+  font-size: 1.1rem;
+  font-weight: 600;
+  transition: transform var(--fast) var(--ease), background var(--fast) var(--ease),
+              border-color var(--fast) var(--ease), color var(--fast) var(--ease);
+}
+
+.scale-step:active { transform: scale(.96); }
+
+.scale-step[aria-checked="true"] {
+  background: linear-gradient(135deg, var(--amber), var(--amber-soft));
+  border-color: transparent;
+  color: #14212b;
+  box-shadow: 0 8px 22px rgba(251, 174, 64, .2);
+}
+
+.scale-ends {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: .8rem;
+  color: var(--ink-3);
+}
+
+/* --- Slider --- */
+.slider-value {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--amber);
+  margin-bottom: 1rem;
+}
+
+.slider {
+  width: 100%;
+  height: 34px;
+  background: transparent;
+  -webkit-appearance: none;
+  appearance: none;
+  direction: ltr;                  /* the track must read low→high visually */
+}
+
+.slider::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 99px;
+  background: var(--line);
+}
+
+.slider::-moz-range-track {
+  height: 6px;
+  border-radius: 99px;
+  background: var(--line);
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 30px;
+  height: 30px;
+  margin-top: -12px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--amber), var(--amber-soft));
+  border: 3px solid var(--navy-800);
+  box-shadow: 0 4px 14px rgba(251, 174, 64, .35);
+  cursor: grab;
+}
+
+.slider::-moz-range-thumb {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 3px solid var(--navy-800);
+  background: var(--amber);
+  box-shadow: 0 4px 14px rgba(251, 174, 64, .35);
+  cursor: grab;
+}
+
+/* --- Ranking: tap in order. Dragging is unreliable one-handed on a phone
+       and unusable with a keyboard, so order is expressed by tapping. --- */
+.rank-list { display: grid; gap: .55rem; }
+
+.rank-item {
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+  width: 100%;
+  padding: .95rem 1.05rem;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, .04);
+  border: 1px solid var(--line);
+  color: var(--ink-2);
+  font-size: .97rem;
+  line-height: 1.7;
+  text-align: right;
+  transition: transform var(--fast) var(--ease), background var(--fast) var(--ease),
+              border-color var(--fast) var(--ease), color var(--fast) var(--ease);
+}
+
+.rank-item:active { transform: scale(.99); }
+
+.rank-item[data-picked="1"] {
+  background: var(--amber-dim);
+  border-color: rgba(251, 174, 64, .5);
+  color: var(--ink-1);
+}
+
+.rank-badge {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  border: 1.5px solid var(--line-strong);
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--ink-3);
+  transition: all var(--fast) var(--ease);
+}
+
+.rank-item[data-picked="1"] .rank-badge {
+  background: var(--amber);
+  border-color: transparent;
+  color: #14212b;
+}
+
 /* ---------------------------------------------------------------- Buttons */
 
 .btn {

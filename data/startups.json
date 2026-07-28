@@ -73,7 +73,9 @@
       "ارتفاع كلفة التوكنز التي تضغط على هامش الربحية قبل نضوج نموذج الإيراد"
     ],
     "growth_roadmap": "صياغة سردية موحدة تُعرف Specter كمنصة تقنية للإنتاج، وجعل Spectre AI رأس الحربة التجاري مع استباق رصيد AWS لتغطية كلفة التوكنز.",
-    "business_model": null
+    "business_model": "ترخيص تقني ومشاريع إنتاج",
+    "business_model_detail": "محرك تقني مملوك + مشاريع إنتاج",
+    "business_model_source": "derived-from-category-and-description"
   },
   {
     "id": "scenariohat",
@@ -147,7 +149,9 @@
       "نموذج الإيراد وااشتراكات البيانات لا يزال فرضية غير مختبرة في السوق"
     ],
     "growth_roadmap": "صياغة رسالة تموضع موحدة تربط المنصة المجانية كمحرك وصول مع استوديو الملكية الفكرية كمصدر الدخل الفعلي.",
-    "business_model": null
+    "business_model": "اشتراكات وبيانات",
+    "business_model_detail": "منصة بيانات سينمائية باشتراك",
+    "business_model_source": "derived-from-category-and-description"
   },
   {
     "id": "blacklight",
@@ -212,7 +216,9 @@
       "الاعتماد الحالي على صفقات فردية بدلاً من قناة مبيعات متكررة"
     ],
     "growth_roadmap": "بناء محرك اكتساب عملاء B2B وتجهيز ملفات CRM لمتابعة المنتجين الدوليين في المهرجانات العالمية وتثبيت هوية \"البوابة\".",
-    "business_model": null
+    "business_model": "خدمات ومشاريع",
+    "business_model_detail": "خدمات وتسهيلات إنتاجية بالمشروع",
+    "business_model_source": "derived-from-category-and-description"
   },
   {
     "id": "storytailors",
@@ -276,7 +282,9 @@
       "سقف تشغيلي حالي يحد القدرة على خدمة أكثر من فيلم كامل واحد في نفس الوقت"
     ],
     "growth_roadmap": "استهداف شركات الإنتاج في مرحلة تطوير النص المبكرة لتثبيت الأزياء، وتوظيف مقدمات المسرعة لرفع الطاقة التشغيلية.",
-    "business_model": null
+    "business_model": "خدمات ومشاريع",
+    "business_model_detail": "تصميم أزياء وخدمات إنتاج",
+    "business_model_source": "derived-from-category-and-description"
   },
   {
     "id": "whitelens",
@@ -340,7 +348,9 @@
       "عمولات سداد المنصات المرتفعة وتأخر التدفق النقدي"
     ],
     "growth_roadmap": "تفعيل حملات التسويق الرقمي المدفوعة الدائمة (Evergreen) للكتالوج كاملاً لتمويل إنتاج الدورات والانتقال للااشتراكات.",
-    "business_model": null
+    "business_model": "اشتراكات تعليمية B2B/B2G",
+    "business_model_detail": "منصة تعليم بعقود مؤسسية وحكومية",
+    "business_model_source": "derived-from-category-and-description"
   },
   {
     "id": "meem",
@@ -414,7 +424,9 @@
       "اعتماد الدخل الحالي بشكل رئيسي على العقود الحكومية المتقطعة"
     ],
     "growth_roadmap": "بناء اقتصاديات وحدة ناضجة لنادي السينما وتشغيل العروض في مساحات مؤقتة شريكة قبل الالتزام بالمساحة الدائمة.",
-    "business_model": null
+    "business_model": "عضويات وفعاليات",
+    "business_model_detail": "مجتمع وعروض سينمائية بالعضوية",
+    "business_model_source": "derived-from-category-and-description"
   },
   {
     "id": "fateel",
@@ -478,7 +490,9 @@
       "طريقة العمل بأسلوب العلاقات غير الرسمية بدلاً من هيكل تمويلي مؤسسي"
     ],
     "growth_roadmap": "تصميم هيكل تمويلي رسمي للصندوق وتربيطه بشراكات مؤسسية ورعايات مجتمعية مع تحديد معايير الاستثمار.",
-    "business_model": null
+    "business_model": "تمويل بحصة من الإيراد",
+    "business_model_detail": "صندوق تمويل سينمائي بنسبة",
+    "business_model_source": "derived-from-category-and-description"
   },
   {
     "id": "athar",
@@ -542,7 +556,9 @@
       "عدم تسجيل الملكية الفكرية للاسم والشعار وحقوق المشاريع"
     ],
     "growth_roadmap": "تفعيل مسار مبيعات B2B يستهدف شركات الإنتاج الكبرى بالرياض لتوفير خدمات مواقع التصوير، مع تسارع تسجيل الملكية الفكرية.",
-    "business_model": null
+    "business_model": "شراكة إنتاج",
+    "business_model_detail": "استوديو وشريك إنتاج محلي",
+    "business_model_source": "derived-from-category-and-description"
   },
   {
     "id": "expanse",
@@ -608,7 +624,9 @@
       "الاعتماد الكلي على التوصيات الشخصية لاكتساب العملاء دون قناة مبيعات"
     ],
     "growth_roadmap": "تخفيف أزمة السيولة عبر تمويل المستحقات وهيكلة دفعات العقود، وبناء أول وظيفة مبيعات واكتساب عملاء ممنهجة.",
-    "business_model": null
+    "business_model": "تطوير نصوص وملكية فكرية",
+    "business_model_detail": "تطوير IP وما قبل الإنتاج",
+    "business_model_source": "derived-from-category-and-description"
   },
   {
     "id": "tashbeek",
@@ -672,7 +690,9 @@
       "النموذج الربحي للاشتراكات لا يزال فرضية غير مختبرة في السوق"
     ],
     "growth_roadmap": "حسم سد الفجوة التقنية فوراً (عبر شريك تقني متفرغ أو تطوير مدار) لإتمام ربط نظام الدفع الضامن وإطلاق النسخة الأولى.",
-    "business_model": null
+    "business_model": "عمولة على المعاملات",
+    "business_model_detail": "سوق عمل ميداني بحساب ضامن",
+    "business_model_source": "derived-from-category-and-description"
   },
   {
     "id": "namnam",
@@ -736,7 +756,9 @@
       "الأصل الأعلى قيمة (أبو الحلول) يحتاج تمويلاً كبيراً غير مؤمن لدخول الإنتاج"
     ],
     "growth_roadmap": "إطلاق متجر مؤقت لمنتجات شخصية \"هدهود\" واختبار تحويل الشخصيات لشراكات تجارية لقياس عائد الامتياز.",
-    "business_model": null
+    "business_model": "امتياز وملكية فكرية",
+    "business_model_detail": "أنيميشن ونموذج امتياز IP",
+    "business_model_source": "derived-from-category-and-description"
   },
   {
     "id": "busr",
@@ -824,7 +846,9 @@
       "الشراكات مع سلاسل السينما الكبرى للحجز الموحد لم تؤمن رسمياً بعد"
     ],
     "growth_roadmap": "تقليص نطاق MVP إلى ميزتين (التقييم والمجتمع) لإطلاق المنصة بسرعة، ثم بناء طبقة تحليلات البيانات B2B.",
-    "business_model": null
+    "business_model": "اشتراكات B2B",
+    "business_model_detail": "منصة مجتمع وبيانات بالاشتراك",
+    "business_model_source": "derived-from-category-and-description"
   },
   {
     "id": "nas",
@@ -903,7 +927,9 @@
       "إصرار المؤسس على إطلاق كافة الطبقات دفعة واحدة بدلاً من نقطة دخول مركزة"
     ],
     "growth_roadmap": "فصل NAS ككيان مستقل بسجل تجاري يضمن الحياد، وتحديد \"غرفة بيانات المشاريع\" كنقطة إطلاق أولى لبناء الثقة.",
-    "business_model": null
+    "business_model": "اشتراكات وخدمات تحكيم",
+    "business_model_detail": "بنية تحتية للمهرجانات والتحكيم",
+    "business_model_source": "derived-from-category-and-description"
   },
   {
     "id": "aiqda",
@@ -981,7 +1007,9 @@
       "عوائق تحويلات البنوك السعودية الدولية عند التسعير بالدولار"
     ],
     "growth_roadmap": "حسم العميل المثالي الأول (التركيز على عقود B2G المباشرة أو B2C المخفض) وإطلاق الاشتراك المدفوع الأول.",
-    "business_model": null
+    "business_model": "اشتراكات تعليمية",
+    "business_model_detail": "منصة تعليم أنيميشن ومؤثرات",
+    "business_model_source": "derived-from-category-and-description"
   },
   {
     "id": "colorspro",
@@ -1056,7 +1084,9 @@
       "صعوبات تقنية وأمنية في بناء منصة VOD خاصة قبل نضوج نموذج التوزيع"
     ],
     "growth_roadmap": "التركيز التام على خدمة التوزيع كنشاط أساسي وتأجيل منصة VOD، وتحويل مجتمع الـ 548 عضواً إلى عملاء متكررين.",
-    "business_model": null
+    "business_model": "وكالة مبيعات بحصة",
+    "business_model_detail": "توزيع سينمائي ووكالة مبيعات",
+    "business_model_source": "derived-from-category-and-description"
   },
   {
     "id": "filmila",
@@ -1120,7 +1150,9 @@
       "تحدي سوق ثنائي الجانب يتطلب استقطاب المخرجين والجمهور بالتوازي"
     ],
     "growth_roadmap": "تموضع الأفلام القصيرة كتجربة حصرية منتقاة (جودة عالية ومجتمع حوار) لتبرير الدفع، وإطلاق تجريبي مع مخرجين بارزين.",
-    "business_model": null
+    "business_model": "بيع مباشر للمشاهدة TVOD",
+    "business_model_detail": "منصة بث أفلام قصيرة بالدفع للمشاهدة",
+    "business_model_source": "derived-from-category-and-description"
   },
   {
     "id": "prodexa",
@@ -1194,7 +1226,9 @@
       "كلفة تدريب التوأم الرقمي عالي الدقة لكل شخصية مما يضغط الهامش عند التوسع"
     ],
     "growth_roadmap": "تصميم مسار مبيعات B2B موجه للوكالات لتحويل الاهتمام إلى اشتراكات ترخيص متكررة واستغلال زخم عقود النجوم.",
-    "business_model": null
+    "business_model": "ترخيص ذكاء اصطناعي",
+    "business_model_detail": "ملكية فكرية وتوأم رقمي بالترخيص",
+    "business_model_source": "derived-from-category-and-description"
   },
   {
     "id": "mishkat",
@@ -1258,7 +1292,9 @@
       "عدم استقرار قرار نموذج التسعير النهائي (اشتراك أم لكل مشهد)"
     ],
     "growth_roadmap": "تركيز MVP على تطبيق iPad كشاشة مراقبة سينمائية بسيطة تشغل التحليل الفوري وتفعيل تجارب ميدانية مع أصحاب MoUs.",
-    "business_model": null
+    "business_model": "اشتراكات برمجية B2B",
+    "business_model_detail": "ذكاء اصطناعي للمراقبة في موقع التصوير",
+    "business_model_source": "derived-from-category-and-description"
   },
   {
     "id": "cinenow",
@@ -1323,7 +1359,9 @@
       "وجود قيود مثل المشاهدة الواحدة والإعلانات التي قد تزعج المستخدم المدفوع"
     ],
     "growth_roadmap": "معالجة نقاط الاحتكاك في تجربة المستخدم وتحديد \"فيلم بطل\" واحد يقود حملة الإطلاق والتوعية بالنموذج.",
-    "business_model": null
+    "business_model": "بيع مباشر للمشاهدة TVOD",
+    "business_model_detail": "سينما رقمية منزلية بالدفع للمشاهدة",
+    "business_model_source": "derived-from-category-and-description"
   },
   {
     "id": "mokhreg",
@@ -1387,6 +1425,8 @@
       "استنزاف هامش الورش المجتمعية بسبب تسعيرها الرمزي (50 ريالاً) دون فصل الميزانية"
     ],
     "growth_roadmap": "إعلان العلامة رسمياً كأول وكالة تسويق أفلام، واستغلال نجاح حملة \"البوليفارد\" لبناء حزم خدمات متكررة وفصل اقتصاديات الوكالة عن المجتمع.",
-    "business_model": null
+    "business_model": "وكالة تسويق بالخدمة",
+    "business_model_detail": "وكالة تسويق أفلام ومجتمع صناع",
+    "business_model_source": "derived-from-category-and-description"
   }
 ]

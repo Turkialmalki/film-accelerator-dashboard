@@ -41,6 +41,17 @@
     problem: 'وضوح المشكلة'
   };
 
+  /* The multi-select from the question engine. Founders name these themselves,
+     which makes them the strongest read on what the room has not validated. */
+  const UNTESTED_LABELS = {
+    willingness: 'استعداد العميل للدفع بالسعر الحالي',
+    channel:     'قناة وصول متكررة للعملاء',
+    retention:   'بقاء العميل بعد أول تجربة',
+    problem:     'أن المشكلة مؤلمة بما يكفي',
+    margin:      'أن الهامش يصمد عند التوسع',
+    ops:         'قدرة التشغيل على الحمل الأكبر'
+  };
+
   /* ------------------------------ البوابة ------------------------------ */
 
   function initGate() {
@@ -178,6 +189,7 @@
           : null,
         area: (r?.challenge?.tags || [])[0] || null,
         assumptions: r?.assumptions || {},
+        untested: Array.isArray(r?.reflections?.untested) ? r.reflections.untested : [],
         challengeText: (r?.challenge?.text || '').trim(),
         commitment: (r?.commitment || '').trim()
       };
@@ -199,6 +211,7 @@
          which can only count people who answered. */
       stages: rank(participants.filter(p => p.started), p => p.stage, STAGE_ORDER),
       unvalidated: unvalidatedAssumptions(participants),
+      untested: rank(participants.flatMap(p => p.untested.map(u => ({ u }))), x => UNTESTED_LABELS[x.u]),
       words: wordFrequencies(participants),
       /* Kept separate from the cloud: the summary calls these the recurring
          questions, so they must come from what founders raised as problems,
@@ -433,6 +446,12 @@
         items: unvalidated.length
           ? unvalidated.map(u => `${u.label} — إجابة «لا» لدى ${companies(u.value, { oblique: true })}`)
           : ['جميع الفرضيات الثلاث مثبتة لدى من أجاب حتى الآن.']
+      },
+      {
+        title: 'ما لم يُختبر بعد — بكلمات المؤسسين',
+        items: a.untested.length
+          ? a.untested.slice(0, 5).map(x => `${x.label} — ${companies(x.value)}`)
+          : ['لم يصل عدد كافٍ من الإجابات بعد.']
       },
       {
         /* A word seen once is not a recurring theme, so the threshold is two.

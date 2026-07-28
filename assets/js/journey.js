@@ -26,47 +26,18 @@
     startup: null,
     answers: null,
     screen: 'search',
-    participantName: ''
+    participantName: '',
+    questions: [],
+    qIndex: 0
   };
 
-  /* Only the five answered steps carry a progress number. The search, welcome
-     and final screens sit outside the count. */
-  const STEPS = ['stage', 'assumptions', 'challenge', 'insights', 'commitment'];
-  const TOTAL_STEPS = STEPS.length;
-
-  /* Rough minutes still to spend, read off the step the founder is on. It is
+  /* Roughly how long is left, read off the question the founder is on. It is
      a reassurance, not a countdown — deliberately never ticking in real time,
      because a running clock turns reflection into a race. */
-  const REMAINING = { stage: 9, assumptions: 7, challenge: 5, insights: 3, commitment: 2 };
-
-  /* ------------------------------ المحتوى ------------------------------ */
-
-  const CHALLENGE_AREAS = [
-    { id: 'customers',  label: 'العملاء' },
-    { id: 'marketing',  label: 'التسويق' },
-    { id: 'product',    label: 'المنتج' },
-    { id: 'pricing',    label: 'التسعير' },
-    { id: 'investment', label: 'الاستثمار' },
-    { id: 'team',       label: 'الفريق' }
-  ];
-
-  const ASSUMPTION_QUESTIONS = [
-    {
-      key: 'talked',
-      question: 'هل تحدثت مع عملائك؟',
-      options: [{ id: 'yes', label: 'نعم' }, { id: 'no', label: 'لا' }, { id: 'partly', label: 'جزئياً' }]
-    },
-    {
-      key: 'paid',
-      question: 'هل سبق أن دفع أحد مقابل خدمتك؟',
-      options: [{ id: 'yes', label: 'نعم' }, { id: 'no', label: 'لا' }]
-    },
-    {
-      key: 'problem',
-      question: 'هل تعرف بالضبط المشكلة التي تحلها؟',
-      options: [{ id: 'yes', label: 'نعم' }, { id: 'no', label: 'لا' }]
-    }
-  ];
+  function minutesLeft() {
+    const remaining = state.questions.length - state.qIndex;
+    return Math.max(1, Math.round(remaining * 0.6));
+  }
 
   /* --------------------------- المزامنة والحفظ --------------------------- */
 
@@ -78,9 +49,17 @@
       assumptions: state.answers.assumptions,
       commitment: state.answers.commitment,
       validationScore: FVStore.readinessOf(state.answers, state.startup),
-      completionPercentage: FVStore.completionOf(state.answers),
+      completionPercentage: completionPct(),
       submitted: submitted ?? state.answers.submitted
     };
+  }
+
+  /** Share of this founder's own question set that carries an answer. */
+  function completionPct() {
+    const qs = state.questions || [];
+    if (!qs.length) return FVStore.completionOf(state.answers);
+    const done = qs.filter(q => isAnswered(q)).length;
+    return Math.round((done / qs.length) * 100);
   }
 
   /** Push the current draft to Supabase and reflect the outcome in the UI. */
@@ -185,18 +164,21 @@
 
   function renderProgress() {
     const bar = $('#progress');
-    const idx = STEPS.indexOf(state.screen);
 
-    /* The bar is a step counter, so it exists only during the five steps. */
-    if (idx < 0) { bar.hidden = true; return; }
+    /* The bar counts questions, so it exists only while questions are on
+       screen — it would be meaningless on the reveal or the final dashboard. */
+    if (state.screen !== 'question' || !state.questions.length) { bar.hidden = true; return; }
     bar.hidden = false;
 
-    const step = idx + 1;
-    $('#progress-step').textContent = `الخطوة ${num(step)} من ${num(TOTAL_STEPS)}`;
-    $('#progress-time').textContent = `الوقت المتبقي: ${minutes(REMAINING[state.screen] ?? 2)}`;
-    $('#progress-fill').style.width = `${(step / TOTAL_STEPS) * 100}%`;
-    $('#progress-steps').innerHTML = STEPS
-      .map((_, i) => `<span class="${i < idx ? 'done' : i === idx ? 'now' : ''}"></span>`)
+    const total = state.questions.length;
+    const step = state.qIndex + 1;
+    const pct = Math.round((step / total) * 100);
+
+    $('#progress-step').textContent = `السؤال ${num(step)} من ${num(total)}`;
+    $('#progress-time').textContent = `${num(pct)}٪ مكتمل · ${minutes(minutesLeft())}`;
+    $('#progress-fill').style.width = `${pct}%`;
+    $('#progress-steps').innerHTML = state.questions
+      .map((_, i) => `<span class="${i < state.qIndex ? 'done' : i === state.qIndex ? 'now' : ''}"></span>`)
       .join('');
   }
 
@@ -286,8 +268,16 @@
     if (resuming) {
       state.answers = await loadAnswers(startup);
       renderAll(resuming);
-      if (state.answers.submitted) { renderDone(); show('done'); }
-      else show('welcome');
+
+      if (state.answers.submitted) { renderDone(); show('done'); return; }
+
+      const at = Number(state.answers.lastQuestion);
+      if (Number.isInteger(at) && at > 0) {
+        renderSnapshot();
+        goToQuestion(at);
+        return;
+      }
+      show('welcome');
       return;
     }
 
@@ -308,11 +298,10 @@
   }
 
   function renderAll(resuming) {
+    state.questions = FVQuestions.buildFor(state.startup);
+    state.qIndex = 0;
     renderWelcome(resuming);
-    renderStage();
-    renderAssumptions();
-    renderChallenge();
-    renderCommitment();
+    renderCoach();
   }
 
   /* ------------------------ الشاشة ٢ — التحليل ------------------------ */
@@ -322,9 +311,12 @@
      wait — and the real work is awaited, so a slow network extends the step
      rather than being papered over by a fixed timer. */
   const ANALYSIS_STEPS = [
-    { label: 'التعرف على الشركة',        run: async () => {} },
-    { label: 'قراءة ملف شركتك',          run: async (s) => { state.answers = await loadAnswers(s); } },
-    { label: 'تجهيز توصياتك الخاصة',     run: async (s) => { FVRecommend.forStartup(s, state.answers); } }
+    { label: 'تم العثور على بيانات الشركة',  run: async () => {} },
+    { label: 'تحليل مرحلة النمو',            run: async (s) => { state.stageRead = s.stage_ar; } },
+    { label: 'مراجعة نقاط القوة',            run: async (s) => { state.advCount = (s.competitive_advantages || []).length; } },
+    { label: 'تحليل التحديات الحالية',       run: async (s) => { state.riskCount = (s.current_challenges || []).length; } },
+    { label: 'بناء تجربة مخصصة',             run: async (s) => { state.answers = await loadAnswers(s); } },
+    { label: 'تجهيز أسئلة التحقق',           run: async (s) => { state.questions = FVQuestions.buildFor(s); } }
   ];
 
   async function runAnalysis(startup) {
@@ -422,7 +414,7 @@
 
       <div class="actions anim anim-5">
         <p class="muted" style="font-size:.82rem;text-align:center">
-          ${num(TOTAL_STEPS)} خطوات · تبدأ الآن
+          ${num(state.questions.length)} أسئلة قصيرة · حوالي ${minutes(6)}
         </p>
         <button class="btn btn--primary" id="welcome-start">
           ${resuming ? 'أكمل رحلتك' : 'ابدأ'}
@@ -432,7 +424,7 @@
         </button>
       </div>`;
 
-    $('#welcome-start').addEventListener('click', () => show('stage'));
+    $('#welcome-start').addEventListener('click', () => show('coach'));
 
     $('#welcome-switch').addEventListener('click', () => {
       FVStore.clearSession();
@@ -442,156 +434,7 @@
     });
   }
 
-  /* ---------------------- الخطوة ١ — مرحلتك الحالية ---------------------- */
-
-  function renderStage() {
-    const s = state.startup;
-    const chosen = (state.answers.challenge?.tags || [])[0] || '';
-
-    $('#stage').innerHTML = `
-      <h2 class="anim anim-1">مرحلتك الحالية</h2>
-
-      <div class="card anim anim-2" style="margin-top:1.2rem">
-        <p class="card-label">أين تقف شركتك اليوم</p>
-        <p class="card-value" style="color:var(--amber);font-size:1.42rem">${esc(s.stage_ar)}</p>
-        <p class="lede" style="margin-top:.8rem;font-size:1rem">${esc(numText(s.stage_summary_ar))}</p>
-      </div>
-
-      <hr class="rule anim anim-3">
-
-      <h3 class="anim anim-3">ما هو أكبر تحدٍ تواجهه اليوم؟</h3>
-
-      <div class="choices anim anim-4" role="radiogroup" id="stage-choices"
-           aria-label="ما هو أكبر تحدٍ تواجهه اليوم؟" style="margin-top:1rem">
-        ${CHALLENGE_AREAS.map(a => choiceMarkup(a.id, a.label, a.id === chosen)).join('')}
-      </div>
-
-      <div class="actions anim anim-5">
-        <span class="savestate" data-savestate></span>
-        <button class="btn btn--primary" id="stage-next" ${chosen ? '' : 'aria-disabled="true"'}>التالي</button>
-        <button class="btn-back" id="stage-back" style="align-self:center">رجوع</button>
-      </div>`;
-
-    wireChoiceGroup($('#stage-choices'), (id) => {
-      record({ challenge: { ...state.answers.challenge, tags: [id] } });
-      const btn = $('#stage-next');
-      btn.removeAttribute('aria-disabled');
-      markReady(btn, true);
-    });
-
-    $('#stage-next').addEventListener('click', () => show('assumptions'));
-    $('#stage-back').addEventListener('click', () => show('welcome'));
-  }
-
-  /* -------------------- الخطوة ٢ — التحقق من الفرضيات -------------------- */
-
-  function renderAssumptions() {
-    const saved = state.answers.assumptions || {};
-
-    $('#assumptions').innerHTML = `
-      <h2 class="anim anim-1">التحقق من الفرضيات</h2>
-      <p class="lede anim anim-1" style="margin-top:.5rem">ثلاثة أسئلة فقط.</p>
-
-      <div class="stack-l anim anim-2" style="margin-top:1.8rem">
-        ${ASSUMPTION_QUESTIONS.map(q => `
-          <div>
-            <h3 style="margin-bottom:.85rem">${esc(q.question)}</h3>
-            <div class="choices choices--${q.options.length}" role="radiogroup"
-                 aria-label="${esc(q.question)}" data-question="${esc(q.key)}">
-              ${q.options.map(o => choiceMarkup(o.id, o.label, saved[q.key] === o.id)).join('')}
-            </div>
-          </div>`).join('')}
-      </div>
-
-      <div class="actions anim anim-3">
-        <span class="savestate" data-savestate></span>
-        <button class="btn btn--primary" id="assumptions-next">التالي</button>
-        <button class="btn-back" id="assumptions-back" style="align-self:center">رجوع</button>
-      </div>`;
-
-    $$('[data-question]', $('#assumptions')).forEach(group => {
-      wireChoiceGroup(group, (value) => {
-        record({ assumptions: { ...state.answers.assumptions, [group.dataset.question]: value } });
-        syncAssumptionsButton();
-      });
-    });
-
-    syncAssumptionsButton();
-
-    $('#assumptions-next').addEventListener('click', () => show('challenge'));
-    $('#assumptions-back').addEventListener('click', () => show('stage'));
-  }
-
-  function syncAssumptionsButton() {
-    const btn = $('#assumptions-next');
-    if (!btn) return;
-    const a = state.answers.assumptions || {};
-    const done = ASSUMPTION_QUESTIONS.every(q => a[q.key]);
-
-    /* Not toggleAttribute: it writes aria-disabled="", which is a valid
-       "present" attribute but never matches [aria-disabled="true"], so both
-       the dimmed style and the pointer-events guard would silently no-op. */
-    if (done) btn.removeAttribute('aria-disabled');
-    else btn.setAttribute('aria-disabled', 'true');
-    markReady(btn, done);
-  }
-
-  /* ---------------------- الخطوة ٣ — تحديك الحالي ---------------------- */
-
-  function renderChallenge() {
-    $('#challenge').innerHTML = `
-      <h2 class="anim anim-1">تحديك الحالي</h2>
-
-      <label class="field anim anim-2" style="margin-top:1.5rem">
-        <span class="field-label">ما هو أكبر تحدٍ تواجهه شركتك اليوم؟</span>
-        <textarea class="textarea" id="challenge-text" rows="6"
-                  placeholder="اكتب بصراحة — لن يُعرض اسم شركتك مع هذه الإجابة."
-        >${esc(state.answers.challenge?.text || '')}</textarea>
-      </label>
-
-      <div class="actions anim anim-3">
-        <span class="savestate" data-savestate></span>
-        <button class="btn btn--primary" id="challenge-next">التالي</button>
-        <button class="btn-back" id="challenge-back" style="align-self:center">رجوع</button>
-      </div>`;
-
-    const box = $('#challenge-text');
-    box.addEventListener('input', () => {
-      record({ challenge: { ...state.answers.challenge, text: box.value } });
-    });
-
-    $('#challenge-next').addEventListener('click', () => {
-      renderInsights();
-      show('insights');
-    });
-    $('#challenge-back').addEventListener('click', () => show('assumptions'));
-  }
-
-  /* ------------------ الخطوة ٤ — توصيات خاصة بشركتك ------------------ */
-
-  /* Rendered on entry rather than up front, because it reads the answers the
-     founder gave on the three steps before it. */
-  function renderInsights() {
-    const rec = FVRecommend.forStartup(state.startup, state.answers);
-
-    $('#insights').innerHTML = `
-      <h2 class="anim anim-1">توصيات خاصة بشركتك</h2>
-      <p class="lede anim anim-1" style="margin-top:.5rem">بناءً على مرحلتك وإجاباتك.</p>
-
-      <div class="stack" style="margin-top:1.6rem">
-        ${finding('tone-strength', '✅', 'نقطة قوة',        rec.strength,  'anim anim-2')}
-        ${finding('tone-risk',     '⚠️', 'أكبر مخاطرة',     rec.risk,      'anim anim-3')}
-        ${finding('tone-next',     '🎯', 'أفضل خطوة تالية', rec.nextStep,  'anim anim-4')}
-      </div>
-
-      <div class="actions anim anim-5">
-        <button class="btn btn--primary" id="insights-next">التالي</button>
-        <button class="btn-back" id="insights-back" style="align-self:center">رجوع</button>
-      </div>`;
-
-    $('#insights-next').addEventListener('click', () => show('commitment'));
-    $('#insights-back').addEventListener('click', () => show('challenge'));
-  }
+  /* ------------------------------ مساعدات ------------------------------ */
 
   function finding(tone, icon, title, body, anim = '') {
     return `
@@ -608,8 +451,8 @@
    * Fire the completion cue on a step's primary button, once.
    *
    * It marks the transition from "incomplete" to "done" — re-firing it on
-   * every subsequent tap would turn a confirmation into a nag, so the flag
-   * is latched and only cleared when the step becomes incomplete again.
+   * every subsequent tap would turn a confirmation into a nag, so the flag is
+   * latched and only cleared when the step becomes incomplete again.
    */
   function markReady(btn, complete) {
     if (!btn) return;
@@ -621,73 +464,358 @@
     btn.classList.add('is-ready');
   }
 
-  /* ----------------------- الخطوة ٥ — التزامك ----------------------- */
+  /* ------------------------ الشاشة ٤ — المرشد ------------------------ */
 
-  function renderCommitment() {
-    $('#commitment').innerHTML = `
-      <h2 class="anim anim-1">التزامك</h2>
+  function renderCoach() {
+    const s = state.startup;
+    const paragraphs = FVCoach.messageFor(s);
 
-      <label class="field anim anim-2" style="margin-top:1.5rem">
-        <span class="field-label">ما أول خطوة ستقوم بها بعد انتهاء هذه الورشة؟</span>
-        <textarea class="textarea" id="commitment-text" rows="5"
-                  placeholder="قبل الورشة القادمة سأقوم بـ..."
-        >${esc(state.answers.commitment || '')}</textarea>
-      </label>
+    $('#coach').innerHTML = `
+      <p class="eyebrow anim anim-1">قبل أن نبدأ</p>
+
+      <div class="card anim anim-2" style="margin-top:1rem">
+        <div class="stack-s">
+          ${paragraphs.map((p, i) => `
+            <p class="${i === 0 ? 'q-title' : 'lede'}"
+               style="${i === 0 ? '' : 'font-size:1.02rem;line-height:1.95'}">${esc(numText(p))}</p>
+          `).join('')}
+        </div>
+      </div>
+
+      <div class="actions anim anim-3">
+        <button class="btn btn--primary" id="coach-next">ابدأ التحليل</button>
+        <button class="btn-back" id="coach-back" style="align-self:center">رجوع</button>
+      </div>`;
+
+    $('#coach-next').addEventListener('click', () => { renderSnapshot(); show('snapshot'); });
+    $('#coach-back').addEventListener('click', () => show('welcome'));
+  }
+
+  /* ----------------------- الشاشة ٥ — اللقطة ----------------------- */
+
+  function renderSnapshot() {
+    const s = state.startup;
+    const rec = FVRecommend.forStartup(s, state.answers);
+    const score = Number(s.readiness) || 0;
+
+    $('#snapshot').innerHTML = `
+      <h2 class="anim anim-1">أين تقف شركتك اليوم؟</h2>
+
+      <div class="anim anim-2" style="display:grid;place-items:center;margin:1.6rem 0 .4rem">
+        ${ringMarkup(score, 'مؤشر الجاهزية')}
+      </div>
+
+      <p class="muted anim anim-2" style="text-align:center;font-size:.88rem;margin-bottom:1.4rem">
+        ${esc(readinessNote(score))}
+      </p>
+
+      <div class="stack">
+        ${finding('tone-strength', '✅', 'أكبر نقطة قوة',   rec.strength,  'anim anim-3')}
+        ${finding('tone-risk',     '⚠️', 'أكبر مخاطرة',     rec.risk,      'anim anim-4')}
+        ${finding('tone-next',     '🚀', 'الفرصة الأكبر خلال الستة أشهر القادمة',
+                  s.growth_roadmap || rec.nextStep, 'anim anim-5')}
+      </div>
+
+      <div class="actions anim anim-5">
+        <button class="btn btn--primary" id="snapshot-next">لنبدأ الأسئلة</button>
+        <button class="btn-back" id="snapshot-back" style="align-self:center">رجوع</button>
+      </div>`;
+
+    requestAnimationFrame(() => {
+      const fill = $('#snapshot .fill');
+      if (fill) fill.style.strokeDashoffset = fill.dataset.target;
+      countUp($('#snapshot .score-number'), score, { suffix: '٪' });
+    });
+
+    $('#snapshot-next').addEventListener('click', () => goToQuestion(0));
+    $('#snapshot-back').addEventListener('click', () => show('coach'));
+  }
+
+  function readinessNote(score) {
+    if (score >= 75) return 'جاهزية مرتفعة — التركيز الآن على التوسع لا على الإثبات.';
+    if (score >= 60) return 'جاهزية جيدة — بقيت فجوات محددة تستحق الإغلاق.';
+    if (score >= 45) return 'جاهزية متوسطة — الأساسيات تحتاج إثباتاً قبل التوسع.';
+    return 'مرحلة مبكرة — الأولوية للتحقق بأقل تكلفة ممكنة.';
+  }
+
+  /* --------------------- الأسئلة — شاشة لكل سؤال --------------------- */
+
+  function goToQuestion(index) {
+    state.qIndex = Math.max(0, Math.min(index, state.questions.length - 1));
+    /* Remembered locally so a refresh, a dropped connection or a locked phone
+       returns the founder to the question they were on rather than to the
+       start of the journey. Kept out of the sync payload — where you are is a
+       property of this device, not of the team's shared answer. */
+    FVStore.set(state.startup.id, { lastQuestion: state.qIndex });
+    renderQuestion();
+    show('question');
+  }
+
+  /* ---- reading and writing one answer, wherever it is stored ---- */
+
+  function answerOf(q) {
+    const a = state.answers;
+    const where = q.store ? q.store[0] : null;
+    if (where === 'assumptions')   return (a.assumptions || {})[q.store[1]];
+    if (where === 'challengeTag')  return (a.challenge?.tags || [])[0];
+    if (where === 'challengeText') return a.challenge?.text || '';
+    if (where === 'commitment')    return a.commitment || '';
+    return (a.reflections || {})[q.id];
+  }
+
+  function writeAnswer(q, value) {
+    const a = state.answers;
+    const where = q.store ? q.store[0] : null;
+    if (where === 'assumptions') {
+      record({ assumptions: { ...a.assumptions, [q.store[1]]: value } });
+    } else if (where === 'challengeTag') {
+      record({ challenge: { ...a.challenge, tags: [value] } });
+    } else if (where === 'challengeText') {
+      record({ challenge: { ...a.challenge, text: value } });
+    } else if (where === 'commitment') {
+      record({ commitment: value });
+    } else {
+      record({ reflections: { ...a.reflections, [q.id]: value } });
+    }
+  }
+
+  function isAnswered(q) {
+    const v = answerOf(q);
+    if (Array.isArray(v)) return v.length > 0;
+    if (typeof v === 'string') return v.trim().length > 0;
+    return v !== undefined && v !== null && v !== '';
+  }
+
+  /* ---- the renderer ---- */
+
+  function renderQuestion() {
+    const q = state.questions[state.qIndex];
+    const last = state.qIndex === state.questions.length - 1;
+
+    $('#question').innerHTML = `
+      <h2 class="q-title anim anim-1">${esc(numText(q.title))}</h2>
+      ${q.quote ? `<div class="q-quote anim anim-1">${esc(numText(q.quote))}</div>` : ''}
+      ${q.hint  ? `<p class="q-hint anim anim-1">${esc(q.hint)}</p>` : ''}
+
+      <div class="anim anim-2" style="margin-top:1.5rem" id="q-body">${bodyFor(q)}</div>
 
       <div class="actions anim anim-3">
         <span class="savestate" data-savestate></span>
-        <button class="btn btn--primary" id="commitment-submit">إنهاء الرحلة</button>
-        <button class="btn-back" id="commitment-back" style="align-self:center">رجوع</button>
+        <button class="btn btn--primary" id="q-next">${last ? 'إنهاء الرحلة' : 'التالي'}</button>
+        <button class="btn-back" id="q-back" style="align-self:center">رجوع</button>
       </div>`;
 
-    const box = $('#commitment-text');
-    box.addEventListener('input', () => record({ commitment: box.value }));
+    wireBody(q);
+    syncNext(q);
 
-    $('#commitment-submit').addEventListener('click', async (e) => {
-      const btn = e.currentTarget;
-      btn.setAttribute('aria-disabled', 'true');
-      btn.textContent = 'جارٍ الإرسال...';
-
-      state.answers = FVStore.markSubmitted(state.startup.id);
-
-      /* The one write that is not debounced: the founder is about to stop
-         touching the page, so it has to leave now. */
-      await FVApi.save(state.startup.id, payload(true));
-
-      btn.removeAttribute('aria-disabled');
-      btn.textContent = 'إنهاء الرحلة';
-
-      renderDone();
-      show('done');
+    $('#q-next').addEventListener('click', async () => {
+      if (last) return submitJourney();
+      goToQuestion(state.qIndex + 1);
     });
 
-    $('#commitment-back').addEventListener('click', () => show('insights'));
+    $('#q-back').addEventListener('click', () => {
+      if (state.qIndex === 0) return show('snapshot');
+      goToQuestion(state.qIndex - 1);
+    });
   }
 
-  /* -------------------------- الشاشة النهائية -------------------------- */
+  function syncNext(q) {
+    const btn = $('#q-next');
+    if (!btn) return;
+    const ok = !q.required || isAnswered(q);
+    if (ok) btn.removeAttribute('aria-disabled');
+    else btn.setAttribute('aria-disabled', 'true');
+    markReady(btn, ok && q.required);
+  }
+
+  /* ---- markup per answer type ---- */
+
+  function bodyFor(q) {
+    const v = answerOf(q);
+
+    if (q.type === 'choice') {
+      const wide = q.options.length > 3 || q.options.some(o => o.label.length > 14);
+      return `<div class="choices ${wide ? '' : 'choices--' + q.options.length}"
+                   role="radiogroup" aria-label="${esc(q.title)}" id="q-choices">
+        ${q.options.map(o => choiceMarkup(o.id, o.label, v === o.id)).join('')}
+      </div>`;
+    }
+
+    if (q.type === 'multi') {
+      const picked = Array.isArray(v) ? v : [];
+      return `<div class="choices" role="group" aria-label="${esc(q.title)}" id="q-multi">
+        ${q.options.map(o => `
+          <button type="button" class="choice" role="checkbox" data-value="${esc(o.id)}"
+                  aria-checked="${picked.includes(o.id) ? 'true' : 'false'}">
+            <span class="choice-check" aria-hidden="true">✓</span>
+            <span>${esc(o.label)}</span>
+          </button>`).join('')}
+      </div>`;
+    }
+
+    if (q.type === 'scale') {
+      const cur = Number(v) || 0;
+      return `<div class="scale">
+        <div class="scale-row" role="radiogroup" aria-label="${esc(q.title)}" id="q-scale">
+          ${[1, 2, 3, 4, 5].map(n => `
+            <button type="button" class="scale-step" role="radio" data-value="${n}"
+                    aria-checked="${cur === n ? 'true' : 'false'}"
+                    aria-label="${num(n)} من ${num(5)}">${num(n)}</button>`).join('')}
+        </div>
+        <div class="scale-ends"><span>${esc(q.labels[0])}</span><span>${esc(q.labels[1])}</span></div>
+      </div>`;
+    }
+
+    if (q.type === 'slider') {
+      const cur = v === undefined || v === '' ? q.value : Number(v);
+      return `<div>
+        <p class="slider-value tabular" id="q-slider-value">${esc(num(q.unit(cur)))}</p>
+        <input class="slider" id="q-slider" type="range"
+               min="${q.min}" max="${q.max}" step="${q.step}" value="${cur}"
+               aria-label="${esc(q.title)}">
+      </div>`;
+    }
+
+    if (q.type === 'rank') {
+      const order = Array.isArray(v) ? v : [];
+      return `<div class="rank-list" id="q-rank">
+        ${q.options.map(o => {
+          const at = order.indexOf(o.id);
+          return `<button type="button" class="rank-item" data-value="${esc(o.id)}"
+                          data-picked="${at >= 0 ? 1 : 0}"
+                          aria-pressed="${at >= 0 ? 'true' : 'false'}">
+            <span class="rank-badge">${at >= 0 ? num(at + 1) : ''}</span>
+            <span>${esc(numText(o.label))}</span>
+          </button>`;
+        }).join('')}
+      </div>`;
+    }
+
+    /* text / longtext */
+    return `<label class="field">
+      <textarea class="textarea" id="q-text" rows="${q.type === 'longtext' ? 5 : 3}"
+                placeholder="${esc(q.placeholder || '')}">${esc(v || '')}</textarea>
+    </label>`;
+  }
+
+  function wireBody(q) {
+    if (q.type === 'choice') {
+      wireChoiceGroup($('#q-choices'), (value) => { writeAnswer(q, value); syncNext(q); });
+      return;
+    }
+
+    if (q.type === 'multi') {
+      $$('#q-multi .choice').forEach(btn => btn.addEventListener('click', () => {
+        const on = btn.getAttribute('aria-checked') === 'true';
+        btn.setAttribute('aria-checked', String(!on));
+        const picked = $$('#q-multi .choice[aria-checked="true"]').map(b => b.dataset.value);
+        writeAnswer(q, picked);
+        syncNext(q);
+      }));
+      return;
+    }
+
+    if (q.type === 'scale') {
+      const steps = $$('#q-scale .scale-step');
+      steps.forEach(btn => btn.addEventListener('click', () => {
+        steps.forEach(b => b.setAttribute('aria-checked', String(b === btn)));
+        writeAnswer(q, Number(btn.dataset.value));
+        syncNext(q);
+      }));
+      return;
+    }
+
+    if (q.type === 'slider') {
+      const input = $('#q-slider');
+      const label = $('#q-slider-value');
+      const paint = () => { label.textContent = num(q.unit(Number(input.value))); };
+      input.addEventListener('input', () => { paint(); writeAnswer(q, Number(input.value)); syncNext(q); });
+      /* A slider always shows a value, so it counts as answered on arrival —
+         otherwise the founder is blocked by a control that looks complete. */
+      if (!isAnswered(q)) writeAnswer(q, Number(input.value));
+      return;
+    }
+
+    if (q.type === 'rank') {
+      const items = $$('#q-rank .rank-item');
+      items.forEach(btn => btn.addEventListener('click', () => {
+        const cur = Array.isArray(answerOf(q)) ? [...answerOf(q)] : [];
+        const at = cur.indexOf(btn.dataset.value);
+        /* Tapping a ranked item removes it, so a mistake is one tap to undo
+           rather than a restart. */
+        if (at >= 0) cur.splice(at, 1); else cur.push(btn.dataset.value);
+        writeAnswer(q, cur);
+        repaintRank(q, cur);
+        syncNext(q);
+      }));
+      return;
+    }
+
+    const box = $('#q-text');
+    if (box) box.addEventListener('input', () => { writeAnswer(q, box.value); syncNext(q); });
+  }
+
+  function repaintRank(q, order) {
+    $$('#q-rank .rank-item').forEach(btn => {
+      const at = order.indexOf(btn.dataset.value);
+      btn.dataset.picked = at >= 0 ? '1' : '0';
+      btn.setAttribute('aria-pressed', at >= 0 ? 'true' : 'false');
+      btn.querySelector('.rank-badge').textContent = at >= 0 ? num(at + 1) : '';
+    });
+  }
+
+  /* --------------------------- الإرسال والنهاية --------------------------- */
+
+  async function submitJourney() {
+    const btn = $('#q-next');
+    btn.setAttribute('aria-disabled', 'true');
+    btn.textContent = 'جارٍ الإرسال...';
+
+    state.answers = FVStore.markSubmitted(state.startup.id);
+    await FVApi.save(state.startup.id, payload(true));
+
+    btn.removeAttribute('aria-disabled');
+    btn.textContent = 'إنهاء الرحلة';
+
+    renderDone();
+    show('done');
+  }
 
   function renderDone() {
     const s = state.startup;
-    const rec = FVRecommend.forStartup(s, state.answers);
-    const score = FVStore.readinessOf(state.answers, s);
+    const d = FVRecommend.dashboardFor(s, state.answers);
 
     $('#done').innerHTML = `
       <div style="text-align:center">
         <span class="celebrate" aria-hidden="true">🎉</span>
         <h1 class="anim anim-1" style="margin-top:1rem">تم الانتهاء بنجاح</h1>
-        <p class="lede anim anim-1" style="margin-top:.5rem">تم إرسال إجابتك بنجاح.</p>
+        <p class="lede anim anim-1" style="margin-top:.5rem">تم إرسال إجاباتك بنجاح.</p>
       </div>
 
-      <div class="anim anim-2" style="display:grid;place-items:center;margin:2.2rem 0 1.6rem">
-        ${ringMarkup(score)}
+      <div class="anim anim-2" style="display:grid;place-items:center;margin:2rem 0 1.4rem">
+        ${ringMarkup(d.score, 'جاهزية شركتك')}
       </div>
 
-      <div class="stack">
-        ${finding('tone-risk', '⚠️', 'أهم مخاطرة',      rec.risk,      'anim anim-3')}
-        ${finding('tone-next', '🎯', 'أفضل خطوة قادمة', rec.nextStep,  'anim anim-4')}
+      ${d.focus ? `
+        <div class="card card--quiet anim anim-2" style="margin-bottom:1rem">
+          <p class="card-label">أين طلبت الدعم</p>
+          <p class="card-value" style="color:var(--amber)">${esc(d.focus)}</p>
+        </div>` : ''}
+
+      <div class="card anim anim-3">
+        <p class="eyebrow" style="margin-bottom:.9rem">أهم ٣ أولويات لشركتك</p>
+        <ol class="numbered">
+          ${d.priorities.map(p => `<li><span>${esc(numText(p))}</span></li>`).join('')}
+        </ol>
       </div>
 
-      <div class="card card--quiet anim anim-4" style="margin-top:1.4rem">
+      <div class="stack" style="margin-top:1rem">
+        ${finding('tone-strength', '✅', 'أكبر نقطة قوة',  d.strength,    'anim anim-4')}
+        ${finding('tone-risk',     '⚠️', 'أهم مخاطرة',     d.risk,        'anim anim-4')}
+        ${finding('tone-next',     '🎯', 'أفضل خطوة قادمة', d.nextStep,   'anim anim-5')}
+      </div>
+
+      <div class="card card--quiet anim anim-5" style="margin-top:1.2rem">
         <p class="lede" style="font-size:.98rem">
           شكراً لمشاركتك.<br>
           سيتم استخدام إجاباتك بشكل مجهول لمناقشة التحديات المشتركة بين الشركات
@@ -701,11 +829,10 @@
         <button class="btn-back" id="done-edit" style="align-self:center">تعديل إجاباتي</button>
       </div>`;
 
-    /* Ring and number animate together, once the screen is actually on. */
     requestAnimationFrame(() => {
       const fill = $('#done .fill');
       if (fill) fill.style.strokeDashoffset = fill.dataset.target;
-      countUp($('#done .score-number'), score, { suffix: '٪' });
+      countUp($('#done .score-number'), d.score, { suffix: '٪' });
     });
 
     $('#done-finish').addEventListener('click', () => {
@@ -720,15 +847,15 @@
         </div>`;
     });
 
-    $('#done-edit').addEventListener('click', () => show('stage'));
+    $('#done-edit').addEventListener('click', () => goToQuestion(0));
   }
 
-  function ringMarkup(score) {
+  function ringMarkup(score, caption) {
     const size = 190, r = 84;
     const c = 2 * Math.PI * r;
     return `
       <div class="score-ring" style="width:${size}px;height:${size}px"
-           role="img" aria-label="جاهزية شركتك ${num(score)} بالمئة">
+           role="img" aria-label="${esc(caption)} ${num(score)} بالمئة">
         <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" aria-hidden="true">
           <defs>
             <linearGradient id="scoreGrad" x1="0" y1="0" x2="1" y2="1">
@@ -744,7 +871,7 @@
         <div class="score-center">
           <div>
             <div class="score-number tabular">${num(0)}٪</div>
-            <div class="score-caption">جاهزية شركتك</div>
+            <div class="score-caption">${esc(caption)}</div>
           </div>
         </div>
       </div>`;
