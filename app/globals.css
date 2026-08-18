@@ -1,0 +1,133 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  Design tokens.
+
+  These are the Cinema White defaults, inlined so the very first paint is
+  correct even before the client theme provider hydrates. The Appearance studio
+  overwrites them on <html> at runtime; production would seed them server-side
+  from the theme_settings row.
+*/
+:root {
+  --c-canvas: #faf8f5;
+  --c-surface: #ffffff;
+  --c-surface-muted: #f4f1ec;
+  --c-line: #e8e3db;
+  --c-line-strong: #d6cec2;
+  --c-ink: #0f2837;
+  --c-ink-muted: #4b5e69;
+  --c-ink-subtle: #87939b;
+  --c-accent: #c8791b;
+  --c-accent-hover: #a96313;
+  --c-accent-soft: #fdf1df;
+  --c-accent-ink: #ffffff;
+  --c-success: #2f7d62;
+  --c-warning: #b4741a;
+  --c-danger: #b03a31;
+  --c-info: #3c6e8f;
+
+  --r-base: 16px;
+  --shadow-card: 0 1px 2px rgba(15, 40, 55, 0.04), 0 8px 24px -12px rgba(15, 40, 55, 0.12);
+  --shadow-lift: 0 2px 4px rgba(15, 40, 55, 0.05), 0 16px 40px -16px rgba(15, 40, 55, 0.18);
+  --shadow-pop: 0 24px 64px -24px rgba(15, 40, 55, 0.3);
+
+  --font-sans: var(--font-plex-arabic), 'IBM Plex Sans Arabic', ui-sans-serif, system-ui,
+    -apple-system, 'Segoe UI', sans-serif;
+}
+
+@layer base {
+  * {
+    @apply border-line;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--c-canvas);
+    color: var(--c-ink);
+    font-family: var(--font-sans);
+    /* Arabic ascenders and descenders clip at tight line heights; 1.7 keeps
+       hamza and the long descenders of ج/ح/خ intact. */
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    line-height: 1.45;
+    letter-spacing: -0.01em;
+  }
+
+  /* Arabic never takes negative tracking — it breaks the joins. */
+  [dir='rtl'] h1,
+  [dir='rtl'] h2,
+  [dir='rtl'] h3,
+  [dir='rtl'] h4 {
+    letter-spacing: 0;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--c-accent);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background: var(--c-accent-soft);
+    color: var(--c-ink);
+  }
+
+  /* Numerals stay Latin everywhere, including inside Arabic copy — the
+     programme reports in Latin digits. */
+  .tnum {
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+}
+
+@layer components {
+  .surface-card {
+    background-color: var(--c-surface);
+    border: 1px solid var(--c-line);
+    border-radius: var(--r-base);
+    box-shadow: var(--shadow-card);
+  }
+
+  .scroll-thin {
+    scrollbar-width: thin;
+    scrollbar-color: var(--c-line-strong) transparent;
+  }
+
+  .scroll-thin::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .scroll-thin::-webkit-scrollbar-thumb {
+    background-color: var(--c-line-strong);
+    border-radius: 999px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Recharts inherits the page direction, which mirrors its internal maths.
+   Charts are always laid out LTR and only their labels are localised. */
+.chart-ltr {
+  direction: ltr;
+}

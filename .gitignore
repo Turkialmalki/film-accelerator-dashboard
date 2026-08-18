@@ -6,3 +6,11 @@ node_modules/
 # every file in it, so anything here is world-readable the moment it is pushed.
 .env
 .env.*
+
+# Next.js
+/.next/
+/out/
+/node_modules/
+next-env.d.ts
+.env*.local
+.env
