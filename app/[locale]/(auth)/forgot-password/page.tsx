@@ -1,0 +1,63 @@
+'use client';
+
+import { useState } from 'react';
+import Link from 'next/link';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { CheckCircle2, Loader2 } from 'lucide-react';
+import { AuthShell } from '@/components/auth/auth-shell';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Field } from '@/components/ui/misc';
+import { useI18n } from '@/components/providers/locale-provider';
+import { getRepository } from '@/lib/data';
+
+const schema = z.object({ email: z.string().min(1).email() });
+type Values = z.infer<typeof schema>;
+
+export default function ForgotPasswordPage() {
+  const { t, href } = useI18n();
+  const [sent, setSent] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<Values>({ resolver: zodResolver(schema), defaultValues: { email: '' } });
+
+  return (
+    <AuthShell
+      title={t.auth.forgotTitle}
+      subtitle={t.auth.forgotSubtitle}
+      footer={
+        <Link href={href('/sign-in')} className="font-medium text-accent hover:underline">
+          {t.auth.backToSignIn}
+        </Link>
+      }
+    >
+      {sent ? (
+        <div className="flex items-start gap-3 rounded-lg border border-success/25 bg-success/8 p-4">
+          <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-success" aria-hidden />
+          <p className="text-sm text-ink">{t.auth.resetSent}</p>
+        </div>
+      ) : (
+        <form
+          noValidate
+          className="flex flex-col gap-4"
+          onSubmit={handleSubmit(async (values) => {
+            await getRepository().requestPasswordReset(values.email);
+            setSent(true);
+          })}
+        >
+          <Field label={t.auth.email} htmlFor="email" error={errors.email ? t.auth.invalidEmail : undefined}>
+            <Input id="email" type="email" dir="ltr" autoComplete="email" {...register('email')} />
+          </Field>
+          <Button type="submit" size="lg" disabled={isSubmitting}>
+            {isSubmitting ? <Loader2 className="animate-spin" aria-hidden /> : null}
+            {t.auth.sendLink}
+          </Button>
+        </form>
+      )}
+    </AuthShell>
+  );
+}
