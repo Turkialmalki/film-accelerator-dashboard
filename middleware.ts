@@ -7,6 +7,7 @@ import {
   isAuthRoute,
   isParticipantRoute,
   isProtectedRoute,
+  isPublicRoute,
   type AppRole,
 } from '@/lib/routes';
 import { isSupabaseConfigured } from '@/lib/supabase/env';
@@ -104,7 +105,15 @@ export async function middleware(request: NextRequest) {
   if (session) {
     // A temporary password grants access to one screen and nothing else. This
     // is enforced here, before the page is served — not by hiding navigation.
-    if (session.mustChangePassword && rest !== CHANGE_PASSWORD_ROUTE && !isAuthRoute(rest)) {
+    // Published form share links stay reachable by anyone, including someone
+    // who happens to be signed in and mid-onboarding — the gate is about
+    // reaching the workspace, not about a public URL.
+    if (
+      session.mustChangePassword &&
+      rest !== CHANGE_PASSWORD_ROUTE &&
+      !isAuthRoute(rest) &&
+      !isPublicRoute(rest)
+    ) {
       return redirectTo(CHANGE_PASSWORD_ROUTE);
     }
 
