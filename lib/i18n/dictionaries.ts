@@ -129,10 +129,9 @@ const en = {
     demoAdmin: 'Sign in as admin',
     demoParticipant: 'Sign in as participant',
     demoNote: 'One-click demo sign-in. Disabled in production builds.',
-    campaignStatement:
-      'From a first draft to a business that can carry a film.',
+    campaignStatement: 'Film Business Accelerator',
     campaignSupport:
-      'Twenty Saudi film companies, one cohort, one programme built to make them investable.',
+      'The Film Accelerator is a programme that empowers startups and small companies in the film sector by supporting business development, market expansion, capability building, and investment attraction — contributing to the growth of the Kingdom\'s creative economy.',
     placeholderNote: 'Placeholder visual — awaiting the approved campaign photograph.',
     resetSent: 'If that email is registered, a reset link is on its way.',
     errorNoAccount: 'No account found for that email.',
@@ -618,9 +617,9 @@ const ar: Loose<Dictionary> = {
     demoAdmin: 'الدخول كمشرف',
     demoParticipant: 'الدخول كمشارك',
     demoNote: 'دخول تجريبي بنقرة واحدة. معطّل في نسخة الإنتاج.',
-    campaignStatement: 'من مسودة أولى إلى شركة تقدر أن تحمل فيلماً.',
+    campaignStatement: 'مسرعة الأعمال في الأفلام',
     campaignSupport:
-      'عشرون شركة أفلام سعودية، دفعة واحدة، وبرنامج مبني ليجعلها جاهزة للاستثمار.',
+      'مسرّعة الأفلام هي برنامج يهدف إلى تمكين الشركات الناشئة والصغيرة في قطاع الأفلام من خلال دعم تطوير الأعمال، والتوسّع في الأسواق، وبناء القدرات وجذب الاستثمارات، بما يسهم في نمو الاقتصاد الإبداعي في المملكة.',
     placeholderNote: 'صورة مؤقتة — بانتظار الصورة المعتمدة للحملة.',
     resetSent: 'إن كان البريد مسجلاً لدينا فرابط الاستعادة في طريقه إليك.',
     errorNoAccount: 'لا يوجد حساب بهذا البريد.',
