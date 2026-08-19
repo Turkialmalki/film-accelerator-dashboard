@@ -31,6 +31,7 @@ import {
   Phone,
   PieChart,
   Presentation,
+  RefreshCw,
   Rows3,
   SeparatorHorizontal,
   Settings,
@@ -44,6 +45,7 @@ import {
   UserRound,
   Users,
   EyeOff,
+  XCircle,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -85,6 +87,7 @@ const REGISTRY: Record<string, LucideIcon> = {
   Phone,
   PieChart,
   Presentation,
+  RefreshCw,
   Rows3,
   SeparatorHorizontal,
   Settings,
@@ -98,6 +101,7 @@ const REGISTRY: Record<string, LucideIcon> = {
   UserRound,
   Users,
   EyeOff,
+  XCircle,
 };
 
 export function Icon({ name, className }: { name: string; className?: string }) {
