@@ -1,200 +1,379 @@
--- ============================================================================
--- Founder Validation Intelligence Platform — Supabase schema
+-- =============================================================================
+-- Film Business Accelerator — target production schema
 --
--- Run this once in the Supabase SQL Editor (Dashboard → SQL Editor → New query).
--- It is safe to re-run: every statement is idempotent.
--- ============================================================================
+-- STATUS: this file has NEVER been executed. It was written alongside
+-- lib/data/types.ts so the two stay in step, but no Supabase project was
+-- available while building, so nothing here has been applied or verified.
+-- Review it before running `supabase db push`.
+--
+-- Conventions
+--   * Every user-authored string is bilingual and stored as jsonb: {"ar": …, "en": …}.
+--   * Every tenant-scoped table carries org_id so RLS can be a single predicate.
+--   * Deletes cascade down the ownership chain: org → cohort → form → submission.
+-- =============================================================================
 
 create extension if not exists "pgcrypto";
 
--- ---------------------------------------------------------------------------
--- Table
--- ---------------------------------------------------------------------------
+-- ------------------------------------------------------------------ enums ---
 
-create table if not exists public.workshop_responses (
-  id                    uuid primary key default gen_random_uuid(),
-
-  workshop_id           text not null,
-  startup_id            text not null,
-
-  -- Which device/tab produced the latest write. Never shown in the mentor UI.
-  session_id            text not null,
-  -- Which founder or team member searched. Never shown in the mentor UI.
-  participant_name      text,
-
-  challenge             text        default '',
-  challenge_tags        jsonb       default '[]'::jsonb,
-  reflection_answers    jsonb       default '{}'::jsonb,
-  assumption_status     jsonb       default '{}'::jsonb,
-  commitment            text        default '',
-
-  validation_score      integer     default 0,
-  completion_percentage integer     default 0,
-  submitted             boolean     default false,
-
-  created_at            timestamptz not null default now(),
-  updated_at            timestamptz not null default now()
+create type app_role        as enum ('owner', 'admin', 'reviewer', 'participant');
+create type cohort_status   as enum ('draft', 'active', 'completed', 'archived');
+create type team_stage      as enum ('idea', 'mvp', 'pre-seed', 'seed', 'series-a', 'growth');
+create type team_status     as enum ('active', 'archived');
+create type invite_status   as enum ('pending', 'accepted', 'revoked', 'expired');
+create type form_status     as enum ('draft', 'published', 'closed');
+create type submission_status as enum ('draft', 'submitted', 'reviewed');
+create type audience_scope  as enum ('all', 'team');
+create type rule_operator   as enum (
+  'equals', 'not_equals', 'contains', 'is_empty', 'is_not_empty',
+  'greater_than', 'less_than'
+);
+create type rule_action     as enum ('show', 'hide');
+create type field_type      as enum (
+  'short_text', 'long_text', 'email', 'phone', 'number', 'url',
+  'select', 'multi_select', 'radio', 'checkbox', 'consent',
+  'rating', 'likert', 'nps',
+  'date', 'time', 'datetime',
+  'file', 'image',
+  'team_select', 'participant_select',
+  'section_heading', 'description', 'divider', 'page_break', 'hidden'
 );
 
--- One row per startup per workshop. This is what makes duplicate submissions
--- impossible: the client upserts on this constraint, so a founder pressing
--- Submit twice — or two team members submitting from different phones —
--- updates the same row instead of creating a second one.
-create unique index if not exists workshop_responses_workshop_startup_key
-  on public.workshop_responses (workshop_id, startup_id);
+-- ------------------------------------------------------------ organisations -
 
--- The mentor dashboard always reads one workshop at a time.
-create index if not exists workshop_responses_workshop_idx
-  on public.workshop_responses (workshop_id);
+create table organizations (
+  id          uuid primary key default gen_random_uuid(),
+  name        jsonb not null,
+  slug        text not null unique,
+  logo_url    text,
+  created_at  timestamptz not null default now()
+);
 
--- ---------------------------------------------------------------------------
--- updated_at maintenance
--- ---------------------------------------------------------------------------
+create table cohorts (
+  id                uuid primary key default gen_random_uuid(),
+  org_id            uuid not null references organizations(id) on delete cascade,
+  name              jsonb not null,
+  status            cohort_status not null default 'draft',
+  starts_on         date not null,
+  ends_on           date not null,
+  current_milestone jsonb not null default '{"ar":"","en":""}'::jsonb,
+  next_milestone_at date,
+  created_at        timestamptz not null default now()
+);
 
-create or replace function public.touch_updated_at()
-returns trigger
-language plpgsql
-as $$
+create index on cohorts (org_id, status);
+
+-- ------------------------------------------------------------------ people --
+
+-- Mirrors auth.users. Populated by the handle_new_user trigger below.
+create table profiles (
+  id          uuid primary key references auth.users(id) on delete cascade,
+  email       text not null,
+  full_name   jsonb not null default '{"ar":"","en":""}'::jsonb,
+  avatar_url  text,
+  locale      text not null default 'ar' check (locale in ('ar', 'en')),
+  created_at  timestamptz not null default now()
+);
+
+create table teams (
+  id             uuid primary key default gen_random_uuid(),
+  org_id         uuid not null references organizations(id) on delete cascade,
+  cohort_id      uuid not null references cohorts(id) on delete cascade,
+  slug           text not null,
+  name           jsonb not null,
+  track          jsonb not null default '{"ar":"","en":""}'::jsonb,
+  description    jsonb not null default '{"ar":"","en":""}'::jsonb,
+  city           jsonb not null default '{"ar":"","en":""}'::jsonb,
+  stage          team_stage not null default 'seed',
+  readiness      int not null default 0 check (readiness between 0 and 100),
+  revenue_band   text not null default '',
+  team_size      int not null default 0,
+  business_model jsonb not null default '{"ar":"","en":""}'::jsonb,
+  key_strengths  text[] not null default '{}',
+  challenges     text[] not null default '{}',
+  growth_path    text not null default '',
+  founders       jsonb not null default '[]'::jsonb,
+  status         team_status not null default 'active',
+  -- Admin-only column. The participant SELECT policy excludes it via a view.
+  internal_notes text not null default '',
+  created_at     timestamptz not null default now(),
+  updated_at     timestamptz not null default now(),
+  unique (org_id, slug)
+);
+
+create index on teams (cohort_id, status);
+
+-- org_memberships is the authorisation table: role and (for participants) the
+-- single team the person belongs to.
+create table org_memberships (
+  id          uuid primary key default gen_random_uuid(),
+  org_id      uuid not null references organizations(id) on delete cascade,
+  profile_id  uuid not null references profiles(id) on delete cascade,
+  role        app_role not null default 'participant',
+  team_id     uuid references teams(id) on delete set null,
+  created_at  timestamptz not null default now(),
+  unique (org_id, profile_id)
+);
+
+create index on org_memberships (profile_id);
+
+create table team_members (
+  id          uuid primary key default gen_random_uuid(),
+  team_id     uuid not null references teams(id) on delete cascade,
+  profile_id  uuid references profiles(id) on delete set null,
+  name        jsonb not null,
+  role        jsonb not null default '{"ar":"","en":""}'::jsonb,
+  email       text,
+  is_primary  boolean not null default false
+);
+
+create table invitations (
+  id          uuid primary key default gen_random_uuid(),
+  org_id      uuid not null references organizations(id) on delete cascade,
+  team_id     uuid references teams(id) on delete cascade,
+  email       text not null,
+  role        app_role not null default 'participant',
+  code        text not null unique,
+  status      invite_status not null default 'pending',
+  expires_at  timestamptz not null default (now() + interval '30 days'),
+  created_at  timestamptz not null default now(),
+  accepted_at timestamptz
+);
+
+create index on invitations (org_id, status);
+
+-- ------------------------------------------------------------------- forms --
+
+create table forms (
+  id           uuid primary key default gen_random_uuid(),
+  org_id       uuid not null references organizations(id) on delete cascade,
+  cohort_id    uuid not null references cohorts(id) on delete cascade,
+  template_key text not null default 'blank',
+  title        jsonb not null,
+  description  jsonb not null default '{"ar":"","en":""}'::jsonb,
+  status       form_status not null default 'draft',
+  -- accent_color, multi_step, allow_drafts, allow_edit_after_submit,
+  -- response_limit, opens_at, closes_at, confirmation_message
+  settings     jsonb not null default '{}'::jsonb,
+  created_by   uuid references profiles(id) on delete set null,
+  created_at   timestamptz not null default now(),
+  updated_at   timestamptz not null default now()
+);
+
+create index on forms (org_id, status);
+
+create table form_sections (
+  id          uuid primary key default gen_random_uuid(),
+  form_id     uuid not null references forms(id) on delete cascade,
+  title       jsonb not null default '{"ar":"","en":""}'::jsonb,
+  description jsonb not null default '{"ar":"","en":""}'::jsonb,
+  position    int not null default 0
+);
+
+create index on form_sections (form_id, position);
+
+create table form_fields (
+  id            uuid primary key default gen_random_uuid(),
+  form_id       uuid not null references forms(id) on delete cascade,
+  section_id    uuid references form_sections(id) on delete cascade,
+  type          field_type not null,
+  label         jsonb not null default '{"ar":"","en":""}'::jsonb,
+  description   jsonb not null default '{"ar":"","en":""}'::jsonb,
+  placeholder   jsonb not null default '{"ar":"","en":""}'::jsonb,
+  required      boolean not null default false,
+  position      int not null default 0,
+  -- [{id, value, label:{ar,en}}]
+  options       jsonb not null default '[]'::jsonb,
+  -- {min,max,minLength,maxLength,pattern,scale,accept,maxSizeMb}
+  validation    jsonb not null default '{}'::jsonb,
+  default_value text not null default ''
+);
+
+create index on form_fields (form_id, position);
+
+create table form_rules (
+  id              uuid primary key default gen_random_uuid(),
+  form_id         uuid not null references forms(id) on delete cascade,
+  target_field_id uuid not null references form_fields(id) on delete cascade,
+  source_field_id uuid not null references form_fields(id) on delete cascade,
+  operator        rule_operator not null default 'equals',
+  value           text not null default '',
+  action          rule_action not null default 'show',
+  check (target_field_id <> source_field_id)
+);
+
+create index on form_rules (form_id);
+
+create table form_publications (
+  id             uuid primary key default gen_random_uuid(),
+  form_id        uuid not null references forms(id) on delete cascade,
+  slug           text not null unique,
+  published_at   timestamptz not null default now(),
+  published_by   uuid references profiles(id) on delete set null,
+  unpublished_at timestamptz
+);
+
+create table form_audiences (
+  id      uuid primary key default gen_random_uuid(),
+  form_id uuid not null references forms(id) on delete cascade,
+  scope   audience_scope not null default 'all',
+  team_id uuid references teams(id) on delete cascade,
+  -- 'all' rows must not name a team; 'team' rows must.
+  check ((scope = 'all' and team_id is null) or (scope = 'team' and team_id is not null))
+);
+
+create index on form_audiences (form_id);
+
+-- ------------------------------------------------------------- submissions --
+
+create table submissions (
+  id             uuid primary key default gen_random_uuid(),
+  form_id        uuid not null references forms(id) on delete cascade,
+  team_id        uuid references teams(id) on delete set null,
+  profile_id     uuid references profiles(id) on delete set null,
+  status         submission_status not null default 'draft',
+  started_at     timestamptz not null default now(),
+  submitted_at   timestamptz,
+  reviewed_at    timestamptz,
+  -- Admin-only column; participants never select it (see rls.sql).
+  internal_notes text not null default ''
+);
+
+create index on submissions (form_id, status);
+create index on submissions (team_id);
+
+create table submission_answers (
+  id            uuid primary key default gen_random_uuid(),
+  submission_id uuid not null references submissions(id) on delete cascade,
+  field_id      uuid not null references form_fields(id) on delete cascade,
+  -- jsonb, because an answer may be a string, number, boolean or string[].
+  value         jsonb,
+  unique (submission_id, field_id)
+);
+
+create index on submission_answers (submission_id);
+create index on submission_answers (field_id);
+
+create table files (
+  id            uuid primary key default gen_random_uuid(),
+  org_id        uuid not null references organizations(id) on delete cascade,
+  submission_id uuid references submissions(id) on delete cascade,
+  field_id      uuid references form_fields(id) on delete set null,
+  filename      text not null,
+  mime_type     text not null default 'application/octet-stream',
+  size_bytes    bigint not null default 0,
+  -- Storage object path, resolved to a signed URL at read time.
+  url           text not null,
+  uploaded_at   timestamptz not null default now()
+);
+
+-- -------------------------------------------------------------- appearance --
+
+create table theme_settings (
+  id         uuid primary key default gen_random_uuid(),
+  org_id     uuid not null references organizations(id) on delete cascade unique,
+  preset     text not null default 'cinema_white',
+  tokens     jsonb not null,
+  updated_at timestamptz not null default now(),
+  updated_by uuid references profiles(id) on delete set null
+);
+
+create table audit_logs (
+  id         uuid primary key default gen_random_uuid(),
+  org_id     uuid not null references organizations(id) on delete cascade,
+  actor_id   uuid references profiles(id) on delete set null,
+  action     text not null,
+  entity     text not null,
+  entity_id  text not null,
+  meta       jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now()
+);
+
+create index on audit_logs (org_id, created_at desc);
+
+-- --------------------------------------------------------------- triggers ---
+
+create or replace function touch_updated_at() returns trigger
+language plpgsql as $$
 begin
   new.updated_at = now();
-  -- created_at must survive an upsert that rewrites the row.
-  new.created_at = coalesce(old.created_at, new.created_at, now());
   return new;
 end;
 $$;
 
-drop trigger if exists workshop_responses_touch_updated_at on public.workshop_responses;
-create trigger workshop_responses_touch_updated_at
-  before update on public.workshop_responses
-  for each row execute function public.touch_updated_at();
+create trigger teams_touch before update on teams
+  for each row execute function touch_updated_at();
+create trigger forms_touch before update on forms
+  for each row execute function touch_updated_at();
 
--- ---------------------------------------------------------------------------
--- Row Level Security
---
--- The workshop runs without authentication: founders scan a QR code and start
--- answering. So the anon role must be able to read and write this table.
---
--- Understand the trade-off before using this in another context: anyone who
--- has the anon key (it ships in the client, so that is anyone who opens the
--- page) can read and write workshop_responses. That is acceptable for a
--- time-boxed workshop with non-sensitive content, and is not acceptable for
--- anything else. Delete the data after the session.
--- ---------------------------------------------------------------------------
-
-alter table public.workshop_responses enable row level security;
-
-drop policy if exists "anon can read responses"   on public.workshop_responses;
-drop policy if exists "anon can insert responses" on public.workshop_responses;
-drop policy if exists "anon can update responses" on public.workshop_responses;
-
-create policy "anon can read responses"
-  on public.workshop_responses for select
-  to anon, authenticated
-  using (true);
-
-create policy "anon can insert responses"
-  on public.workshop_responses for insert
-  to anon, authenticated
-  with check (true);
-
-create policy "anon can update responses"
-  on public.workshop_responses for update
-  to anon, authenticated
-  using (true)
-  with check (true);
-
--- ONE-TIME SETUP. Run this file once per Supabase project and never again
--- before a workshop: the mentor dashboard starts new cohorts and clears
--- responses on its own, so nothing here is a recurring task.
---
--- Delete is scoped, not open. The mentor dashboard needs to reset a workshop
--- between cohorts without anyone opening the SQL editor, so anon may delete —
--- but only rows that belong to a workshop, which is every row, so the real
--- protection is that the client always filters by workshop_id and the table
--- holds nothing but responses. Startup profiles live in data/startups.json
--- and are not in this database at all, so they cannot be reached from here.
---
--- The trade-off is the same one the anon key already carries: anyone who can
--- open the page can clear a workshop. For a time-boxed session behind a QR
--- code that is acceptable. If it is not, drop this policy and clear from the
--- SQL editor instead — the dashboard detects the refusal and says so.
-drop policy if exists "anon can delete responses" on public.workshop_responses;
-
-create policy "anon can delete responses"
-  on public.workshop_responses for delete
-  to anon, authenticated
-  using (true);
-
--- ---------------------------------------------------------------------------
--- Realtime
---
--- This is what makes the mentor dashboard update without a refresh.
--- Also enable Realtime for this table in Dashboard → Database → Replication.
--- ---------------------------------------------------------------------------
-
--- `alter publication ... add table` raises 42710 if the table is already a
--- member, which would abort a re-run of this file partway through. Guarded so
--- the script stays idempotent end to end.
-do $$
+-- Creates the profile row and redeems an invitation code passed in the
+-- sign-up metadata, so SupabaseAdapter.signUp needs no second round trip.
+create or replace function handle_new_user() returns trigger
+language plpgsql security definer set search_path = public as $$
+declare
+  invite invitations%rowtype;
 begin
-  if not exists (
-    select 1 from pg_publication_tables
-    where pubname = 'supabase_realtime'
-      and schemaname = 'public'
-      and tablename = 'workshop_responses'
-  ) then
-    alter publication supabase_realtime add table public.workshop_responses;
+  insert into profiles (id, email, full_name)
+  values (
+    new.id,
+    new.email,
+    jsonb_build_object(
+      'ar', coalesce(new.raw_user_meta_data ->> 'full_name', ''),
+      'en', coalesce(new.raw_user_meta_data ->> 'full_name', '')
+    )
+  );
+
+  select * into invite
+  from invitations
+  where code = (new.raw_user_meta_data ->> 'invite_code')
+    and status = 'pending'
+    and expires_at > now()
+  limit 1;
+
+  if found then
+    insert into org_memberships (org_id, profile_id, role, team_id)
+    values (invite.org_id, new.id, invite.role, invite.team_id);
+
+    update invitations
+    set status = 'accepted', accepted_at = now()
+    where id = invite.id;
   end if;
-end
+
+  return new;
+end;
 $$;
 
--- REPLICA IDENTITY FULL makes the old row available on UPDATE events, so the
--- dashboard can reconcile edits rather than only insertions.
-alter table public.workshop_responses replica identity full;
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute function handle_new_user();
 
--- ---------------------------------------------------------------------------
--- Useful afterwards
--- ---------------------------------------------------------------------------
+-- Allocates a unique slug and flips the form to published atomically. The
+-- client cannot do this safely because slug collision is a race.
+create or replace function publish_form(target uuid) returns form_publications
+language plpgsql security definer set search_path = public as $$
+declare
+  base   text;
+  slug   text;
+  n      int := 1;
+  result form_publications%rowtype;
+begin
+  select lower(regexp_replace(coalesce(title ->> 'en', title ->> 'ar'), '[^a-zA-Z0-9]+', '-', 'g'))
+  into base from forms where id = target;
 
--- Inspect a workshop:
---   select startup_id, completion_percentage, submitted, updated_at
---   from public.workshop_responses
---   where workshop_id = 'film-accelerator-2026' order by updated_at desc;
+  slug := trim(both '-' from base);
+  while exists (select 1 from form_publications where form_publications.slug = slug) loop
+    n := n + 1;
+    slug := trim(both '-' from base) || '-' || n;
+  end loop;
 
--- Reset a workshop before a new cohort:
---   delete from public.workshop_responses where workshop_id = 'film-accelerator-2026';
+  update forms set status = 'published' where id = target;
 
--- ---------------------------------------------------------------------------
--- Verification
---
--- Run these after installing. Every row should report `ok`.
--- ---------------------------------------------------------------------------
+  insert into form_publications (form_id, slug, published_by)
+  values (target, slug, auth.uid())
+  on conflict (form_id) do update
+    set unpublished_at = null, published_at = now()
+  returning * into result;
 
--- 1. Table, columns and defaults
-select case when count(*) = 15 then 'ok' else 'MISSING COLUMNS' end as columns_check
-from information_schema.columns
-where table_schema = 'public' and table_name = 'workshop_responses';
-
--- 2. The unique constraint that makes upsert-on-conflict work
-select case when count(*) = 1 then 'ok' else 'MISSING UNIQUE INDEX' end as unique_check
-from pg_indexes
-where schemaname = 'public' and indexname = 'workshop_responses_workshop_startup_key';
-
--- 3. Row Level Security enabled
-select case when relrowsecurity then 'ok' else 'RLS DISABLED' end as rls_check
-from pg_class where oid = 'public.workshop_responses'::regclass;
-
--- 4. The three anon policies
-select case when count(*) = 4 then 'ok' else 'MISSING POLICIES' end as policy_check
-from pg_policies
-where schemaname = 'public' and tablename = 'workshop_responses';
-
--- 5. Realtime publication membership
-select case when count(*) = 1 then 'ok' else 'REALTIME NOT ENABLED' end as realtime_check
-from pg_publication_tables
-where pubname = 'supabase_realtime' and schemaname = 'public'
-  and tablename = 'workshop_responses';
-
--- 6. REPLICA IDENTITY FULL, so UPDATE events carry the old row
-select case when relreplident = 'f' then 'ok' else 'REPLICA IDENTITY NOT FULL' end as replica_check
-from pg_class where oid = 'public.workshop_responses'::regclass;
+  return result;
+end;
+$$;
