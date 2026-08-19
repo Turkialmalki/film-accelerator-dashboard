@@ -383,9 +383,10 @@ try {
     bars: document.querySelectorAll('.recharts-bar-rectangle').length,
     areas: document.querySelectorAll('.recharts-area-area').length,
   }));
+  // Six charts on the dashboard now: three portfolio, three operations.
   record(
     'each dashboard chart exposes its numbers as a screen-reader table',
-    a11y.tables === 3 && a11y.hidden === 3,
+    a11y.tables === 6 && a11y.hidden === 6,
     JSON.stringify(a11y),
   );
   record(
@@ -424,6 +425,127 @@ try {
     `series drawn=${empty.series}${emptyErrs.length ? ` console: ${emptyErrs.join(' | ')}` : ''}`,
   );
   await chartCtx.close();
+
+  /* ------------------------------- 11b. the portfolio analytics layer */
+  const pfCtx = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
+  const pfPage = await newPage(pfCtx);
+  await signIn(pfPage, 'admin');
+  await pfPage.goto(`${BASE}/en/dashboard`, { waitUntil: 'networkidle' });
+  await pfPage.waitForTimeout(2600);
+
+  // Every field the portfolio functions read must exist on every real row.
+  // The demo fixture is `data/startups.json` verbatim, so this is a check
+  // against the real shape, not against a convenient mock.
+  const shape = await pfPage.evaluate(() => {
+    const teams = JSON.parse(window.localStorage.getItem('fba.demo.store.v1')).teams;
+    const problems = [];
+    teams.forEach((t) => {
+      const bad = (what) => problems.push(`${t.slug}: ${what}`);
+      if (!Array.isArray(t.founders)) bad('founders is not an array');
+      if (!t.city || typeof t.city.ar !== 'string' || typeof t.city.en !== 'string') bad('city is not bilingual');
+      if (typeof t.revenue_band !== 'string') bad('revenue_band is not a string');
+      if (!Number.isFinite(t.readiness)) bad('readiness is not finite');
+      if (!Number.isFinite(t.team_size)) bad('team_size is not finite');
+      if (typeof t.stage !== 'string') bad('stage missing');
+      if (!Array.isArray(t.challenges)) bad('challenges is not an array');
+      if (typeof t.growth_path !== 'string') bad('growth_path is not a string');
+    });
+    return { count: teams.length, problems };
+  });
+  record(
+    'every team row carries the fields the portfolio analytics read',
+    shape.count === 20 && shape.problems.length === 0,
+    `${shape.count} teams${shape.problems.length ? ` · ${shape.problems.join(' | ')}` : ''}`,
+  );
+
+  const board = await pfPage.locator('main').innerText();
+  const kpiLabels = [
+    'Portfolio companies',
+    'Average readiness',
+    'At MVP stage',
+    'Direct jobs',
+    'Revenue-active companies',
+    'Investor-ready companies',
+    'Key-person-risk companies',
+  ];
+  record(
+    'all seven portfolio KPI cards render',
+    kpiLabels.every((l) => board.includes(l)),
+    kpiLabels.filter((l) => !board.includes(l)).join(', ') || 'all present',
+  );
+
+  const panels = [
+    'Key findings',
+    'Portfolio health',
+    'Investment-stage distribution',
+    'Average readiness by stage',
+    'Revenue-band distribution',
+    'Geography & team structure',
+    'Portfolio readiness ranking',
+    'Risks, opportunities & watchlist',
+    'Programme operations',
+  ];
+  record(
+    'every portfolio panel renders',
+    panels.every((p) => board.includes(p)),
+    panels.filter((p) => !board.includes(p)).join(', ') || 'all present',
+  );
+
+  // The two Pre-A companies were folded into 'seed' before this pass; both the
+  // portfolio donut and the operations bar chart must now count all 20.
+  record(
+    'the Pre-A stage is counted, not folded into Seed',
+    board.includes('Pre-A'),
+    board.includes('Pre-A') ? 'Pre-A present' : 'Pre-A missing from the dashboard',
+  );
+
+  // Key findings must be computed, never authored prose with a number in it.
+  const findingsComputed = await pfPage.evaluate(() => {
+    const teams = JSON.parse(window.localStorage.getItem('fba.demo.store.v1')).teams.filter(
+      (t) => t.status === 'active',
+    );
+    const solo = teams.filter((t) => t.founders.length <= 1 && t.team_size <= 3).length;
+    const text = document.querySelector('main').innerText;
+    return { solo, matches: text.includes(`${solo} companies carry key-person risk`) };
+  });
+  record(
+    'key findings are computed from the roster, not authored',
+    findingsComputed.matches,
+    `key-person-risk companies computed as ${findingsComputed.solo}`,
+  );
+
+  // Light theme, still: the dashboard must be painted on the Cinema White
+  // surface token, not a second dark palette of its own.
+  const theme = await pfPage.evaluate(() => {
+    const root = getComputedStyle(document.documentElement);
+    // A card, not the banner — the banner is deliberately a dark brand plate
+    // with its own inline gradient and no surface token.
+    const panel = document.querySelector('main section[class*="bg-surface"]');
+    return {
+      canvas: root.getPropertyValue('--c-canvas').trim(),
+      surface: root.getPropertyValue('--c-surface').trim(),
+      accent: root.getPropertyValue('--c-accent').trim(),
+      panelBg: panel ? getComputedStyle(panel).backgroundColor : null,
+    };
+  });
+  record(
+    'the portfolio dashboard stays on the Cinema White tokens',
+    theme.canvas.toLowerCase() === '#faf8f5' &&
+      theme.surface.toLowerCase() === '#ffffff' &&
+      theme.panelBg === 'rgb(255, 255, 255)',
+    JSON.stringify(theme),
+  );
+
+  // The banner must carry the programme's real, sourced content.
+  const banner = await pfPage.locator('main section').first().innerText();
+  record(
+    'the banner carries the real programme content',
+    banner.includes('empower startups and small companies in the film sector') &&
+      /Training bootcamp|Accelerator phase/.test(banner) &&
+      banner.includes('Riyadh'),
+    banner.replace(/\n/g, ' · ').slice(0, 160),
+  );
+  await pfCtx.close();
 
   /* ----------------------------------- 12. prefers-reduced-motion is real */
   const rmCtx = await browser.newContext({ reducedMotion: 'reduce' });
