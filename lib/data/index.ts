@@ -10,22 +10,31 @@ import { DemoAdapter } from './demo-adapter';
 import { SupabaseAdapter } from './supabase-adapter';
 import type { Repository } from './types';
 import { ORG_ID } from './seed';
+import {
+  ORG_ID_ENV,
+  SUPABASE_ANON_KEY,
+  SUPABASE_URL,
+  isSupabaseConfigured,
+} from '@/lib/supabase/env';
 
 let instance: Repository | null = null;
 
+/**
+ * The mode detection now lives in `lib/supabase/env.ts` so that middleware,
+ * the auth layer and the data layer cannot disagree about which mode the
+ * deployment is in. The rule itself is unchanged.
+ */
 export function isDemoMode(): boolean {
-  return !(
-    process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  );
+  return !isSupabaseConfigured();
 }
 
 export function getRepository(): Repository {
   if (instance) return instance;
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  const orgId = process.env.NEXT_PUBLIC_ORG_ID ?? ORG_ID;
+  const orgId = ORG_ID_ENV || ORG_ID;
 
-  instance = url && key ? new SupabaseAdapter(url, key, orgId) : new DemoAdapter();
+  instance = isSupabaseConfigured()
+    ? new SupabaseAdapter(SUPABASE_URL, SUPABASE_ANON_KEY, orgId)
+    : new DemoAdapter();
   return instance;
 }
 

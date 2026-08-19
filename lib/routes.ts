@@ -22,8 +22,19 @@ export const PARTICIPANT_ROUTES = [
   '/my-submissions',
 ] as const;
 
+/**
+ * The forced password-change screen.
+ *
+ * It is not an AUTH_ROUTE — auth routes bounce a signed-in visitor away, and
+ * this one is only reachable *while* signed in. It is not an admin or
+ * participant route either, so no role redirect applies to it. It is simply a
+ * shared, protected route that every other protected route defers to while
+ * `must_change_password` is set.
+ */
+export const CHANGE_PASSWORD_ROUTE = '/change-password';
+
 /** Signed in, any role. */
-export const SHARED_ROUTES = ['/profile', '/help'] as const;
+export const SHARED_ROUTES = ['/profile', '/help', CHANGE_PASSWORD_ROUTE] as const;
 
 export const AUTH_ROUTES = [
   '/sign-in',

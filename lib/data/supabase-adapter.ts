@@ -11,7 +11,8 @@
  * (see .env.example). `getRepository()` in ./index.ts switches automatically.
  */
 
-import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import { getBrowserSupabase } from '@/lib/supabase/browser-client';
 import type {
   AnswerValue,
   AuditLog,
@@ -46,12 +47,31 @@ const NOT_IMPLEMENTED = (method: string) =>
 export class SupabaseAdapter implements Repository {
   readonly mode = 'supabase' as const;
 
-  private client: SupabaseClient;
+  private url: string;
+  private anonKey: string;
   private orgId: string;
+  private cached: SupabaseClient | null = null;
 
   constructor(url: string, anonKey: string, orgId: string) {
-    this.client = createClient(url, anonKey);
+    this.url = url;
+    this.anonKey = anonKey;
     this.orgId = orgId;
+  }
+
+  /**
+   * The client is built on first use rather than in the constructor. A client
+   * component still renders once on the server, and `getRepository()` may be
+   * reached during that render; the browser client wants a cookie jar that
+   * only exists in the document.
+   *
+   * It is the **cookie-backed** `createBrowserClient` from `@supabase/ssr`,
+   * not the localStorage-backed `createClient`. `middleware.ts` runs before
+   * any page JavaScript and can only read cookies, so a localStorage session
+   * would leave every protected route looking anonymous to the route guard.
+   */
+  private get client(): SupabaseClient {
+    if (!this.cached) this.cached = getBrowserSupabase(this.url, this.anonKey);
+    return this.cached;
   }
 
   private async one<T>(table: string, match: Record<string, unknown>): Promise<T | null> {

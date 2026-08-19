@@ -82,6 +82,30 @@ create policy profile_self_read on profiles
 create policy profile_self_write on profiles
   for update using (id = auth.uid());
 
+-- `must_change_password` must not be self-clearable. An RLS policy cannot
+-- express "this column may not change" without recursing into profiles, so it
+-- is done with column privileges instead: drop the blanket UPDATE and grant
+-- back only the columns a person legitimately edits about themselves.
+--
+-- Column-level grants are only consulted once the table-level privilege is
+-- gone, hence the revoke-then-grant ordering.
+--
+-- The service-role key bypasses RLS *and* these grants, so the invite and
+-- change-password routes are unaffected.
+revoke update on profiles from authenticated;
+grant update (email, full_name, avatar_url, locale) on profiles to authenticated;
+
+-- The anon-key SupabaseAdapter must be able to answer "am I an admin or a
+-- participant?" immediately after sign-in. That read is:
+--
+--     profiles         where id = auth.uid()          -> profile_self_read
+--     org_memberships  where profile_id = auth.uid()  -> membership_read
+--     cohorts          where org_id = current_org_id()-> cohort_read
+--
+-- All three are covered above. The helper functions are SECURITY DEFINER, so
+-- `membership_read` calling `is_admin()` does not recurse into org_memberships'
+-- own policy. Nothing here blocks the post-login bootstrap read.
+
 create policy membership_read on org_memberships
   for select using (profile_id = auth.uid() or (is_admin() and org_id = current_org_id()));
 

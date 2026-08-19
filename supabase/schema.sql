@@ -72,6 +72,13 @@ create table profiles (
   full_name   jsonb not null default '{"ar":"","en":""}'::jsonb,
   avatar_url  text,
   locale      text not null default 'ar' check (locale in ('ar', 'en')),
+  -- Set when an admin creates the account with a generated temporary password.
+  -- The durable record; the enforced copy is the `must_change_password` claim
+  -- in app_metadata, which middleware reads on every request without a query.
+  -- Cleared by POST /api/auth/change-password, which writes both.
+  -- Also shipped separately as migrations/0002_must_change_password.sql for
+  -- projects where this schema has already been applied.
+  must_change_password boolean not null default false,
   created_at  timestamptz not null default now()
 );
 
