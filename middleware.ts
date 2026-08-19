@@ -1,3 +1,5 @@
+import './lib/supabase/edge-realtime-polyfill';
+
 import { NextResponse, type NextRequest } from 'next/server';
 import {
   CHANGE_PASSWORD_ROUTE,

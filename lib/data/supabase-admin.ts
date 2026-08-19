@@ -22,6 +22,7 @@
  */
 
 import 'server-only';
+import '@/lib/supabase/edge-realtime-polyfill';
 
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { SUPABASE_URL } from '@/lib/supabase/env';
