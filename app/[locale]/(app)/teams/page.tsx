@@ -32,6 +32,7 @@ import {
   Skeleton,
 } from '@/components/ui/misc';
 import { useI18n } from '@/components/providers/locale-provider';
+import { useSession } from '@/components/providers/session-provider';
 import { useRepoQuery } from '@/lib/hooks/use-repo';
 import { getRepository } from '@/lib/data';
 import type { Repository, Team, TeamStage } from '@/lib/data/types';
@@ -57,6 +58,7 @@ const STAGE_RANK: Record<TeamStage, number> = {
 
 export default function TeamsPage() {
   const { t, b, tf, fmtNumber, fmtDate, locale } = useI18n();
+  const { session } = useSession();
   const query = useCallback((repo: Repository) => repo.listTeams(), []);
   const { data: teams, loading } = useRepoQuery<Team[]>(query, []);
 
@@ -121,10 +123,10 @@ export default function TeamsPage() {
               onChange={async (event) => {
                 const file = event.target.files?.[0];
                 event.target.value = '';
-                if (!file) return;
+                if (!file || !session) return;
                 try {
                   const text = await file.text();
-                  const rows = csvToTeamInputs(text);
+                  const rows = csvToTeamInputs(text, session.org_id, session.cohort_id);
                   if (!rows.length) throw new Error('EMPTY');
                   const result = await getRepository().importTeams(rows);
                   setImportMessage(

@@ -17,17 +17,18 @@ import {
   Skeleton,
 } from '@/components/ui/misc';
 import { useI18n } from '@/components/providers/locale-provider';
+import { useSession } from '@/components/providers/session-provider';
 import { useRepoQuery } from '@/lib/hooks/use-repo';
 import { getRepository } from '@/lib/data';
 import type { Form, FormTemplateKey, Repository, Submission } from '@/lib/data/types';
 import { TemplateChooser } from '@/components/forms/template-chooser';
 import { buildTemplate, TEMPLATE_MAP } from '@/lib/forms/templates';
 import { CINEMA_WHITE } from '@/lib/theme/presets';
-import { COHORT_ID, ORG_ID } from '@/lib/data/seed';
 import { uid } from '@/lib/utils';
 
 export default function FormsPage() {
   const { t, b, fmtNumber, fmtDate, href } = useI18n();
+  const { session } = useSession();
   const router = useRouter();
   const [chooserOpen, setChooserOpen] = useState(false);
 
@@ -55,11 +56,12 @@ export default function FormsPage() {
   }, [data.submissions]);
 
   async function createFromTemplate(key: FormTemplateKey) {
+    if (!session) return;
     const repo = getRepository();
     const blueprint = TEMPLATE_MAP[key];
     const form = await repo.createForm({
-      org_id: ORG_ID,
-      cohort_id: COHORT_ID,
+      org_id: session.org_id,
+      cohort_id: session.cohort_id,
       template_key: key,
       title: blueprint.title,
       description: blueprint.description,
@@ -77,7 +79,7 @@ export default function FormsPage() {
           en: 'We have your response. Thank you for your time.',
         },
       },
-      created_by: 'profile_admin',
+      created_by: session.profile.id,
     });
 
     const built = buildTemplate(key, form.id, (scope) => uid(scope));

@@ -18,9 +18,9 @@ import { Button } from '@/components/ui/button';
 import { Input, NativeSelect, Textarea } from '@/components/ui/input';
 import { Field } from '@/components/ui/misc';
 import { useI18n } from '@/components/providers/locale-provider';
+import { useSession } from '@/components/providers/session-provider';
 import { getRepository } from '@/lib/data';
 import type { Team, TeamInput, TeamStage } from '@/lib/data/types';
-import { COHORT_ID, ORG_ID } from '@/lib/data/seed';
 
 const STAGES: TeamStage[] = ['idea', 'mvp', 'pre-seed', 'seed', 'pre-a', 'series-a', 'growth'];
 
@@ -76,6 +76,7 @@ export function TeamFormDialog({
   team: Team | null;
 }) {
   const { t } = useI18n();
+  const { session } = useSession();
   const {
     register,
     handleSubmit,
@@ -91,9 +92,10 @@ export function TeamFormDialog({
   }, [open, team, reset]);
 
   async function onSubmit(values: Values) {
+    if (!session && !team) return;
     const payload: TeamInput = {
-      org_id: team?.org_id ?? ORG_ID,
-      cohort_id: team?.cohort_id ?? COHORT_ID,
+      org_id: team?.org_id ?? session!.org_id,
+      cohort_id: team?.cohort_id ?? session!.cohort_id,
       slug: values.slug.trim(),
       name: { ar: values.nameAr, en: values.nameEn },
       track: { ar: values.trackAr, en: values.trackEn },

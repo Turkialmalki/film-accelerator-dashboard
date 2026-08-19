@@ -51,13 +51,28 @@ export function initials(name: string): string {
   return parts.map((p) => p[0] ?? '').join('') || '؟';
 }
 
-/** Stable, dependency-free id for client-side entity creation. */
-export function uid(prefix: string): string {
-  const rand =
-    typeof window !== 'undefined' && window.crypto?.randomUUID
-      ? window.crypto.randomUUID().slice(0, 8)
-      : Math.random().toString(36).slice(2, 10);
-  return `${prefix}_${rand}`;
+/**
+ * Client-side id for entities the builder creates before they're saved
+ * (new fields, sections, rules, audiences). Must be a real UUID, not a
+ * readable `prefix_xxxxxx` string: `saveFields`/`saveSections`/`saveRules`
+ * and the audience insert all write this value straight into a Postgres
+ * `uuid primary key` column in Supabase mode, and a non-UUID string is
+ * rejected outright — which is exactly what silently broke "use this
+ * template" and every other real-DB write, since nothing here ever
+ * exercised that codepath against a live database before tonight.
+ *
+ * `prefix` is accepted for call-site compatibility but no longer used —
+ * demo mode never depended on the string being readable, only unique.
+ */
+export function uid(_prefix?: string): string {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID();
+  // Fallback for an environment without a native UUID generator (should not
+  // happen in a browser or modern Node, but fail into something rather than
+  // throwing): RFC 4122 v4-shaped, good enough as a primary key value.
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16);
+  });
 }
 
 export function clamp(value: number, min: number, max: number): number {

@@ -1,6 +1,5 @@
 import type { Team, TeamInput, TeamStage } from '@/lib/data/types';
 import { csvToObjects } from '@/lib/csv';
-import { COHORT_ID, ORG_ID } from '@/lib/data/seed';
 
 /** The exchange format for the Teams import/export round-trip. */
 export const TEAM_CSV_HEADER = [
@@ -48,7 +47,11 @@ export function teamsToCsvRows(teams: Team[]): (string | number)[][] {
   ];
 }
 
-export function csvToTeamInputs(text: string): Partial<TeamInput>[] {
+export function csvToTeamInputs(
+  text: string,
+  orgId: string,
+  cohortId: string,
+): Partial<TeamInput>[] {
   return csvToObjects(text)
     .filter((row) => row.slug || row.name_ar || row.name_en)
     .map((row) => {
@@ -65,8 +68,8 @@ export function csvToTeamInputs(text: string): Partial<TeamInput>[] {
         });
 
       const input: Partial<TeamInput> = {
-        org_id: ORG_ID,
-        cohort_id: COHORT_ID,
+        org_id: orgId,
+        cohort_id: cohortId,
         slug: row.slug || undefined,
         name: { ar: row.name_ar ?? '', en: row.name_en ?? '' },
         track: { ar: row.track_ar ?? '', en: row.track_en ?? '' },
