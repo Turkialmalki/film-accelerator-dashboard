@@ -7,6 +7,11 @@ node_modules/
 .env
 .env.*
 
+# ...except the template, which holds only names and comments — no values.
+# HANDOFF.md has referred to it since the first handoff; it was never actually
+# committed, because the rule above swallowed it.
+!.env.example
+
 # Next.js
 /.next/
 /out/
