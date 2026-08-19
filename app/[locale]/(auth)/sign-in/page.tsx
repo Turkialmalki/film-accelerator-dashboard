@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
@@ -30,7 +30,7 @@ const schema = z.object({
 
 type Values = z.infer<typeof schema>;
 
-export default function SignInPage() {
+function SignInForm() {
   const { t, href } = useI18n();
   const { signIn } = useSession();
   const router = useRouter();
@@ -167,5 +167,17 @@ export default function SignInPage() {
         </div>
       ) : null}
     </AuthShell>
+  );
+}
+
+/**
+ * useSearchParams() opts the page out of static prerendering, so the form has
+ * to sit behind a Suspense boundary for the production build to emit a shell.
+ */
+export default function SignInPage() {
+  return (
+    <Suspense>
+      <SignInForm />
+    </Suspense>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
@@ -23,7 +23,7 @@ const schema = z
 
 type Values = z.infer<typeof schema>;
 
-export default function ResetPasswordPage() {
+function ResetPasswordForm() {
   const { t, href } = useI18n();
   const params = useSearchParams();
   const [done, setDone] = useState(false);
@@ -87,5 +87,17 @@ export default function ResetPasswordPage() {
         </form>
       )}
     </AuthShell>
+  );
+}
+
+/**
+ * useSearchParams() opts the page out of static prerendering, so the form has
+ * to sit behind a Suspense boundary for the production build to emit a shell.
+ */
+export default function ResetPasswordPage() {
+  return (
+    <Suspense>
+      <ResetPasswordForm />
+    </Suspense>
   );
 }

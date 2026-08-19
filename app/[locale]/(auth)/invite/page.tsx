@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
@@ -26,7 +26,7 @@ const schema = z.object({
 
 type Values = z.infer<typeof schema>;
 
-export default function InvitePage() {
+function InviteForm() {
   const { t, href } = useI18n();
   const { refresh } = useSession();
   const router = useRouter();
@@ -143,5 +143,17 @@ export default function InvitePage() {
         </Button>
       </form>
     </AuthShell>
+  );
+}
+
+/**
+ * useSearchParams() opts the page out of static prerendering, so the form has
+ * to sit behind a Suspense boundary for the production build to emit a shell.
+ */
+export default function InvitePage() {
+  return (
+    <Suspense>
+      <InviteForm />
+    </Suspense>
   );
 }
