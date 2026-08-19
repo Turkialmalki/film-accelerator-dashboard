@@ -307,6 +307,146 @@ try {
     adminInvite.status() === 200 && adminInviteBody.mode === 'demo' && adminInviteBody.simulated === true,
     `status ${adminInvite.status()} mode=${adminInviteBody.mode}`,
   );
+
+  /* ------------------------------- 10. every sidebar item actually works */
+  // Clicking, not URL-typing: a nav item can be present and still be a dead
+  // link. Each click must land on its route and render without a console error.
+  const NAV = {
+    admin: [
+      ['لوحة المؤشرات', '/dashboard'],
+      ['الفرق المشاركة', '/teams'],
+      ['الاستمارات', '/forms'],
+      ['نتائج الاستمارات', '/results'],
+      ['المظهر', '/appearance'],
+      ['إعدادات البرنامج', '/settings'],
+      ['المساعدة', '/help'],
+      ['الملف الشخصي', '/profile'],
+    ],
+    participant: [
+      ['نظرة عامة', '/overview'],
+      ['فريقي', '/my-team'],
+      ['الاستمارات المسندة', '/assigned-forms'],
+      ['إجاباتي', '/my-submissions'],
+      ['المساعدة', '/help'],
+      ['الملف الشخصي', '/profile'],
+    ],
+  };
+
+  for (const [role, items] of Object.entries(NAV)) {
+    const navCtx = await browser.newContext();
+    const navPage = await newPage(navCtx);
+    await signIn(navPage, role);
+
+    for (const [label, route] of items) {
+      navPage.errors.length = 0;
+      const link = navPage.getByRole('navigation').getByRole('link', { name: label, exact: true });
+      if ((await link.count()) === 0) {
+        record(`${role} nav → ${route}`, false, 'nav item not rendered');
+        continue;
+      }
+      await link.first().click();
+      // Wait for the URL, not a fixed delay: under `next dev` the first click
+      // into a route pays for its compile, which can take several seconds and
+      // would otherwise read as a dead link.
+      await navPage.waitForURL((url) => url.pathname.includes(route), { timeout: 30000 }).catch(() => {});
+      await navPage.waitForTimeout(900);
+      const landed = navPage.url().includes(route);
+      const current = await link.first().getAttribute('aria-current');
+      // _rsc prefetches are aborted by design on client-side navigation.
+      const errs = navPage.errors.filter((e) => !e.includes('favicon') && !e.includes('_rsc'));
+      const body = await navPage.locator('main').innerText().catch(() => '');
+      record(
+        `${role} nav → ${route}`,
+        landed && errs.length === 0 && current === 'page' && body.trim().length > 0,
+        `url=${navPage.url().replace(BASE, '')} aria-current=${current}${errs.length ? ` console: ${errs.join(' | ')}` : ''}`,
+      );
+    }
+
+    navPage.errors.length = 0;
+    await navPage.getByRole('button', { name: 'تسجيل الخروج' }).first().click();
+    await navPage.waitForTimeout(2500);
+    record(`${role} sign-out returns to sign-in`, navPage.url().includes('/sign-in'), navPage.url());
+    await navCtx.close();
+  }
+
+  /* --------------------- 11. charts: a11y summary + honest empty states */
+  const chartCtx = await browser.newContext();
+  const chartPage = await newPage(chartCtx);
+  await signIn(chartPage, 'admin');
+  await chartPage.goto(`${BASE}/ar/dashboard`, { waitUntil: 'networkidle' });
+  await chartPage.waitForTimeout(1800);
+
+  const a11y = await chartPage.evaluate(() => ({
+    tables: document.querySelectorAll('table.sr-only').length,
+    hidden: document.querySelectorAll('.chart-ltr[aria-hidden="true"]').length,
+    sectors: document.querySelectorAll('.recharts-sector').length,
+    bars: document.querySelectorAll('.recharts-bar-rectangle').length,
+    areas: document.querySelectorAll('.recharts-area-area').length,
+  }));
+  record(
+    'each dashboard chart exposes its numbers as a screen-reader table',
+    a11y.tables === 3 && a11y.hidden === 3,
+    JSON.stringify(a11y),
+  );
+  record(
+    'all three chart series are drawn',
+    a11y.sectors > 0 && a11y.bars > 0 && a11y.areas > 0,
+    JSON.stringify(a11y),
+  );
+
+  // Zero submissions is the real production state. The charts must say so
+  // rather than draw an invented series.
+  await chartPage.evaluate(() => {
+    const store = JSON.parse(window.localStorage.getItem('fba.demo.store.v1'));
+    store.submissions = [];
+    store.answers = [];
+    store.teams = [];
+    window.localStorage.setItem('fba.demo.store.v1', JSON.stringify(store));
+  });
+  chartPage.errors.length = 0;
+  await chartPage.goto(`${BASE}/en/dashboard`, { waitUntil: 'networkidle' });
+  await chartPage.waitForTimeout(1800);
+  const empty = await chartPage.evaluate(() => ({
+    text: document.querySelector('main').innerText,
+    series:
+      document.querySelectorAll('.recharts-sector').length +
+      document.querySelectorAll('.recharts-bar-rectangle').length +
+      document.querySelectorAll('.recharts-area-area').length,
+  }));
+  const emptyErrs = chartPage.errors.filter((e) => !e.includes('favicon') && !e.includes('_rsc'));
+  record(
+    'zero data renders real empty states and draws no invented series',
+    empty.text.includes('No responses yet') &&
+      empty.text.includes('Nothing to plot yet') &&
+      empty.text.includes('No active teams yet') &&
+      empty.series === 0 &&
+      emptyErrs.length === 0,
+    `series drawn=${empty.series}${emptyErrs.length ? ` console: ${emptyErrs.join(' | ')}` : ''}`,
+  );
+  await chartCtx.close();
+
+  /* ----------------------------------- 12. prefers-reduced-motion is real */
+  const rmCtx = await browser.newContext({ reducedMotion: 'reduce' });
+  const rmPage = await newPage(rmCtx);
+  await signIn(rmPage, 'admin');
+  await rmPage.goto(`${BASE}/en/dashboard`, { waitUntil: 'networkidle' });
+  // Deliberately short: with motion reduced everything must already be final.
+  await rmPage.waitForTimeout(500);
+  const rm = await rmPage.evaluate(() => ({
+    matches: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+    railTransitionMs:
+      parseFloat(getComputedStyle(document.querySelector('aside')).transitionDuration) * 1000,
+    kpiOpacity: getComputedStyle(document.querySelector('article')).opacity,
+    series:
+      document.querySelectorAll('.recharts-sector').length +
+      document.querySelectorAll('.recharts-bar-rectangle').length,
+  }));
+  record(
+    'prefers-reduced-motion: no transitions, content already final',
+    rm.matches && rm.railTransitionMs < 1 && rm.kpiOpacity === '1' && rm.series > 0,
+    JSON.stringify(rm),
+  );
+  await rmCtx.close();
 } catch (error) {
   record('verification script completed', false, String(error).slice(0, 400));
 } finally {
