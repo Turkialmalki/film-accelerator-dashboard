@@ -66,7 +66,6 @@ function SignInForm() {
   return (
     <AuthShell
       title={t.auth.signInTitle}
-      subtitle={t.auth.signInSubtitle}
       footer={
         <span>
           {t.auth.noAccount}{' '}

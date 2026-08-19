@@ -21,7 +21,6 @@ import { Button } from '@/components/ui/button';
  */
 
 const CAMPAIGN_IMAGE = process.env.NEXT_PUBLIC_CAMPAIGN_IMAGE || '/brand/campaign-fba.jpg';
-const IS_PLACEHOLDER = false;
 
 export function AuthShell({
   title,
@@ -30,7 +29,7 @@ export function AuthShell({
   footer,
 }: {
   title: string;
-  subtitle: string;
+  subtitle?: string;
   children: React.ReactNode;
   footer?: React.ReactNode;
 }) {
@@ -58,8 +57,8 @@ export function AuthShell({
         <main className="flex flex-1 items-center justify-center px-6 pb-10 sm:px-10">
           <div className="w-full max-w-[26rem]">
             <h1 className="text-2xl font-semibold text-ink sm:text-[1.75rem]">{title}</h1>
-            <p className="mt-2 text-sm text-ink-muted">{subtitle}</p>
-            <div className="mt-7">{children}</div>
+            {subtitle ? <p className="mt-2 text-sm text-ink-muted">{subtitle}</p> : null}
+            <div className={subtitle ? 'mt-7' : 'mt-5'}>{children}</div>
             {footer ? <div className="mt-6 text-sm text-ink-muted">{footer}</div> : null}
           </div>
         </main>
@@ -81,35 +80,14 @@ export function AuthShell({
           sizes="58vw"
           className="object-cover"
         />
-        {/* Warm overlay — keeps the statement readable over any photograph. */}
+        {/* Soft warm overlay — blends the photograph into the panel edges. */}
         <div
           className="absolute inset-0"
           style={{
             background:
-              'linear-gradient(200deg, rgba(15,40,55,0.20) 0%, rgba(15,40,55,0.55) 55%, rgba(7,17,25,0.88) 100%)',
+              'linear-gradient(200deg, rgba(15,40,55,0.08) 0%, rgba(15,40,55,0.18) 55%, rgba(7,17,25,0.32) 100%)',
           }}
         />
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              'radial-gradient(120% 90% at 15% 100%, rgba(251,174,64,0.28) 0%, rgba(251,174,64,0) 60%)',
-          }}
-        />
-
-        <div className="relative flex h-full flex-col justify-end p-12 xl:p-16">
-          <p className="max-w-[22ch] text-3xl font-semibold leading-[1.35] text-white xl:text-[2.5rem]">
-            {t.auth.campaignStatement}
-          </p>
-          <p className="mt-5 max-w-[46ch] text-base leading-relaxed text-white/75">
-            {t.auth.campaignSupport}
-          </p>
-          {IS_PLACEHOLDER ? (
-            <p className="mt-10 inline-flex w-fit rounded-full border border-white/25 px-3 py-1 text-[11px] uppercase tracking-wide text-white/60">
-              {t.auth.placeholderNote}
-            </p>
-          ) : null}
-        </div>
       </aside>
     </div>
   );
