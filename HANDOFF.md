@@ -439,6 +439,50 @@ touched — this pass scoped to the dashboard and its analytics layer, the part 
 with the most specific, verifiable acceptance criteria. They're real remaining work, not
 silently dropped.
 
+## 7c. Second increment: auth, shell, teams polish, one real a11y fix
+
+Continuation of §7b on the same branch, after merging in `main`'s Supabase-auth work (§9).
+
+**Auth.** Added `components/ui/password-input.tsx` — a show/hide toggle on every password
+field across sign-in, sign-up, reset-password and change-password, positioned on the
+inline-end edge so it mirrors automatically. `AuthShell` gained a one-time entrance fade/rise
+on the form column and a very slow (16s, one-time) scale-down pan on the cinematic image,
+both skipped under `prefers-reduced-motion`.
+
+**Shell.** The sidebar's collapse/expand now animates the rail width with a CSS transition
+(a slight-overshoot easing curve standing in for a spring, since the width has to actually
+reflow the flex children rather than just clip a fixed box) instead of snapping instantly,
+and respects `motion-reduce:`. Collapsed nav items get a real floating tooltip
+(`components/ui/tooltip.tsx`, Radix-based, positioned on the correct side per locale) instead
+of a bare `title` attribute. The mobile/desktop drawer (`components/ui/drawer.tsx`) gained an
+actual slide-in/out transform via `tailwindcss-animate`, direction-aware, on top of the
+fade it already had.
+
+**Teams page.** Cards get a one-time stagger entrance (first 8 only, to keep it from feeling
+busy on the full 20-card grid). Readiness is now shown as its own colour-coded badge, using
+the exact same thresholds as the dashboard (`INVESTOR_READY_THRESHOLD` / `WATCHLIST_THRESHOLD`
+from `lib/analytics.ts`) so a green badge here means the same thing it means on the dashboard.
+The revenue-band line on cards, table and the detail drawer now reads through
+`revenueBandOf()` + `t.portfolio.revenueBands`, so English users see "Above SAR 1M" instead of
+the raw Arabic source string ("1,000,000+ ر.س") that was leaking through before.
+
+**Form builder — a real accessibility fix, not just polish.** The canvas field row's action
+buttons (reorder, settings, duplicate, delete) were `opacity-0` until `:hover` or
+`:focus-within`. On a touch device there is no hover, so those actions were only reachable by
+tabbing to them blind — a genuine violation of the brief's own "no hover-only essential
+actions" rule, not a cosmetic gap. They're now always visible.
+
+**Verification.** `npm run typecheck` / `lint` / `build` all pass; `verify-e2e.mjs` is
+unchanged in count and still 44/44 (nothing in this increment touches what those checks
+assert). Visual review at 1440px desktop (Arabic and English) and 390px mobile.
+
+**Still not done**, honestly: a deeper pass on the submission-results page and the form
+builder's settings drawer / multi-step preview, and the participant portal's visual
+consistency with the admin side, weren't reached in this increment either. The results
+overview page was reviewed and is already close to the design system (cards, badges, progress
+bars, real empty/loading states) — it did not need the same intervention the dashboard or
+teams page did.
+
 ## 8. The legacy site
 
 The original static site was moved to `legacy/` (`index.html`, `mentor.html`,

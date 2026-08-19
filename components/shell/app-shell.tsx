@@ -64,10 +64,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen bg-canvas">
       {/* Desktop sidebar. Flex order puts it on the inline-start edge, which
-          the html[dir] attribute already mirrors. */}
+          the html[dir] attribute already mirrors. The width transition uses a
+          slight-overshoot easing curve to read as a soft spring; reduced
+          motion drops straight to the CSS `transition-none` variant. */}
       <aside
         className={cn(
-          'sticky top-0 hidden h-screen shrink-0 border-line lg:block ltr:border-r rtl:border-l',
+          'sticky top-0 hidden h-screen shrink-0 overflow-hidden border-line transition-[width] duration-300 ease-[cubic-bezier(0.34,1.15,0.64,1)] motion-reduce:transition-none lg:block ltr:border-r rtl:border-l',
           collapsed ? 'w-[72px]' : 'w-64',
         )}
       >

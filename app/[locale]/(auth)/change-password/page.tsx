@@ -8,7 +8,7 @@ import { z } from 'zod';
 import { Loader2 } from 'lucide-react';
 import { AuthShell } from '@/components/auth/auth-shell';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 import { Field } from '@/components/ui/misc';
 import { useI18n } from '@/components/providers/locale-provider';
 import { useSession } from '@/components/providers/session-provider';
@@ -103,12 +103,7 @@ export default function ChangePasswordPage() {
     <AuthShell title={t.auth.changeTitle} subtitle={t.auth.changeSubtitle}>
       <form noValidate className="flex flex-col gap-4" onSubmit={handleSubmit(submit)}>
         <Field label={t.auth.currentPassword} htmlFor="currentPassword">
-          <Input
-            id="currentPassword"
-            type="password"
-            autoComplete="current-password"
-            {...register('currentPassword')}
-          />
+          <PasswordInput id="currentPassword" autoComplete="current-password" {...register('currentPassword')} />
         </Field>
 
         <Field
@@ -116,7 +111,7 @@ export default function ChangePasswordPage() {
           htmlFor="password"
           error={errors.password ? t.auth.passwordHint : undefined}
         >
-          <Input id="password" type="password" autoComplete="new-password" {...register('password')} />
+          <PasswordInput id="password" autoComplete="new-password" {...register('password')} />
         </Field>
 
         <Field
@@ -124,7 +119,7 @@ export default function ChangePasswordPage() {
           htmlFor="confirm"
           error={errors.confirm ? t.auth.passwordMismatch : undefined}
         >
-          <Input id="confirm" type="password" autoComplete="new-password" {...register('confirm')} />
+          <PasswordInput id="confirm" autoComplete="new-password" {...register('confirm')} />
         </Field>
 
         {serverError ? (

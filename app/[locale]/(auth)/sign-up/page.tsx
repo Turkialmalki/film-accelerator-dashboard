@@ -10,6 +10,7 @@ import { Loader2 } from 'lucide-react';
 import { AuthShell } from '@/components/auth/auth-shell';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 import { Field } from '@/components/ui/misc';
 import { useI18n } from '@/components/providers/locale-provider';
 import { useSession } from '@/components/providers/session-provider';
@@ -103,7 +104,7 @@ function SignUpForm() {
           hint={t.auth.passwordHint}
           error={errors.password ? t.auth.passwordHint : undefined}
         >
-          <Input id="password" type="password" autoComplete="new-password" {...register('password')} />
+          <PasswordInput id="password" autoComplete="new-password" {...register('password')} />
         </Field>
 
         <Field
@@ -111,12 +112,7 @@ function SignUpForm() {
           htmlFor="confirmPassword"
           error={errors.confirmPassword ? t.auth.passwordMismatch : undefined}
         >
-          <Input
-            id="confirmPassword"
-            type="password"
-            autoComplete="new-password"
-            {...register('confirmPassword')}
-          />
+          <PasswordInput id="confirmPassword" autoComplete="new-password" {...register('confirmPassword')} />
         </Field>
 
         <Field label={`${t.auth.inviteCode} · ${t.common.optional}`} htmlFor="inviteCode">

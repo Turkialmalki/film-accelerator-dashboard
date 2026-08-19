@@ -35,6 +35,7 @@ import {
 import { useI18n } from '@/components/providers/locale-provider';
 import { getRepository } from '@/lib/data';
 import { inviteUser, type InviteOutcome } from '@/lib/auth/invite-client';
+import { revenueBandOf } from '@/lib/analytics';
 import type { Form, Invitation, Role, Submission, Team } from '@/lib/data/types';
 
 export function TeamDetailDrawer({
@@ -132,7 +133,7 @@ export function TeamDetailDrawer({
               <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
                 <Detail label={t.teams.city} value={b(team.city)} />
                 <Detail label={t.teams.teamSize} value={fmtNumber(team.team_size)} />
-                <Detail label={t.teams.revenue} value={team.revenue_band} />
+                <Detail label={t.teams.revenue} value={t.portfolio.revenueBands[revenueBandOf(team.revenue_band)]} />
                 <Detail label={t.teams.businessModel} value={b(team.business_model)} />
               </dl>
 
