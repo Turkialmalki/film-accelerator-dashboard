@@ -30,7 +30,19 @@ import { readFileSync, existsSync } from 'node:fs';
 import { randomInt } from 'node:crypto';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createClient } from '@supabase/supabase-js';
+
+// @supabase/supabase-js constructs a RealtimeClient in createClient() even
+// though this script never subscribes to anything, and that constructor
+// throws immediately if `globalThis.WebSocket` is missing. Native WebSocket
+// only landed in Node 21 (stable in 22); on Node <21 — the LTS this was first
+// run under — createClient() crashes before a single query runs. Polyfilling
+// with `ws` costs nothing on newer Node, where this branch is simply skipped.
+if (typeof globalThis.WebSocket === 'undefined') {
+  const { WebSocket } = await import('ws');
+  globalThis.WebSocket = WebSocket;
+}
+
+const { createClient } = await import('@supabase/supabase-js');
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
