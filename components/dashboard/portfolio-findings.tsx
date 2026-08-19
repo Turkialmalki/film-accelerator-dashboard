@@ -6,6 +6,7 @@ import { useI18n } from '@/components/providers/locale-provider';
 import { EASE_OUT, MOTION_MS } from '@/components/charts/chart-kit';
 import { Panel } from '@/components/dashboard/panel';
 import type { Finding, FindingTone } from '@/lib/analytics';
+import { findingCopy } from '@/lib/analytics-copy';
 import { cn } from '@/lib/utils';
 
 const TONE_ICON: Record<FindingTone, typeof Circle> = {
@@ -33,47 +34,7 @@ export function KeyFindings({ findings, index = 0 }: { findings: Finding[]; inde
 
   if (!findings.length) return null;
 
-  const copyFor = (f: Finding): { title: string; body: string } => {
-    // Locale-aware values, resolved here rather than in the pure analytics layer.
-    const values: Record<string, string | number> = Object.fromEntries(
-      Object.entries(f.values).map(([k, v]) => [k, typeof v === 'number' ? fmtNumber(v) : v]),
-    );
-    if (f.region) values.region = b(f.region);
-    if (f.stages) values.stages = f.stages.map((s) => t.stages[s]).join(' + ');
-
-    switch (f.kind) {
-      case 'revenue_active':
-        return {
-          title: tf(t.portfolio.findingRevenueActive, values),
-          body: tf(t.portfolio.findingRevenueActiveBody, values),
-        };
-      case 'geo_concentration':
-        return {
-          title: tf(t.portfolio.findingGeoConcentration, values),
-          body: tf(t.portfolio.findingGeoConcentrationBody, values),
-        };
-      case 'investor_ready':
-        return {
-          title: tf(t.portfolio.findingInvestorReady, values),
-          body: tf(t.portfolio.findingInvestorReadyBody, values),
-        };
-      case 'key_person':
-        return {
-          title: tf(t.portfolio.findingKeyPerson, values),
-          body: tf(t.portfolio.findingKeyPersonBody, values),
-        };
-      case 'stage_concentration':
-        return {
-          title: tf(t.portfolio.findingStageConcentration, values),
-          body: tf(t.portfolio.findingStageConcentrationBody, values),
-        };
-      case 'readiness_spread':
-        return {
-          title: tf(t.portfolio.findingReadinessSpread, values),
-          body: tf(t.portfolio.findingReadinessSpreadBody, values),
-        };
-    }
-  };
+  const copyFor = (f: Finding) => findingCopy(f, t, tf, b, fmtNumber);
 
   return (
     <Panel

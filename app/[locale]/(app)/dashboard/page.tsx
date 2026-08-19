@@ -28,6 +28,7 @@ import { ReadinessRankingCard } from '@/components/dashboard/portfolio-ranking';
 import { PortfolioRisksPanel } from '@/components/dashboard/portfolio-risks';
 import { ResponseTrend, StageBars, StatusDonut } from '@/components/dashboard/dashboard-charts';
 import { CalendlyPanel } from '@/components/dashboard/calendly-panel';
+import { ExportMenu } from '@/components/dashboard/export-menu';
 import { Skeleton } from '@/components/ui/misc';
 
 /**
@@ -79,7 +80,24 @@ export default function DashboardPage() {
 
   return (
     <div className="mx-auto max-w-7xl">
-      <PageHeader title={t.dashboard.title} subtitle={t.portfolio.sectionEyebrow} />
+      <PageHeader
+        title={t.dashboard.title}
+        subtitle={t.portfolio.sectionEyebrow}
+        actions={
+          !loading ? (
+            <ExportMenu
+              portfolio={portfolio}
+              findings={findings}
+              teams={data.teams}
+              kpis={kpis}
+              status={status}
+              trend={trend}
+              stages={stages}
+              forms={data.forms}
+            />
+          ) : null
+        }
+      />
 
       {/* Mentorship sessions — live from Calendly, on-demand sync. Placed
           above the banner deliberately: it's the first live-updating number

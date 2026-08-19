@@ -569,6 +569,33 @@ try {
     JSON.stringify(rm),
   );
   await rmCtx.close();
+
+  /* --------------------------------------- 12. dashboard export, all three formats */
+  const exCtx = await browser.newContext();
+  const exPage = await newPage(exCtx);
+  await signIn(exPage, 'admin');
+  await exPage.goto(`${BASE}/ar/dashboard`, { waitUntil: 'networkidle' });
+  await exPage.waitForTimeout(1500);
+
+  await exPage.getByRole('button', { name: /^تصدير$/ }).click();
+  await exPage.waitForTimeout(500);
+
+  for (const [label, ext] of [
+    ['CSV', 'csv'],
+    ['Excel', 'xlsx'],
+    ['PDF', 'pdf'],
+  ]) {
+    await exPage.getByText(label, { exact: true }).click();
+    await exPage.waitForTimeout(200);
+    const [download] = await Promise.all([
+      exPage.waitForEvent('download', { timeout: 25000 }),
+      exPage.getByRole('button', { name: /تنزيل/ }).click(),
+    ]);
+    const name = download.suggestedFilename();
+    record(`dashboard export downloads a real .${ext} file`, name.endsWith(`.${ext}`), name);
+    await exPage.waitForTimeout(2200); // let the "done" phase settle before the next format
+  }
+  await exCtx.close();
 } catch (error) {
   record('verification script completed', false, String(error).slice(0, 400));
 } finally {
