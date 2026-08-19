@@ -48,6 +48,25 @@ language sql stable security definer set search_path = public as $$
   select team_id from org_memberships where profile_id = auth.uid() limit 1;
 $$;
 
+-- Breaks a real RLS cycle: form_read's own USING clause needs to know whether
+-- a form_audiences row permits the caller, but form_audiences' own policy
+-- (audience_read) queries back into forms to find its row — a plain
+-- correlated subquery on both sides sends Postgres into
+-- "infinite recursion detected in policy for relation forms" (42P17).
+-- SECURITY DEFINER breaks the loop the same way current_org_id() etc. already
+-- do: the query this function runs internally bypasses RLS entirely, so it
+-- never re-enters audience_read's policy on forms.
+create or replace function form_audience_permits_caller(target_form_id uuid) returns boolean
+language sql stable security definer set search_path = public as $$
+  select
+    not exists (select 1 from form_audiences a where a.form_id = target_form_id)
+    or exists (
+      select 1 from form_audiences a
+      where a.form_id = target_form_id
+        and (a.scope = 'all' or a.team_id = current_team_id())
+    );
+$$;
+
 create or replace function is_admin() returns boolean
 language sql stable security definer set search_path = public as $$
   select coalesce(current_role_name() in ('owner', 'admin', 'reviewer'), false);
@@ -164,17 +183,7 @@ create policy form_read on forms
     org_id = current_org_id()
     and (
       is_admin()
-      or (
-        status = 'published'
-        and (
-          not exists (select 1 from form_audiences a where a.form_id = forms.id)
-          or exists (
-            select 1 from form_audiences a
-            where a.form_id = forms.id
-              and (a.scope = 'all' or a.team_id = current_team_id())
-          )
-        )
-      )
+      or (status = 'published' and form_audience_permits_caller(forms.id))
     )
   );
 
