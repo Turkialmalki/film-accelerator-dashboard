@@ -1,6 +1,9 @@
 import { chromium } from 'playwright';
 
-const BASE = 'http://localhost:4319';
+// Override with E2E_BASE_URL when 4319 is already taken — otherwise the script
+// happily runs against whatever unrelated server holds the port and reports
+// passes that mean nothing.
+const BASE = process.env.E2E_BASE_URL || 'http://localhost:4319';
 const results = [];
 let browser;
 
@@ -258,6 +261,51 @@ try {
     'root redirects into a locale and onto sign-in',
     rootRes.status() === 200 && apage.url().includes('/sign-in'),
     `${apage.url()} status ${rootRes.status()}`,
+  );
+
+  /* ------------------------------------------- 9. auth + invite surface */
+  // The forced password-change screen is a protected route, not an auth
+  // route: anonymous must be bounced, not shown it.
+  await apage.goto(`${BASE}/ar/change-password`, { waitUntil: 'networkidle' });
+  record(
+    'anonymous redirected away from /change-password',
+    apage.url().includes('/sign-in'),
+    apage.url(),
+  );
+
+  // The invite route must refuse a caller with no session at all.
+  const anonInvite = await anon.request.post(`${BASE}/api/admin/invite`, {
+    data: { email: 'nobody@example.com', role: 'participant' },
+    failOnStatusCode: false,
+  });
+  record(
+    'POST /api/admin/invite rejects an anonymous caller',
+    anonInvite.status() === 401,
+    `status ${anonInvite.status()}`,
+  );
+
+  // A participant is signed in but may not invite.
+  const participantInvite = await pctx.request.post(`${BASE}/api/admin/invite`, {
+    data: { email: 'nobody@example.com', role: 'participant' },
+    failOnStatusCode: false,
+  });
+  record(
+    'POST /api/admin/invite rejects a participant',
+    participantInvite.status() === 403,
+    `status ${participantInvite.status()}`,
+  );
+
+  // And in demo mode an admin gets the simulated response: nothing is created
+  // server-side and no email is sent.
+  const adminInvite = await ctx.request.post(`${BASE}/api/admin/invite`, {
+    data: { email: 'invited@example.com', role: 'participant', locale: 'ar' },
+    failOnStatusCode: false,
+  });
+  const adminInviteBody = adminInvite.ok() ? await adminInvite.json() : {};
+  record(
+    'POST /api/admin/invite returns demo mode for an admin',
+    adminInvite.status() === 200 && adminInviteBody.mode === 'demo' && adminInviteBody.simulated === true,
+    `status ${adminInvite.status()} mode=${adminInviteBody.mode}`,
   );
 } catch (error) {
   record('verification script completed', false, String(error).slice(0, 400));
