@@ -14,15 +14,14 @@ import { Button } from '@/components/ui/button';
  * side, so it is on the right in English and on the left in Arabic without a
  * single direction-specific class.
  *
- * NOTE ON THE VISUAL: `public/brand/campaign-placeholder.svg` is a stand-in.
- * The approved campaign photograph has not been supplied. Set
- * NEXT_PUBLIC_CAMPAIGN_IMAGE to the real asset path to swap it in — no code
- * change required.
+ * NOTE ON THE VISUAL: `public/brand/campaign-fba.jpg` is the official Film
+ * Business Accelerator image, sourced from film.moc.gov.sa and saved locally
+ * (see README/HANDOFF for provenance). Set NEXT_PUBLIC_CAMPAIGN_IMAGE to
+ * override it with a different approved asset — no code change required.
  */
 
-const CAMPAIGN_IMAGE =
-  process.env.NEXT_PUBLIC_CAMPAIGN_IMAGE || '/brand/campaign-placeholder.svg';
-const IS_PLACEHOLDER = !process.env.NEXT_PUBLIC_CAMPAIGN_IMAGE;
+const CAMPAIGN_IMAGE = process.env.NEXT_PUBLIC_CAMPAIGN_IMAGE || '/brand/campaign-fba.jpg';
+const IS_PLACEHOLDER = false;
 
 export function AuthShell({
   title,

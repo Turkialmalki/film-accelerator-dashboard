@@ -289,10 +289,12 @@ Run with headless Chromium via Playwright against a dev server
 
 **Needed from the project owner**
 
-1. **The approved campaign photograph** for the auth split-screen. Today it renders
-   `public/brand/campaign-placeholder.svg`, a film-strip gradient with a visible
-   "PLACEHOLDER VISUAL" label. Drop the real image into `public/brand/` and point
-   `NEXT_PUBLIC_CAMPAIGN_IMAGE` at it — no code change.
+1. ~~The approved campaign photograph~~ — **done.** `public/brand/campaign-fba.jpg` is the
+   official Film Business Accelerator image (film production monitor rig + bilingual FBA
+   lockup), sourced from the Film Commission's own site (`film.moc.gov.sa`, About Us
+   imagery) and saved locally, resized to 1600px wide and re-compressed as JPEG
+   (643KB → 177KB). It is now the default auth-panel visual; `NEXT_PUBLIC_CAMPAIGN_IMAGE`
+   still overrides it with no code change if a different approved photo shows up later.
 2. **A live Supabase project**, so the schema and RLS can actually be applied and the
    adapter proven.
 3. **Confirmation of the English brand copy.** The Arabic is the primary voice throughout;
@@ -300,6 +302,16 @@ Run with headless Chromium via Playwright against a dev server
    someone who owns the brand's English register.
 4. **Any brand assets beyond the six SVGs already in `assets/images/`** — favicon set,
    social/OG image, print marks.
+
+**Bug fixed in this pass, unrelated to the above:** `public/brand/fba-lockup.svg` and
+`fba-lockup-light.svg` used `xlink:href` without declaring the `xlink` namespace on the
+root `<svg>` — invalid XML that every browser silently refused to render, so the FBA
+lockup was a broken image everywhere in the app (auth header, sidebar, footer). Fixed by
+adding `xmlns:xlink="http://www.w3.org/1999/xlink"` to both files (and their `legacy/`
+copies). Also switched the brand `<Image>` components to `unoptimized` — Next's
+image-optimization proxy sniffs local SVG buffers unreliably and was 400-ing valid files
+even after the namespace fix; these are vectors served straight from `/public`, so there
+was nothing to optimize in the first place.
 
 **Engineering TODO**
 
