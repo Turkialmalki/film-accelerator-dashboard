@@ -412,6 +412,12 @@ The mode detection is unchanged in substance — both `NEXT_PUBLIC_SUPABASE_URL`
 
 All four are in `.env.example`, with the same warnings.
 
+A note on that file: §4 has claimed since the first handoff that `.env.example` is in the
+repo root, and it was not — `.gitignore` matched it with `.env.*` and quietly dropped every
+attempt to add it. `.gitignore` now carries a `!.env.example` negation and the file is
+actually committed. It contains variable names and comments only; the credential rules above
+the negation are untouched.
+
 ### 9.3 Where the service-role key is allowed to go
 
 This is the one hard security boundary in the feature, so it is worth being explicit.
