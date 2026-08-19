@@ -21,7 +21,7 @@ export const TEAM_CSV_HEADER = [
   'founders',
 ] as const;
 
-const STAGES: TeamStage[] = ['idea', 'mvp', 'pre-seed', 'seed', 'series-a', 'growth'];
+const STAGES: TeamStage[] = ['idea', 'mvp', 'pre-seed', 'seed', 'pre-a', 'series-a', 'growth'];
 
 export function teamsToCsvRows(teams: Team[]): (string | number)[][] {
   return [
