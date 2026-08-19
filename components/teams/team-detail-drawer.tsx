@@ -34,6 +34,7 @@ import {
 } from '@/components/ui/misc';
 import { useI18n } from '@/components/providers/locale-provider';
 import { getRepository } from '@/lib/data';
+import { inviteUser, type InviteOutcome } from '@/lib/auth/invite-client';
 import type { Form, Invitation, Role, Submission, Team } from '@/lib/data/types';
 
 export function TeamDetailDrawer({
@@ -47,7 +48,7 @@ export function TeamDetailDrawer({
   onOpenChange: (open: boolean) => void;
   onEdit: (team: Team) => void;
 }) {
-  const { t, b, fmtDate, fmtDateTime, fmtNumber } = useI18n();
+  const { t, b, locale, fmtDate, fmtDateTime, fmtNumber } = useI18n();
   const [forms, setForms] = useState<Form[]>([]);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [invitations, setInvitations] = useState<Invitation[]>([]);
@@ -55,7 +56,9 @@ export function TeamDetailDrawer({
   const [notesSaved, setNotesSaved] = useState(false);
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRole, setInviteRole] = useState<Role>('participant');
+  const [inviteName, setInviteName] = useState('');
   const [inviting, setInviting] = useState(false);
+  const [inviteResult, setInviteResult] = useState<InviteOutcome | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
 
   const load = useCallback(async () => {
@@ -307,18 +310,36 @@ export function TeamDetailDrawer({
                     <option value="admin">{t.roles.admin}</option>
                   </NativeSelect>
                 </Field>
+                <Field label={t.teams.inviteName} htmlFor="inviteName">
+                  <Input
+                    id="inviteName"
+                    value={inviteName}
+                    onChange={(e) => setInviteName(e.target.value)}
+                  />
+                </Field>
                 <Button
                   size="sm"
                   className="w-fit"
                   disabled={!inviteEmail.includes('@') || inviting}
                   onClick={async () => {
                     setInviting(true);
-                    await getRepository().createInvitation({
+                    setInviteResult(null);
+                    // One call for both modes. In Supabase mode the server
+                    // creates the auth user and mails the temporary password;
+                    // in demo mode it creates nothing and the helper falls
+                    // back to the local invitation record.
+                    const outcome = await inviteUser({
                       email: inviteEmail,
                       role: inviteRole,
-                      team_id: team.id,
+                      teamId: team.id,
+                      fullName: inviteName || undefined,
+                      locale,
                     });
-                    setInviteEmail('');
+                    setInviteResult(outcome);
+                    if (outcome.status !== 'forbidden' && outcome.status !== 'failed') {
+                      setInviteEmail('');
+                      setInviteName('');
+                    }
                     await load();
                     setInviting(false);
                   }}
@@ -326,6 +347,30 @@ export function TeamDetailDrawer({
                   {inviting ? <Loader2 className="animate-spin" aria-hidden /> : <Mail aria-hidden />}
                   {t.teams.sendInvite}
                 </Button>
+
+                {inviteResult ? (
+                  <p
+                    role="status"
+                    className={
+                      inviteResult.status === 'forbidden' || inviteResult.status === 'failed'
+                        ? 'rounded-md border border-danger/25 bg-danger/8 px-3 py-2 text-sm text-danger'
+                        : 'rounded-md border border-line bg-surface px-3 py-2 text-sm text-ink-muted'
+                    }
+                  >
+                    {inviteResult.status === 'sent' ? t.teams.inviteSent : null}
+                    {inviteResult.status === 'demo' ? t.teams.inviteDemo : null}
+                    {inviteResult.status === 'forbidden' ? t.teams.inviteForbidden : null}
+                    {inviteResult.status === 'failed' ? t.teams.inviteFailed : null}
+                    {inviteResult.status === 'created_not_emailed' ? (
+                      <>
+                        {t.teams.inviteNoEmail}{' '}
+                        <code dir="ltr" className="font-mono text-ink">
+                          {inviteResult.tempPassword}
+                        </code>
+                      </>
+                    ) : null}
+                  </p>
+                ) : null}
               </div>
 
               {invitations.length === 0 ? (

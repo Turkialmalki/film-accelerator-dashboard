@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import {
+  CHANGE_PASSWORD_ROUTE,
   homeFor,
   isAdminRole,
   isAdminRoute,
@@ -8,6 +9,8 @@ import {
   isProtectedRoute,
   type AppRole,
 } from '@/lib/routes';
+import { isSupabaseConfigured } from '@/lib/supabase/env';
+import { readSupabaseSession, withAuthCookies } from '@/lib/supabase/middleware-session';
 
 const LOCALES = ['ar', 'en'] as const;
 const DEFAULT_LOCALE = 'ar';
@@ -28,29 +31,36 @@ function preferredLocale(request: NextRequest): Locale {
   return header.toLowerCase().startsWith('en') ? 'en' : DEFAULT_LOCALE;
 }
 
-interface CookieSession {
+interface GuardSession {
   role: AppRole;
-  team_id: string | null;
-  email: string;
+  mustChangePassword: boolean;
 }
 
-function readSession(request: NextRequest): CookieSession | null {
+/**
+ * Demo mode only. The cookie is unsigned — it is a demo, and the data it
+ * guards is fixture data in the visitor's own browser. Supabase mode never
+ * reaches this function; it verifies a real JWT instead (see below).
+ */
+function readDemoSession(request: NextRequest): GuardSession | null {
   const raw = request.cookies.get(SESSION_COOKIE)?.value;
   if (!raw) return null;
   try {
-    return JSON.parse(decodeURIComponent(raw)) as CookieSession;
+    const parsed = JSON.parse(decodeURIComponent(raw)) as { role: AppRole };
+    // Demo mode has no password store, so it has no forced password change.
+    return { role: parsed.role, mustChangePassword: false };
   } catch {
     return null;
   }
 }
 
 /**
- * In demo mode the session cookie is unsigned — it is a demo, and the data it
- * guards is fixture data in the visitor's own browser. In production this
- * middleware would verify the Supabase JWT instead of parsing JSON, which is
- * the only change required here.
+ * Route guarding, in whichever mode the deployment is running.
+ *
+ * The two modes differ in exactly one place — how the session is obtained. The
+ * guard decisions below are shared, so a route cannot be protected in demo
+ * mode and forgotten in production.
  */
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
   const { locale, rest } = splitLocale(pathname);
 
@@ -60,40 +70,61 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  const session = readSession(request);
+  const supabaseMode = isSupabaseConfigured();
+
+  let session: GuardSession | null;
+  // In Supabase mode this response carries any rotated auth cookies and must
+  // be folded into whatever we finally return.
+  let carrier: NextResponse | null = null;
+
+  if (supabaseMode) {
+    const supa = await readSupabaseSession(request);
+    carrier = supa.carrier;
+    session = supa.role
+      ? { role: supa.role, mustChangePassword: supa.mustChangePassword }
+      : null;
+  } else {
+    session = readDemoSession(request);
+  }
+
+  const send = (response: NextResponse) =>
+    carrier ? withAuthCookies(carrier, response) : response;
+
+  const redirectTo = (path: string, query = '') => {
+    const url = request.nextUrl.clone();
+    url.pathname = `/${locale}${path}`;
+    url.search = query;
+    return send(NextResponse.redirect(url));
+  };
 
   if (isProtectedRoute(rest) && !session) {
-    const url = request.nextUrl.clone();
-    url.pathname = `/${locale}/sign-in`;
-    url.search = `?next=${encodeURIComponent(rest + search)}`;
-    return NextResponse.redirect(url);
+    return redirectTo('/sign-in', `?next=${encodeURIComponent(rest + search)}`);
   }
 
   if (session) {
+    // A temporary password grants access to one screen and nothing else. This
+    // is enforced here, before the page is served — not by hiding navigation.
+    if (session.mustChangePassword && rest !== CHANGE_PASSWORD_ROUTE && !isAuthRoute(rest)) {
+      return redirectTo(CHANGE_PASSWORD_ROUTE);
+    }
+
     const admin = isAdminRole(session.role);
     // A participant must not reach an admin route, even by typing the URL.
     if (isAdminRoute(rest) && !admin) {
-      const url = request.nextUrl.clone();
-      url.pathname = `/${locale}/overview`;
-      url.search = '?denied=1';
-      return NextResponse.redirect(url);
+      return redirectTo('/overview', '?denied=1');
     }
     // And an admin has no participant workspace to sit in.
     if (isParticipantRoute(rest) && admin) {
-      const url = request.nextUrl.clone();
-      url.pathname = `/${locale}/dashboard`;
-      url.search = '';
-      return NextResponse.redirect(url);
+      return redirectTo('/dashboard');
     }
     if (isAuthRoute(rest)) {
-      const url = request.nextUrl.clone();
-      url.pathname = `/${locale}${homeFor(session.role)}`;
-      url.search = '';
-      return NextResponse.redirect(url);
+      return redirectTo(
+        session.mustChangePassword ? CHANGE_PASSWORD_ROUTE : homeFor(session.role),
+      );
     }
   }
 
-  return NextResponse.next();
+  return send(carrier ?? NextResponse.next());
 }
 
 export const config = {
