@@ -104,9 +104,9 @@ export default function DashboardPage() {
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <StatusDonut data={status} />
-        <ResponseTrend data={trend} />
-        <StageBars data={stages} />
+        <StatusDonut data={status} index={0} />
+        <ResponseTrend data={trend} index={1} />
+        <StageBars data={stages} index={2} />
       </div>
     </div>
   );
