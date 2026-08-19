@@ -142,7 +142,12 @@ export function ProgramBanner({
       initial={reduced ? false : { opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: MOTION_MS.slow / 1000, ease: EASE_OUT }}
-      className="relative isolate overflow-hidden rounded-xl border border-line shadow-card"
+      // A colour-matched ambient shadow, not just the flat grey `shadow-card`
+      // every other card on the page uses — it's what keeps a dark banner
+      // from reading as a block dropped onto a light page rather than a card
+      // that belongs to the same dashboard. Lifts further on hover, like the
+      // rest of the product's cards already do.
+      className="group relative isolate overflow-hidden rounded-xl border border-line shadow-[0_2px_8px_-2px_rgba(15,40,55,0.18),0_28px_64px_-24px_rgba(15,40,55,0.45)] transition-shadow duration-300 hover:shadow-[0_4px_14px_-2px_rgba(15,40,55,0.22),0_36px_84px_-24px_rgba(15,40,55,0.55)] motion-reduce:transition-none"
       style={{ background: 'linear-gradient(135deg, #0F2837 0%, #16394C 58%, #0B1A24 100%)' }}
     >
       {/* Parallax layer: the photograph lags the page as it scrolls, and drifts
@@ -191,6 +196,25 @@ export function ProgramBanner({
           background: `radial-gradient(65% 130% at ${dir === 'rtl' ? 85 : 15}% 115%, rgba(251,174,64,0.26) 0%, rgba(251,174,64,0) 62%)`,
         }}
       />
+
+      {/* A single light sweep, once, on first paint — the "this just loaded
+          and it's polished" cue premium product UIs use instead of a louder
+          entrance. A diagonal band of the brand amber at low opacity, crossing
+          the full banner in one pass and never repeating. Inert under
+          reduced motion, same as everything else in this component. */}
+      {!reduced ? (
+        <motion.div
+          aria-hidden
+          className="pointer-events-none absolute inset-y-0 -z-10 w-1/3 skew-x-[-20deg]"
+          style={{
+            background:
+              'linear-gradient(90deg, transparent 0%, rgba(251,174,64,0.16) 45%, rgba(255,255,255,0.10) 50%, rgba(251,174,64,0.16) 55%, transparent 100%)',
+          }}
+          initial={{ x: dir === 'rtl' ? '480%' : '-140%' }}
+          animate={{ x: dir === 'rtl' ? '-140%' : '480%' }}
+          transition={{ duration: 1.1, delay: 0.5, ease: [0.4, 0, 0.2, 1] }}
+        />
+      ) : null}
 
       <div className="relative flex flex-wrap items-start justify-between gap-6 p-6 sm:p-8">
         <div className="min-w-0 max-w-2xl">
@@ -266,13 +290,26 @@ export function ProgramBanner({
 
         <motion.div {...rise(0.29)} className="flex items-center gap-5">
           <ReadinessDial value={avgReadiness} />
-          <Link
-            href={href('/teams')}
-            className="inline-flex items-center gap-2 rounded-md bg-[#FBAE40] px-4 py-2.5 text-sm font-semibold text-[#0F2837] transition-colors duration-200 hover:bg-[#F89C49] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0F2837] motion-reduce:transition-none"
-          >
-            {t.dashboard.bannerCta}
-            <Arrow className="size-4" aria-hidden />
-          </Link>
+          <div className="relative">
+            {/* A slow, quiet breathing glow behind the one primary action in
+                the banner — not a loop that competes for attention, just
+                enough life that the CTA doesn't sit dead on the page. */}
+            <motion.div
+              aria-hidden
+              className="pointer-events-none absolute inset-0 rounded-md bg-[#FBAE40] blur-md"
+              animate={reduced ? { opacity: 0.25 } : { opacity: [0.25, 0.45, 0.25] }}
+              transition={
+                reduced ? undefined : { duration: 3.2, repeat: Infinity, ease: 'easeInOut' }
+              }
+            />
+            <Link
+              href={href('/teams')}
+              className="relative inline-flex items-center gap-2 rounded-md bg-[#FBAE40] px-4 py-2.5 text-sm font-semibold text-[#0F2837] transition-[background-color,transform] duration-200 hover:scale-[1.03] hover:bg-[#F89C49] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0F2837] motion-reduce:transition-none motion-reduce:hover:scale-100"
+            >
+              {t.dashboard.bannerCta}
+              <Arrow className="size-4" aria-hidden />
+            </Link>
+          </div>
         </motion.div>
       </div>
 

@@ -81,6 +81,17 @@ export default function DashboardPage() {
     <div className="mx-auto max-w-7xl">
       <PageHeader title={t.dashboard.title} subtitle={t.portfolio.sectionEyebrow} />
 
+      {/* Mentorship sessions — live from Calendly, on-demand sync. Placed
+          above the banner deliberately: it's the first live-updating number
+          on the page, ahead of the cohort story below it. */}
+      <div className="pb-6">
+        <p className="text-sm font-semibold text-ink">{t.calendly.sectionTitle}</p>
+        <p className="mt-0.5 text-xs text-ink-subtle">{t.calendly.sectionSubtitle}</p>
+        <div className="mt-4">
+          <CalendlyPanel />
+        </div>
+      </div>
+
       <ProgramBanner
         organization={data.organization}
         cohort={data.cohort}
@@ -283,17 +294,6 @@ export default function DashboardPage() {
           <StatusDonut data={status} index={0} />
           <ResponseTrend data={trend} index={1} />
           <StageBars data={stages} index={2} />
-        </div>
-      </div>
-
-      {/* Mentorship sessions — live from Calendly, on-demand sync. Its own
-          section: this data has nothing to do with the cohort roster or the
-          forms pipeline above it, and shouldn't be read as though it does. */}
-      <div className="mt-10 border-t border-line pt-6">
-        <p className="text-sm font-semibold text-ink">{t.calendly.sectionTitle}</p>
-        <p className="mt-0.5 text-xs text-ink-subtle">{t.calendly.sectionSubtitle}</p>
-        <div className="mt-4">
-          <CalendlyPanel />
         </div>
       </div>
     </div>
