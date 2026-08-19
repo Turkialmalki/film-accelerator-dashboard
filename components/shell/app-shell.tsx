@@ -67,7 +67,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           the html[dir] attribute already mirrors. */}
       <aside
         className={cn(
-          'sticky top-0 hidden h-screen shrink-0 border-line lg:block ltr:border-r rtl:border-l',
+          // The rail's width has to actually reflow its flex children, so this
+          // is a width transition rather than a transform. 260ms with a slight
+          // overshoot reads as a spring without one.
+          'sticky top-0 hidden h-screen shrink-0 border-line transition-[width] duration-[260ms] ease-[cubic-bezier(0.22,0.9,0.3,1.06)] motion-reduce:transition-none lg:block ltr:border-r rtl:border-l',
           collapsed ? 'w-[72px]' : 'w-64',
         )}
       >
@@ -88,7 +91,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {/* Mobile drawer */}
       <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
         <DrawerContent side="start" width="max-w-[17rem]" className="p-0">
-          <SidebarContent collapsed={false} onNavigate={() => setDrawerOpen(false)} />
+          <SidebarContent
+            collapsed={false}
+            instance="drawer"
+            onNavigate={() => setDrawerOpen(false)}
+          />
         </DrawerContent>
       </Drawer>
 

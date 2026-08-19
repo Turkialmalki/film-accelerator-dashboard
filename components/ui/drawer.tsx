@@ -23,15 +23,19 @@ export const DrawerContent = React.forwardRef<
   }
 >(({ className, children, side = 'end', width = 'max-w-xl', ...props }, ref) => (
   <DialogPrimitive.Portal>
-    <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-[color:var(--c-ink)]/25 backdrop-blur-[2px] data-[state=open]:animate-fade-in" />
+    <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-[color:var(--c-ink)]/25 backdrop-blur-[2px] duration-200 data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 motion-reduce:animate-none" />
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        'fixed inset-y-0 z-50 flex w-[calc(100vw-2rem)] flex-col border-line bg-surface shadow-pop focus:outline-none data-[state=open]:animate-fade-in',
+        'fixed inset-y-0 z-50 flex w-[calc(100vw-2rem)] flex-col border-line bg-surface shadow-pop focus:outline-none',
+        // Radix keeps the node mounted for the closing animation, so the panel
+        // slides back out instead of vanishing. Direction-aware: it always
+        // enters from the edge it is anchored to.
+        'duration-[280ms] ease-[cubic-bezier(0.22,0.68,0.28,1)] data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 motion-reduce:animate-none',
         width,
         side === 'end'
-          ? 'ltr:right-0 ltr:border-l rtl:left-0 rtl:border-r'
-          : 'ltr:left-0 ltr:border-r rtl:right-0 rtl:border-l',
+          ? 'ltr:right-0 ltr:border-l rtl:left-0 rtl:border-r ltr:data-[state=closed]:slide-out-to-right ltr:data-[state=open]:slide-in-from-right rtl:data-[state=closed]:slide-out-to-left rtl:data-[state=open]:slide-in-from-left'
+          : 'ltr:left-0 ltr:border-r rtl:right-0 rtl:border-l ltr:data-[state=closed]:slide-out-to-left ltr:data-[state=open]:slide-in-from-left rtl:data-[state=closed]:slide-out-to-right rtl:data-[state=open]:slide-in-from-right',
         className,
       )}
       {...props}
