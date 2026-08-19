@@ -18,7 +18,7 @@ create extension if not exists "pgcrypto";
 
 create type app_role        as enum ('owner', 'admin', 'reviewer', 'participant');
 create type cohort_status   as enum ('draft', 'active', 'completed', 'archived');
-create type team_stage      as enum ('idea', 'mvp', 'pre-seed', 'seed', 'series-a', 'growth');
+create type team_stage      as enum ('idea', 'mvp', 'pre-seed', 'seed', 'pre-a', 'series-a', 'growth');
 create type team_status     as enum ('active', 'archived');
 create type invite_status   as enum ('pending', 'accepted', 'revoked', 'expired');
 create type form_status     as enum ('draft', 'published', 'closed');
