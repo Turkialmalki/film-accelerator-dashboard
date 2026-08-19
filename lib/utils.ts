@@ -63,3 +63,8 @@ export function uid(prefix: string): string {
 export function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value));
 }
+
+/** Replaces `{key}` placeholders in a dictionary string with the given values. */
+export function fmtTemplate(template: string, vars: Record<string, string | number>): string {
+  return template.replace(/\{(\w+)\}/g, (match, key) => (key in vars ? String(vars[key]) : match));
+}

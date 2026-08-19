@@ -137,7 +137,10 @@ function CanvasField({
         </p>
       </button>
 
-      <div className="flex shrink-0 items-center gap-0.5 opacity-0 transition-opacity focus-within:opacity-100 group-hover:opacity-100">
+      {/* Always visible: hover-only actions are unreachable on touch, and this
+          is a builder tool, not decoration — see spec's "no hover-only
+          essential actions" rule. */}
+      <div className="flex shrink-0 items-center gap-0.5">
         <Button
           variant="ghost"
           size="icon-sm"

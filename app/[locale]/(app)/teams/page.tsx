@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useMemo, useRef, useState } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
 import {
   Archive,
   ArchiveRestore,
@@ -17,7 +18,8 @@ import {
 } from 'lucide-react';
 import { PageHeader } from '@/components/shell/page-header';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Badge, type BadgeProps } from '@/components/ui/badge';
+import { INVESTOR_READY_THRESHOLD, WATCHLIST_THRESHOLD, revenueBandOf } from '@/lib/analytics';
 import { Input, NativeSelect } from '@/components/ui/input';
 import {
   Checkbox,
@@ -44,18 +46,27 @@ import { cn } from '@/lib/utils';
 type SortKey = 'name' | 'readiness' | 'stage' | 'updated';
 type ViewMode = 'cards' | 'table';
 
-const STAGES: TeamStage[] = ['idea', 'mvp', 'pre-seed', 'seed', 'series-a', 'growth'];
+const STAGES: TeamStage[] = ['idea', 'mvp', 'pre-seed', 'seed', 'pre-a', 'series-a', 'growth'];
 const STAGE_RANK: Record<TeamStage, number> = {
   idea: 0,
   mvp: 1,
   'pre-seed': 2,
   seed: 3,
-  'series-a': 4,
-  growth: 5,
+  'pre-a': 4,
+  'series-a': 5,
+  growth: 6,
 };
+
+/** Same thresholds the dashboard uses, so a badge here means the same thing there. */
+function readinessTone(readiness: number): BadgeProps['tone'] {
+  if (readiness >= INVESTOR_READY_THRESHOLD) return 'success';
+  if (readiness < WATCHLIST_THRESHOLD) return 'warning';
+  return 'accent';
+}
 
 export default function TeamsPage() {
   const { t, b, tf, fmtNumber, fmtDate, locale } = useI18n();
+  const reducedMotion = useReducedMotion();
   const query = useCallback((repo: Repository) => repo.listTeams(), []);
   const { data: teams, loading } = useRepoQuery<Team[]>(query, []);
 
@@ -290,9 +301,12 @@ export default function TeamsPage() {
         <EmptyState icon={<Users />} title={t.teams.noResults} />
       ) : view === 'cards' ? (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {visible.map((team) => (
-            <article
+          {visible.map((team, index) => (
+            <motion.article
               key={team.id}
+              initial={reducedMotion ? false : { opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: reducedMotion ? 0 : Math.min(index, 8) * 0.04, ease: [0.22, 0.68, 0.28, 1] }}
               className="flex flex-col rounded-lg border border-line bg-surface p-5 shadow-card transition-shadow hover:shadow-lift"
             >
               <div className="flex items-start justify-between gap-3">
@@ -311,6 +325,7 @@ export default function TeamsPage() {
 
               <div className="mt-3 flex flex-wrap gap-1.5">
                 <Badge tone="accent">{t.stages[team.stage]}</Badge>
+                <Badge tone={readinessTone(team.readiness)}>{fmtNumber(team.readiness)}%</Badge>
                 <Badge tone="neutral">{b(team.city)}</Badge>
                 {team.status === 'archived' ? (
                   <Badge tone="warning">{t.common.archived}</Badge>
@@ -331,13 +346,13 @@ export default function TeamsPage() {
 
               <div className="mt-4 flex items-center justify-between border-t border-line pt-3 text-xs text-ink-subtle">
                 <span className="tnum">
-                  {fmtNumber(team.team_size)} · {team.revenue_band}
+                  {fmtNumber(team.team_size)} · {t.portfolio.revenueBands[revenueBandOf(team.revenue_band)]}
                 </span>
                 <Button variant="ghost" size="sm" onClick={() => setDetail(team)}>
                   {t.common.open}
                 </Button>
               </div>
-            </article>
+            </motion.article>
           ))}
         </div>
       ) : (
@@ -390,7 +405,9 @@ export default function TeamsPage() {
                     <Badge tone="accent">{t.stages[team.stage]}</Badge>
                   </td>
                   <td className="px-4 py-3 text-ink-muted">{b(team.city)}</td>
-                  <td className="tnum px-4 py-3 text-ink-muted">{fmtNumber(team.readiness)}%</td>
+                  <td className="px-4 py-3">
+                    <Badge tone={readinessTone(team.readiness)}>{fmtNumber(team.readiness)}%</Badge>
+                  </td>
                   <td className="tnum px-4 py-3 text-xs text-ink-subtle">{fmtDate(team.updated_at)}</td>
                   <td className="px-4 py-3 text-end">
                     <TeamMenu team={team} onEdit={() => { setEditing(team); setDialogOpen(true); }} />

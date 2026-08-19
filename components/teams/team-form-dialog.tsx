@@ -22,7 +22,7 @@ import { getRepository } from '@/lib/data';
 import type { Team, TeamInput, TeamStage } from '@/lib/data/types';
 import { COHORT_ID, ORG_ID } from '@/lib/data/seed';
 
-const STAGES: TeamStage[] = ['idea', 'mvp', 'pre-seed', 'seed', 'series-a', 'growth'];
+const STAGES: TeamStage[] = ['idea', 'mvp', 'pre-seed', 'seed', 'pre-a', 'series-a', 'growth'];
 
 const schema = z.object({
   nameAr: z.string().min(1),
@@ -32,7 +32,7 @@ const schema = z.object({
   trackEn: z.string(),
   cityAr: z.string(),
   cityEn: z.string(),
-  stage: z.enum(['idea', 'mvp', 'pre-seed', 'seed', 'series-a', 'growth']),
+  stage: z.enum(['idea', 'mvp', 'pre-seed', 'seed', 'pre-a', 'series-a', 'growth']),
   readiness: z.number().min(0).max(100),
   teamSize: z.number().min(0),
   revenueBand: z.string(),

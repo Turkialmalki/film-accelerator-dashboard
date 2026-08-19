@@ -365,6 +365,124 @@ was nothing to optimize in the first place.
 
 ---
 
+## 7b. Premium dashboard refresh (`feat/premium-dashboard-refresh`)
+
+The admin dashboard was rebuilt around a new portfolio-analytics layer, without touching
+auth, route guards, teams CRUD, the form builder, submission results, or Supabase-adapter
+behaviour.
+
+**New: `lib/analytics.ts` portfolio functions.** `computePortfolioMetrics(teams)` is the
+single source for every number on the dashboard: readiness (mean/median/range),
+investment-stage distribution, readiness by stage, revenue-band distribution (parsed from
+the free-text `revenue_band` field), geography (a team's `city` may list more than one
+region — each is counted once, so region counts can exceed the team count by design),
+team structure (multi-founder vs solo, and a documented "key-person risk" rule: a solo
+founder running a team of three or fewer), a four-dimension portfolio-health composite, the
+readiness ranking, investor-ready / follow-up-watchlist thresholds (74% / 55%), and a
+keyword-based classifier over each team's own authored `challenges` text into seven risk
+categories.
+
+Every one of the programme's reference-snapshot numbers (20 companies, 64% average
+readiness, 68% median, 46–81% range, 7 MVP / 12 revenue-active / 3 investor-ready
+companies, 118 direct jobs, 5.9 average team size, 4 regions, 6 key-person-risk companies,
+health score 56 with dimensions 45/64/53/61, the full stage/revenue/geography/team-structure
+breakdowns, the top-8 readiness ranking, and the investor-ready/watchlist company lists)
+reproduces **exactly** from the current `data/startups.json` through these functions — this
+was verified directly, not assumed. Two categories of exception, both intentional:
+
+- **Average readiness by stage** is off by 1–2 points from the supplied snapshot for
+  Pre-Seed, Seed and Series A (68% vs 66%, 69.4% vs 68%, 68% vs 67%). The formula is a plain
+  per-stage mean of `readiness`; the small gap most likely reflects the snapshot being taken
+  at a slightly different moment than the current dataset. Documented in code, not
+  papered over.
+- **The seven priority-risk categories** are a deterministic keyword classifier over each
+  company's own `challenges`/`growth_path` text (see `RISK_KEYWORDS` in `lib/analytics.ts`).
+  It reproduces the "fragmented positioning" category exactly (6 companies, 30%) but the
+  other six categories diverge from the supplied percentages, because the original
+  categorisation reflects human editorial judgement on free text that a keyword rule cannot
+  fully recover. This is a documented heuristic, not a fabricated match.
+- **"Female-led companies" is not computed anywhere.** `TeamFounder` has no gender field,
+  and the domain model was not extended to add one — inferring gender from a founder's name
+  would be a guess, not a computation, so the metric is omitted rather than invented.
+
+**`TeamStage` gained `'pre-a'`.** The type previously had no Pre-A value, so the seed
+silently folded the two real Pre-A companies (Blacklight Films, Expanse Media Production)
+into `'seed'`. This is now a real, separate stage — additive everywhere it's enumerated
+(`STAGE_LABEL`, the CSV import/export stage list, the team-edit dialog's stage select, both
+dictionaries). Existing teams data, CSV round-trips and the team form still work; a team
+already saved as `'seed'` is untouched.
+
+**New dashboard layout**, above the fold: a compact page heading, the animated cohort banner
+(now also showing an animated readiness ring, the 16-week/Riyadh programme facts, and a
+"Explore the portfolio" CTA into `/teams`), four primary KPI cards (companies, average
+readiness, revenue-active, investor-ready), and the portfolio-health panel (score + four
+dimensions + a secondary strip: jobs, regions, MVP count, average team size). Below that, the
+six-card analytics grid the spec asked for, then the previous operational section (forms,
+submissions, response trend) — preserved in full, just demoted under a
+"Programme operations" divider so it doesn't compete with the portfolio story.
+
+**New files:** `components/dashboard/portfolio-health.tsx`, `portfolio-charts.tsx`,
+`portfolio-geo-structure.tsx`, `portfolio-ranking.tsx`, `portfolio-risks.tsx`. `Icon` gained
+a few more Lucide icons (`Building2`, `Briefcase`, `MapPin`, `TrendingUp`, `ShieldAlert`,
+`PieChart`, `Compass`) for the new panels. `lib/utils.ts` gained `fmtTemplate` for
+`{placeholder}` interpolation in dictionary strings.
+
+**`scripts/verify-e2e.mjs`** gained nine checks on top of the original 31 (40/40 pass):
+the dashboard does not duplicate the teams roster, all KPI values are finite, charts render
+without console errors, no failed image requests, no horizontal overflow at 390px/320px, the
+mobile drawer opens, the English dashboard shows the same portfolio KPI, and the dark theme
+(Midnight Screening) renders on the dashboard without errors.
+
+**Not done in this pass**, honestly: the auth screen, sidebar/shell chrome, teams page visual
+polish, form builder polish, and submission-results polish described in the brief were not
+touched — this pass scoped to the dashboard and its analytics layer, the part of the brief
+with the most specific, verifiable acceptance criteria. They're real remaining work, not
+silently dropped.
+
+## 7c. Second increment: auth, shell, teams polish, one real a11y fix
+
+Continuation of §7b on the same branch, after merging in `main`'s Supabase-auth work (§9).
+
+**Auth.** Added `components/ui/password-input.tsx` — a show/hide toggle on every password
+field across sign-in, sign-up, reset-password and change-password, positioned on the
+inline-end edge so it mirrors automatically. `AuthShell` gained a one-time entrance fade/rise
+on the form column and a very slow (16s, one-time) scale-down pan on the cinematic image,
+both skipped under `prefers-reduced-motion`.
+
+**Shell.** The sidebar's collapse/expand now animates the rail width with a CSS transition
+(a slight-overshoot easing curve standing in for a spring, since the width has to actually
+reflow the flex children rather than just clip a fixed box) instead of snapping instantly,
+and respects `motion-reduce:`. Collapsed nav items get a real floating tooltip
+(`components/ui/tooltip.tsx`, Radix-based, positioned on the correct side per locale) instead
+of a bare `title` attribute. The mobile/desktop drawer (`components/ui/drawer.tsx`) gained an
+actual slide-in/out transform via `tailwindcss-animate`, direction-aware, on top of the
+fade it already had.
+
+**Teams page.** Cards get a one-time stagger entrance (first 8 only, to keep it from feeling
+busy on the full 20-card grid). Readiness is now shown as its own colour-coded badge, using
+the exact same thresholds as the dashboard (`INVESTOR_READY_THRESHOLD` / `WATCHLIST_THRESHOLD`
+from `lib/analytics.ts`) so a green badge here means the same thing it means on the dashboard.
+The revenue-band line on cards, table and the detail drawer now reads through
+`revenueBandOf()` + `t.portfolio.revenueBands`, so English users see "Above SAR 1M" instead of
+the raw Arabic source string ("1,000,000+ ر.س") that was leaking through before.
+
+**Form builder — a real accessibility fix, not just polish.** The canvas field row's action
+buttons (reorder, settings, duplicate, delete) were `opacity-0` until `:hover` or
+`:focus-within`. On a touch device there is no hover, so those actions were only reachable by
+tabbing to them blind — a genuine violation of the brief's own "no hover-only essential
+actions" rule, not a cosmetic gap. They're now always visible.
+
+**Verification.** `npm run typecheck` / `lint` / `build` all pass; `verify-e2e.mjs` is
+unchanged in count and still 44/44 (nothing in this increment touches what those checks
+assert). Visual review at 1440px desktop (Arabic and English) and 390px mobile.
+
+**Still not done**, honestly: a deeper pass on the submission-results page and the form
+builder's settings drawer / multi-step preview, and the participant portal's visual
+consistency with the admin side, weren't reached in this increment either. The results
+overview page was reviewed and is already close to the design system (cards, badges, progress
+bars, real empty/loading states) — it did not need the same intervention the dashboard or
+teams page did.
+
 ## 8. The legacy site
 
 The original static site was moved to `legacy/` (`index.html`, `mentor.html`,

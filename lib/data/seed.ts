@@ -129,7 +129,7 @@ const STAGE_MAP: Record<string, TeamStage> = {
   MVP: 'mvp',
   'Pre-Seed': 'pre-seed',
   Seed: 'seed',
-  'Pre-A': 'seed',
+  'Pre-A': 'pre-a',
   'Series A': 'series-a',
 };
 
@@ -138,6 +138,7 @@ export const STAGE_LABEL: Record<TeamStage, { ar: string; en: string }> = {
   mvp: { ar: 'منتج أولي', en: 'MVP' },
   'pre-seed': { ar: 'ما قبل التأسيس', en: 'Pre-seed' },
   seed: { ar: 'التأسيس', en: 'Seed' },
+  'pre-a': { ar: 'ما قبل الجولة أ', en: 'Pre-A' },
   'series-a': { ar: 'الجولة أ', en: 'Series A' },
   growth: { ar: 'النمو', en: 'Growth' },
 };

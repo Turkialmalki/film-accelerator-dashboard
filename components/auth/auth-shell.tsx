@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { motion, useReducedMotion } from 'framer-motion';
 import { Languages } from 'lucide-react';
 import { useI18n } from '@/components/providers/locale-provider';
 import { FbaLockup, FilmCommissionMark } from '@/components/brand/logo';
@@ -34,6 +35,7 @@ export function AuthShell({
   footer?: React.ReactNode;
 }) {
   const { t, locale, switchLocale, href } = useI18n();
+  const reduced = useReducedMotion();
 
   return (
     <div className="flex min-h-screen flex-col bg-canvas lg:flex-row">
@@ -55,12 +57,17 @@ export function AuthShell({
         </header>
 
         <main className="flex flex-1 items-center justify-center px-6 pb-10 sm:px-10">
-          <div className="w-full max-w-[26rem]">
+          <motion.div
+            className="w-full max-w-[26rem]"
+            initial={reduced ? false : { opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.32, ease: [0.22, 0.68, 0.28, 1] }}
+          >
             <h1 className="text-2xl font-semibold text-ink sm:text-[1.75rem]">{title}</h1>
             {subtitle ? <p className="mt-2 text-sm text-ink-muted">{subtitle}</p> : null}
             <div className={subtitle ? 'mt-7' : 'mt-5'}>{children}</div>
             {footer ? <div className="mt-6 text-sm text-ink-muted">{footer}</div> : null}
-          </div>
+          </motion.div>
         </main>
 
         <footer className="flex items-center justify-between gap-4 px-6 py-5 text-xs text-ink-subtle sm:px-10">
@@ -71,15 +78,22 @@ export function AuthShell({
 
       {/* Cinematic column */}
       <aside className="relative hidden overflow-hidden lg:block lg:w-[58%]">
-        <Image
-          src={CAMPAIGN_IMAGE}
-          alt=""
-          aria-hidden
-          fill
-          priority
-          sizes="58vw"
-          className="object-cover"
-        />
+        <motion.div
+          className="absolute inset-0"
+          initial={reduced ? false : { scale: 1.06 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 16, ease: 'easeOut' }}
+        >
+          <Image
+            src={CAMPAIGN_IMAGE}
+            alt=""
+            aria-hidden
+            fill
+            priority
+            sizes="58vw"
+            className="object-cover"
+          />
+        </motion.div>
         {/* Soft warm overlay — blends the photograph into the panel edges. */}
         <div
           className="absolute inset-0"

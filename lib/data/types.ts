@@ -62,6 +62,7 @@ export type TeamStage =
   | 'mvp'
   | 'pre-seed'
   | 'seed'
+  | 'pre-a'
   | 'series-a'
   | 'growth';
 
