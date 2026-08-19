@@ -47,8 +47,19 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [mode, setModeState] = useState<ColorMode>('light');
 
   const reload = useCallback(async () => {
-    const theme = await getRepository().getTheme();
-    setPublished(theme);
+    try {
+      const theme = await getRepository().getTheme();
+      setPublished(theme);
+    } catch {
+      // A theme fetch must never be able to take the whole app down with it —
+      // `active` already falls back to CINEMA_WHITE when `published` is null
+      // (see below), so the product still renders correctly, just on the
+      // default preset instead of whatever the org actually published. This
+      // also covers the org's very first request, right after sign-in,
+      // before the auth session is fully attached to the Supabase client —
+      // an unhandled rejection here was silently freezing every other
+      // provider's data fetch behind it.
+    }
   }, []);
 
   useEffect(() => {
