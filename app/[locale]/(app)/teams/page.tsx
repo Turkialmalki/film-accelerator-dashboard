@@ -44,14 +44,15 @@ import { cn } from '@/lib/utils';
 type SortKey = 'name' | 'readiness' | 'stage' | 'updated';
 type ViewMode = 'cards' | 'table';
 
-const STAGES: TeamStage[] = ['idea', 'mvp', 'pre-seed', 'seed', 'series-a', 'growth'];
+const STAGES: TeamStage[] = ['idea', 'mvp', 'pre-seed', 'seed', 'pre-a', 'series-a', 'growth'];
 const STAGE_RANK: Record<TeamStage, number> = {
   idea: 0,
   mvp: 1,
   'pre-seed': 2,
   seed: 3,
-  'series-a': 4,
-  growth: 5,
+  'pre-a': 4,
+  'series-a': 5,
+  growth: 6,
 };
 
 export default function TeamsPage() {

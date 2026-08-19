@@ -2,17 +2,49 @@
 
 import Link from 'next/link';
 import { motion, useReducedMotion } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Flag } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Calendar, Flag, MapPin } from 'lucide-react';
 import { useI18n } from '@/components/providers/locale-provider';
 import { Badge } from '@/components/ui/badge';
+import { useCountUp } from '@/lib/hooks/use-count-up';
 import type { Cohort, Organization } from '@/lib/data/types';
+
+function ReadinessBadge({ value }: { value: number }) {
+  const { t } = useI18n();
+  const reduced = useReducedMotion();
+  const animated = useCountUp(value);
+  const shown = Math.round(animated);
+
+  return (
+    <div className="relative grid size-16 shrink-0 place-items-center sm:size-20">
+      <motion.div
+        aria-hidden
+        className="absolute inset-0 rounded-full"
+        style={{
+          background: `conic-gradient(#FBAE40 0deg, #FBAE40 ${shown * 3.6}deg, rgba(255,255,255,0.14) ${shown * 3.6}deg)`,
+        }}
+        initial={reduced ? false : { opacity: 0, scale: 0.85 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.7, ease: [0.22, 0.68, 0.28, 1] }}
+      />
+      <div className="absolute inset-1.5 rounded-full bg-[#0F2837]" />
+      <div className="relative flex flex-col items-center">
+        <span className="tnum text-base font-semibold text-white sm:text-lg">{shown}%</span>
+      </div>
+      <span className="sr-only">
+        {t.portfolio.kpiReadiness}: {value}%
+      </span>
+    </div>
+  );
+}
 
 export function ProgramBanner({
   organization,
   cohort,
+  avgReadiness,
 }: {
   organization: Organization | null;
   cohort: Cohort | null;
+  avgReadiness: number;
 }) {
   const { t, b, fmtDate, href, dir } = useI18n();
   const reduced = useReducedMotion();
@@ -52,8 +84,13 @@ export function ProgramBanner({
         />
       )}
 
-      <div className="relative flex flex-wrap items-end justify-between gap-6 p-6 sm:p-8">
-        <div className="min-w-0">
+      <div className="relative flex flex-wrap items-center justify-between gap-6 p-6 sm:p-8">
+        <motion.div
+          className="min-w-0"
+          initial={reduced ? false : { opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: reduced ? 0 : 0.08 }}
+        >
           <p className="text-xs font-medium uppercase tracking-wider text-white/55">
             {t.dashboard.bannerEyebrow}
           </p>
@@ -83,16 +120,35 @@ export function ProgramBanner({
                 </p>
               </div>
             ) : null}
+            <div className="flex items-start gap-2.5">
+              <Calendar className="mt-0.5 size-4 shrink-0 text-white/50" aria-hidden />
+              <p className="text-sm text-white/75">{t.dashboard.bannerDuration}</p>
+            </div>
+            <div className="flex items-start gap-2.5">
+              <MapPin className="mt-0.5 size-4 shrink-0 text-white/50" aria-hidden />
+              <p className="text-sm text-white/75">{t.dashboard.bannerLocation}</p>
+            </div>
           </div>
-        </div>
+        </motion.div>
 
-        <Link
-          href={href('/forms')}
-          className="inline-flex items-center gap-2 rounded-md bg-[#FBAE40] px-4 py-2.5 text-sm font-semibold text-[#0F2837] transition-colors hover:bg-[#F89C49] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0F2837]"
+        <motion.div
+          className="flex items-center gap-4"
+          initial={reduced ? false : { opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: reduced ? 0 : 0.16 }}
         >
-          {t.dashboard.bannerCta}
-          <Arrow className="size-4" aria-hidden />
-        </Link>
+          <div className="flex flex-col items-center gap-1.5">
+            <ReadinessBadge value={avgReadiness} />
+            <span className="text-[11px] text-white/55">{t.dashboard.bannerReadinessLabel}</span>
+          </div>
+          <Link
+            href={href('/teams')}
+            className="inline-flex items-center gap-2 rounded-md bg-[#FBAE40] px-4 py-2.5 text-sm font-semibold text-[#0F2837] transition-colors hover:bg-[#F89C49] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0F2837]"
+          >
+            {t.dashboard.bannerCta}
+            <Arrow className="size-4" aria-hidden />
+          </Link>
+        </motion.div>
       </div>
     </motion.section>
   );

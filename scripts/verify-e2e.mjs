@@ -259,6 +259,98 @@ try {
     rootRes.status() === 200 && apage.url().includes('/sign-in'),
     `${apage.url()} status ${rootRes.status()}`,
   );
+
+  /* ------------------------------------- 9. premium dashboard refresh --- */
+
+  // dashboard does not duplicate the 20-team roster (no 20-row team table)
+  page.errors.length = 0;
+  await page.goto(`${BASE}/ar/dashboard`, { waitUntil: 'networkidle' });
+  await page.waitForTimeout(1800);
+  const dashboardArticleCount = await page.locator('main article').count();
+  record(
+    'dashboard does not duplicate the teams roster',
+    dashboardArticleCount < 20,
+    `${dashboardArticleCount} <article> elements on the dashboard (teams page has 20 team cards)`,
+  );
+
+  // every KPI number on the dashboard is finite (no NaN/undefined leaking through)
+  const kpiNumbers = await page.locator('main p.tnum').allInnerTexts();
+  const badKpis = kpiNumbers.filter((t) => /NaN|undefined|null|Infinity/i.test(t));
+  record('all KPI values are finite', badKpis.length === 0, `checked ${kpiNumbers.length} values`);
+
+  // charts render without console errors
+  record('charts render without console errors', page.errors.filter((e) => !e.includes('favicon')).length === 0, `${page.errors.length} console errors`);
+
+  // no failed image requests on the dashboard
+  const failedImages = [];
+  page.on('requestfailed', (req) => {
+    if (req.resourceType() === 'image') failedImages.push(req.url());
+  });
+  await page.reload({ waitUntil: 'networkidle' });
+  await page.waitForTimeout(1200);
+  record('no failed image requests', failedImages.length === 0, failedImages.join(', '));
+
+  // no horizontal overflow at a small mobile width
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.waitForTimeout(600);
+  const overflowMobile = await page.evaluate(
+    () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+  );
+  record('no horizontal overflow at 390px', !overflowMobile);
+
+  await page.setViewportSize({ width: 320, height: 700 });
+  await page.waitForTimeout(600);
+  const overflow320 = await page.evaluate(
+    () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+  );
+  record('no horizontal overflow at 320px', !overflow320);
+
+  // mobile drawer opens and closes
+  const menuButton = page.getByRole('button', { name: /القائمة|Menu/i }).first();
+  const hasMenuButton = await menuButton.count();
+  if (hasMenuButton) {
+    await menuButton.click();
+    await page.waitForTimeout(500);
+    const drawerOpen = await page.locator('[role="dialog"]').count();
+    record('mobile drawer opens', drawerOpen > 0, `${drawerOpen} dialog(s) open`);
+    await page.keyboard.press('Escape');
+    await page.waitForTimeout(400);
+  } else {
+    record('mobile drawer opens', false, 'no menu button found at 390px width');
+  }
+  await page.setViewportSize({ width: 1440, height: 900 });
+
+  // English dashboard: same portfolio KPI (20 companies), LTR
+  await page.goto(`${BASE}/en/dashboard`, { waitUntil: 'networkidle' });
+  await page.waitForTimeout(1600);
+  const enKpiText = await page.locator('main article').first().innerText();
+  record('English dashboard shows 20 companies', /20/.test(enKpiText), enKpiText.replace(/\n/g, ' '));
+
+  // dark theme (Midnight Screening) renders on the dashboard without errors
+  page.errors.length = 0;
+  await page.goto(`${BASE}/ar/appearance`, { waitUntil: 'networkidle' });
+  await page.waitForTimeout(1000);
+  await page.getByRole('button', { name: /عرض منتصف الليل/ }).click();
+  await page.waitForTimeout(400);
+  await page.getByRole('button', { name: 'نشر السمة' }).click();
+  await page.waitForTimeout(1200);
+  await page.goto(`${BASE}/ar/dashboard`, { waitUntil: 'networkidle' });
+  await page.waitForTimeout(1500);
+  const darkCanvas = await page.evaluate(() =>
+    getComputedStyle(document.documentElement).getPropertyValue('--c-canvas').trim(),
+  );
+  record(
+    'dark theme renders on the dashboard',
+    darkCanvas.toLowerCase() === '#071119' && page.errors.filter((e) => !e.includes('favicon')).length === 0,
+    `--c-canvas=${darkCanvas}`,
+  );
+  // restore the default theme so the store stays clean for future runs
+  await page.goto(`${BASE}/ar/appearance`, { waitUntil: 'networkidle' });
+  await page.waitForTimeout(1000);
+  await page.getByRole('button', { name: /أبيض سينمائي/ }).click();
+  await page.waitForTimeout(400);
+  await page.getByRole('button', { name: 'نشر السمة' }).click();
+  await page.waitForTimeout(800);
 } catch (error) {
   record('verification script completed', false, String(error).slice(0, 400));
 } finally {
