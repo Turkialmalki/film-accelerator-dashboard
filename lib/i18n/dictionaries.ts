@@ -359,14 +359,13 @@ const en = {
     kpiSessionsRescheduled: 'Sessions rescheduled',
     sessionsPerMentorTitle: 'Sessions per mentor',
     sessionsPerMentorSubtitle: 'Across every mentor event type on the account',
-    sessionsPerTopicTitle: 'Sessions per topic',
-    sessionsPerTopicSubtitle: 'What mentees actually booked, straight from Calendly',
+    sessionsPerTopicTitle: 'Topics booked so far',
     /** This chart is deliberately Calendly-only — the bootcamp sheet has no
      * topic recorded for any session, so it never enters this total. Its
      * centre number is smaller than the "Sessions completed" KPI card on
      * purpose, and reusing that card's own label here read as if the two
      * should match. This is its own label instead. */
-    calendlySessionsLabel: 'Calendly sessions',
+    calendlySessionsLabel: 'Done topics',
     noSessions: 'No sessions yet',
     noSessionsBody: 'Sessions appear here as soon as a mentor booking is scheduled on Calendly.',
     notConfiguredTitle: 'Calendly is not connected',
@@ -374,7 +373,6 @@ const en = {
     errorTitle: 'Could not load Calendly data',
     rangeLabel: '12 Aug 2026 – today',
     bookedTitle: 'Booked sessions',
-    bookedSubtitle: 'Every session on Calendly in this window, mentor and mentee together',
     bookedMentor: 'Mentor',
     bookedMentee: 'Entrepreneur',
     bookedTopic: 'Topic',
@@ -1091,9 +1089,8 @@ const ar: Loose<Dictionary> = {
     kpiSessionsRescheduled: 'الجلسات المُعاد جدولتها',
     sessionsPerMentorTitle: 'الجلسات لكل مرشد',
     sessionsPerMentorSubtitle: 'عبر جميع أنواع جلسات المرشدين في الحساب',
-    sessionsPerTopicTitle: 'الجلسات حسب الموضوع',
-    sessionsPerTopicSubtitle: 'ما حجزه رواد الأعمال فعلياً، مباشرة من Calendly',
-    calendlySessionsLabel: 'جلسات Calendly',
+    sessionsPerTopicTitle: 'المواضيع المحجوزة حتى الآن',
+    calendlySessionsLabel: 'مواضيع تمت',
     noSessions: 'لا توجد جلسات بعد',
     noSessionsBody: 'تظهر الجلسات هنا فور جدولة أي حجز مرشد على Calendly.',
     notConfiguredTitle: 'Calendly غير متصل',
@@ -1101,7 +1098,6 @@ const ar: Loose<Dictionary> = {
     errorTitle: 'تعذّر تحميل بيانات Calendly',
     rangeLabel: '12 أغسطس 2026 – اليوم',
     bookedTitle: 'الجلسات المحجوزة',
-    bookedSubtitle: 'كل جلسة على Calendly في هذه الفترة، المرشد ورائد الأعمال معاً',
     bookedMentor: 'المرشد',
     bookedMentee: 'رائد الأعمال',
     bookedTopic: 'الموضوع',

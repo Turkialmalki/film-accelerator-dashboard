@@ -158,10 +158,7 @@ function BookedSessionsTable({ sessions }: { sessions: BookedSession[] }) {
       className="overflow-hidden rounded-xl border border-line bg-surface shadow-card"
     >
       <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-line px-5 py-4">
-        <div>
-          <h3 className="text-sm font-semibold text-ink">{t.calendly.bookedTitle}</h3>
-          <p className="mt-0.5 text-xs text-ink-subtle">{t.calendly.bookedSubtitle}</p>
-        </div>
+        <h3 className="text-sm font-semibold text-ink">{t.calendly.bookedTitle}</h3>
         <Badge tone="accent">{t.calendly.rangeLabel}</Badge>
       </div>
 
@@ -232,7 +229,6 @@ function SessionsPerTopicDonut({
   return (
     <ChartFrame
       title={t.calendly.sessionsPerTopicTitle}
-      subtitle={t.calendly.sessionsPerTopicSubtitle}
       height={280}
       summary={
         rows.length
