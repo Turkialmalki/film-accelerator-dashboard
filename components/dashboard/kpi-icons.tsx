@@ -123,6 +123,9 @@ export function KpiIconCompanies({ tint = 'accent', className }: KpiIconProps) {
           />
           <path d="M19.4 23.4v-6.9c0-.5.4-1 1-1h2.4c.5 0 1 .5 1 1v6.9z" fill={c} fillOpacity="0.6" />
           <path d="M13 23.4V9.7c0-.7.5-1.2 1.2-1.2h4.4c.7 0 1.2.5 1.2 1.2v13.7z" fill={glyph} />
+          {/* One door, no window grid — a grid at 32px is grain, not detail.
+              The door is what separates this from the three-column growth tile. */}
+          <path d="M14.9 23.4v-3.1a1.5 1.5 0 0 1 3 0v3.1z" fill={CUT} fillOpacity="0.85" />
           <rect x="7.4" y="23" width="17.2" height="1.5" rx="0.75" fill={c} fillOpacity="0.3" />
         </>
       )}
@@ -172,10 +175,14 @@ export function KpiIconCompass({ tint = 'info', className }: KpiIconProps) {
     <Plate tint={tint} className={className}>
       {({ glyph, tint: c }) => (
         <>
-          <circle cx="16" cy="16" r="7.3" fill={c} fillOpacity="0.16" />
-          <circle cx="16" cy="16" r="7.3" fill="none" stroke={glyph} strokeWidth="1.8" />
-          <path d="M20.1 11.9l-2.2 5.3-5.3 2.2 2.2-5.3z" fill={glyph} />
-          <path d="M20.1 11.9l-2.2 5.3-2-1.1z" fill={CUT} fillOpacity="0.55" />
+          {/* A filled disc, not an outlined ring: at 32px a 1.8px ring plus a
+              needle inside it collapses into grey mush. The needle is cut out
+              of the disc instead, which survives the size. */}
+          <circle cx="16" cy="16" r="7.4" fill={glyph} />
+          <path d="M16 8.6a7.4 7.4 0 0 1 7.4 7.4H16z" fill={c} fillOpacity="0.16" />
+          <path d="M20.2 11.8l-2.3 5.6-5.6 2.3 2.3-5.6z" fill={CUT} fillOpacity="0.9" />
+          {/* One face of the needle catches less light than the other. */}
+          <path d="M20.2 11.8l-2.3 5.6-2.1-1.2z" fill={c} fillOpacity="0.34" />
         </>
       )}
     </Plate>
@@ -442,7 +449,10 @@ export function KpiIconRescheduled({ tint = 'warning', className }: KpiIconProps
             strokeWidth="2.6"
             strokeLinecap="round"
           />
-          <path d="M14.4 9.3l-1 2.5-1.9-3.1z" fill={glyph} />
+          {/* Sized deliberately large relative to the 2.6px arc — a
+              proportionate arrowhead disappears at 32px and the tile reads as
+              a plain broken ring. */}
+          <path d="M14.9 9.0l-1.25 3.05-2.1-3.55z" fill={glyph} />
         </>
       )}
     </Plate>
