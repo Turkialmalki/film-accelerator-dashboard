@@ -1,10 +1,9 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import Link from 'next/link';
 import Image from 'next/image';
 import { motion, useReducedMotion, useScroll, useSpring, useTransform } from 'framer-motion';
-import { ArrowLeft, ArrowRight, CalendarClock, Flag, MapPin, Users } from 'lucide-react';
+import { CalendarClock, Flag, MapPin, Users } from 'lucide-react';
 import { useI18n } from '@/components/providers/locale-provider';
 import { Badge } from '@/components/ui/badge';
 import { FbaLockup } from '@/components/brand/logo';
@@ -91,19 +90,14 @@ export function ProgramBanner({
   cohort,
   avgReadiness,
   totalCompanies,
-  ctaHref = '/dashboard',
 }: {
   organization: Organization | null;
   cohort: Cohort | null;
   avgReadiness: number;
   totalCompanies: number;
-  /** Where the "explore the portfolio" action leads. Defaults to the
-   * portfolio analytics dashboard — the banner itself now lives on /teams. */
-  ctaHref?: string;
 }) {
-  const { t, b, fmtDate, fmtNumber, href, dir } = useI18n();
+  const { t, b, fmtDate, fmtNumber, dir } = useI18n();
   const reduced = useReducedMotion();
-  const Arrow = dir === 'rtl' ? ArrowLeft : ArrowRight;
   const progress = cohortProgress(cohort);
   const ref = useRef<HTMLElement>(null);
 
@@ -161,13 +155,35 @@ export function ProgramBanner({
       <motion.div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 -top-[8%] -z-10 h-[124%]"
-        style={reduced ? undefined : { y: parallaxY }}
+        style={{
+          ...(reduced ? undefined : { y: parallaxY }),
+          // A soft vignette on the photograph's own top and bottom edges —
+          // the image fades into the banner rather than sitting inside a
+          // hard rectangle, which is most of what reads as "just a jpeg
+          // pasted in" versus something considered.
+          maskImage: 'linear-gradient(to bottom, transparent 0%, black 18%, black 82%, transparent 100%)',
+          WebkitMaskImage:
+            'linear-gradient(to bottom, transparent 0%, black 18%, black 82%, transparent 100%)',
+        }}
       >
         <motion.div
           className="absolute inset-0"
-          animate={drift ? { scale: [1.04, 1.12, 1.04] } : { scale: 1.04 }}
+          // A real fade-in on first paint — the photograph arrives instead
+          // of just being there — layered under the slow, continuous
+          // Ken Burns drift once it has.
+          initial={reduced ? false : { opacity: 0, scale: 1.1 }}
+          animate={
+            drift
+              ? { opacity: 1, scale: [1.04, 1.12, 1.04] }
+              : { opacity: reduced ? 1 : undefined, scale: 1.04 }
+          }
           transition={
-            drift ? { duration: 42, repeat: Infinity, ease: 'easeInOut' } : { duration: 0 }
+            drift
+              ? {
+                  opacity: { duration: 1.8, ease: EASE_OUT },
+                  scale: { duration: 42, repeat: Infinity, ease: 'easeInOut' },
+                }
+              : { duration: reduced ? 0 : 1.8, ease: EASE_OUT }
           }
         >
           <Image
@@ -179,7 +195,7 @@ export function ProgramBanner({
             // Cropped to the top of the frame — the camera rig, not the lockup
             // baked into the middle of the photograph, which would otherwise
             // ghost the banner's own headline. Softened so it reads as texture.
-            className="object-cover object-[50%_14%] opacity-[0.28] blur-[1.5px]"
+            className="object-cover object-[50%_14%] opacity-[0.34] blur-[1.5px]"
           />
         </motion.div>
       </motion.div>
@@ -296,31 +312,8 @@ export function ProgramBanner({
           </motion.p>
         </div>
 
-        <motion.div
-          {...rise(0.29)}
-          className="flex items-center justify-start gap-5 lg:flex-col lg:items-end lg:justify-center lg:gap-6"
-        >
+        <motion.div {...rise(0.29)} className="flex items-center justify-start lg:justify-center">
           <ReadinessDial value={avgReadiness} />
-          <div className="relative">
-            {/* A slow, quiet breathing glow behind the one primary action in
-                the banner — not a loop that competes for attention, just
-                enough life that the CTA doesn't sit dead on the page. */}
-            <motion.div
-              aria-hidden
-              className="pointer-events-none absolute inset-0 rounded-md bg-[#FBAE40] blur-md"
-              animate={reduced ? { opacity: 0.25 } : { opacity: [0.25, 0.45, 0.25] }}
-              transition={
-                reduced ? undefined : { duration: 3.2, repeat: Infinity, ease: 'easeInOut' }
-              }
-            />
-            <Link
-              href={href(ctaHref)}
-              className="relative inline-flex items-center gap-2 rounded-md bg-[#FBAE40] px-4 py-2.5 text-sm font-semibold text-[#0F2837] transition-[background-color,transform] duration-200 hover:scale-[1.03] hover:bg-[#F89C49] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0F2837] motion-reduce:transition-none motion-reduce:hover:scale-100"
-            >
-              {t.dashboard.bannerCta}
-              <Arrow className="size-4" aria-hidden />
-            </Link>
-          </div>
         </motion.div>
       </div>
 

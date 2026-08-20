@@ -1,7 +1,9 @@
 'use client';
 
 import { useCallback, useMemo } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
 import { useI18n } from '@/components/providers/locale-provider';
+import { EASE_OUT } from '@/components/charts/chart-kit';
 import { useRepoQuery } from '@/lib/hooks/use-repo';
 import type { Repository } from '@/lib/data/types';
 import {
@@ -50,6 +52,31 @@ import { Skeleton } from '@/components/ui/misc';
  * cohort rows; no component recomputes an aggregate on its own, and no figure
  * is authored into the dictionary.
  */
+/**
+ * Reveals a section as it scrolls into view rather than everything on the
+ * page firing at once on mount — the individual charts and KPI cards
+ * already stagger *within* a section (see `chart-kit.tsx`'s `index` prop),
+ * but every section previously started that stagger at the same instant,
+ * so a tall page like this one just burst in all together above the fold
+ * and sat static below it. `viewport={{ once: true }}` means each section
+ * settles permanently the first time it's seen — scrolling back up and
+ * down again never re-triggers it.
+ */
+function Reveal({ children, className }: { children: React.ReactNode; className?: string }) {
+  const reduced = useReducedMotion();
+  return (
+    <motion.div
+      initial={reduced ? false : { opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-10% 0px -10% 0px' }}
+      transition={{ duration: 0.55, ease: EASE_OUT }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
 export default function DashboardPage() {
   const { t, tf } = useI18n();
 
@@ -105,15 +132,15 @@ export default function DashboardPage() {
       {/* Mentorship sessions — live from Calendly, on-demand sync. Placed
           above the KPI row deliberately: it's the first live-updating number
           on the page, ahead of the portfolio numbers below it. */}
-      <div className="pb-6">
+      <Reveal className="pb-6">
         <p className="text-sm font-semibold text-ink">{t.calendly.sectionTitle}</p>
         <div className="mt-4">
           <CalendlyPanel />
         </div>
-      </div>
+      </Reveal>
 
       {/* The seven numbers an executive reads first. */}
-      <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4 xl:grid-cols-7">
+      <Reveal className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4 xl:grid-cols-7">
         {loading ? (
           Array.from({ length: 7 }).map((_, i) => <Skeleton key={i} className="h-[124px]" />)
         ) : (
@@ -176,9 +203,9 @@ export default function DashboardPage() {
             />
           </>
         )}
-      </div>
+      </Reveal>
 
-      <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3">
+      <Reveal className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3">
         {loading ? (
           Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-[340px]" />)
         ) : (
@@ -196,9 +223,9 @@ export default function DashboardPage() {
             />
           </>
         )}
-      </div>
+      </Reveal>
 
-      <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
+      <Reveal className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
         {loading ? (
           <>
             <Skeleton className="h-[280px]" />
@@ -219,9 +246,9 @@ export default function DashboardPage() {
             />
           </>
         )}
-      </div>
+      </Reveal>
 
-      <div className="mt-4">
+      <Reveal className="mt-4">
         {loading ? (
           <Skeleton className="h-[280px]" />
         ) : (
@@ -231,11 +258,11 @@ export default function DashboardPage() {
             watchlist={portfolio.watchlist}
           />
         )}
-      </div>
+      </Reveal>
 
       {/* Programme operations — forms and responses. Preserved in full, demoted
           below the portfolio story so it does not compete with it. */}
-      <div className="mt-10 border-t border-line pt-6">
+      <Reveal className="mt-10 border-t border-line pt-6">
         <p className="text-sm font-semibold text-ink">{t.dashboard.operationsTitle}</p>
         <p className="mt-0.5 text-xs text-ink-subtle">{t.dashboard.operationsSubtitle}</p>
 
@@ -289,7 +316,7 @@ export default function DashboardPage() {
           <ResponseTrend data={trend} index={1} />
           <StageBars data={stages} index={2} />
         </div>
-      </div>
+      </Reveal>
     </div>
   );
 }
