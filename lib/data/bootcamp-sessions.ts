@@ -138,3 +138,29 @@ export const BOOTCAMP_DAYS: BootcampDay[] = [
     ],
   },
 ];
+
+export interface BootcampStats {
+  /** One row per mentor-entrepreneur pairing, one row = one session — the
+   * same unit the Calendly numbers count in. */
+  totalSessions: number;
+  sessionsByMentor: Map<string, number>;
+}
+
+/**
+ * The bootcamp ran 17-19 Aug 2026 — the programme's own first three days —
+ * so every session on this sheet already falls inside the "12 Aug onward"
+ * reporting window the Mentorship-sessions cards use; nothing here needs
+ * its own date filter.
+ */
+export function bootcampStats(): BootcampStats {
+  const sessionsByMentor = new Map<string, number>();
+  let totalSessions = 0;
+  BOOTCAMP_DAYS.forEach((day) => {
+    day.groups.forEach((group) => {
+      const count = group.entrepreneurs.length;
+      totalSessions += count;
+      sessionsByMentor.set(group.mentorName, (sessionsByMentor.get(group.mentorName) ?? 0) + count);
+    });
+  });
+  return { totalSessions, sessionsByMentor };
+}

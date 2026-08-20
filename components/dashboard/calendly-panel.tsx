@@ -31,12 +31,40 @@ import {
 import { useEntranceOnce } from '@/lib/hooks/use-entrance';
 import { Skeleton, EmptyState } from '@/components/ui/misc';
 import type { BookedSession, CalendlySummary } from '@/lib/calendly/summary';
+import { bootcampStats } from '@/lib/data/bootcamp-sessions';
 
 type FetchState =
   | { status: 'loading' }
   | { status: 'not_configured' }
   | { status: 'error'; message: string }
   | { status: 'ready'; data: CalendlySummary };
+
+/**
+ * Folds the bootcamp's own sign-up sheet into the live Calendly numbers —
+ * the bootcamp ran 17-19 Aug, inside the same "12 Aug onward" window the
+ * Calendly data is already scoped to, so these are genuinely the same
+ * reporting period, not two separate ones being mixed together.
+ *
+ * Only what both sources can honestly speak to gets merged: mentor identity
+ * and a session count. Hours, cancellations and reschedules stay Calendly-
+ * only — the bootcamp sheet has no start/end times or cancellation record
+ * for either, so inventing them would be worse than leaving them as-is.
+ */
+function mergeBootcampTotals(data: CalendlySummary) {
+  const { totalSessions, sessionsByMentor } = bootcampStats();
+
+  const merged = new Map<string, number>();
+  data.sessionsPerMentor.forEach((m) => merged.set(m.name, m.sessions));
+  sessionsByMentor.forEach((count, name) => merged.set(name, (merged.get(name) ?? 0) + count));
+
+  return {
+    mentors: merged.size,
+    sessionsCompleted: data.sessionsCompleted + totalSessions,
+    sessionsPerMentor: Array.from(merged.entries())
+      .map(([name, sessions]) => ({ name, sessions }))
+      .sort((a, b) => b.sessions - a.sessions),
+  };
+}
 
 /**
  * Mentorship-session metrics, sourced live from Calendly — on-demand sync,
@@ -101,16 +129,17 @@ export function CalendlyPanel() {
   }
 
   const { data } = state;
+  const totals = mergeBootcampTotals(data);
 
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
-        <KpiCard index={0} icon={<KpiIconPeople />} label={t.calendly.kpiMentors} value={data.mentors} />
+        <KpiCard index={0} icon={<KpiIconPeople />} label={t.calendly.kpiMentors} value={totals.mentors} />
         <KpiCard
           index={1}
           icon={<KpiIconCalendarCheck />}
           label={t.calendly.kpiSessionsCompleted}
-          value={data.sessionsCompleted}
+          value={totals.sessionsCompleted}
         />
         <KpiCard
           index={2}
@@ -131,7 +160,7 @@ export function CalendlyPanel() {
           value={data.sessionsRescheduled}
         />
       </div>
-      <SessionsPerMentorDonut data={data.sessionsPerMentor} />
+      <SessionsPerMentorDonut data={totals.sessionsPerMentor} />
       <BookedSessionsTable sessions={data.bookedSessions} />
     </div>
   );
