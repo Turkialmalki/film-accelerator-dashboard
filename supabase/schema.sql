@@ -149,6 +149,32 @@ create table invitations (
 
 create index on invitations (org_id, status);
 
+-- Self-service registration queue: one row per request, decided exactly
+-- once via a service-role-only API route (see migrations/0006). Never read
+-- or written through the anon/authenticated PostgREST role, so it carries
+-- RLS enabled with no policies rather than per-role rules.
+create table signup_requests (
+  id              uuid primary key default gen_random_uuid(),
+  org_id          uuid not null references organizations(id) on delete cascade,
+  email           text not null,
+  full_name       text not null,
+  requested_role  text not null check (requested_role in ('admin', 'participant')),
+  status          text not null default 'pending' check (status in ('pending', 'approved', 'rejected')),
+  approve_token   uuid not null default gen_random_uuid(),
+  reject_token    uuid not null default gen_random_uuid(),
+  team_id         uuid references teams(id),
+  created_at      timestamptz not null default now(),
+  decided_at      timestamptz
+);
+
+create unique index signup_requests_pending_email_idx
+  on signup_requests (org_id, lower(email))
+  where status = 'pending';
+
+create index on signup_requests (org_id, status);
+
+alter table signup_requests enable row level security;
+
 -- ------------------------------------------------------------------- forms --
 
 create table forms (

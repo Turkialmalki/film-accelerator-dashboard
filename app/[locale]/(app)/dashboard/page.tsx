@@ -14,7 +14,6 @@ import {
   statusBreakdown,
 } from '@/lib/analytics';
 import { PageHeader } from '@/components/shell/page-header';
-import { ProgramBanner } from '@/components/dashboard/program-banner';
 import { KpiCard } from '@/components/dashboard/kpi-card';
 import {
   KpiIconClipboardCheck,
@@ -29,8 +28,6 @@ import {
   KpiIconShieldAlert,
   KpiIconShieldCheck,
 } from '@/components/dashboard/kpi-icons';
-import { KeyFindings } from '@/components/dashboard/portfolio-findings';
-import { PortfolioHealthPanel } from '@/components/dashboard/portfolio-health';
 import {
   ReadinessByStageChart,
   RevenueBandChart,
@@ -58,8 +55,6 @@ export default function DashboardPage() {
 
   const query = useCallback(
     async (repo: Repository) => ({
-      organization: await repo.getOrganization(),
-      cohort: await repo.getCohort(),
       teams: await repo.listTeams(),
       forms: await repo.listForms(),
       submissions: await repo.listSubmissions(),
@@ -68,14 +63,10 @@ export default function DashboardPage() {
   );
 
   const { data, loading } = useRepoQuery(query, {
-    organization: null,
-    cohort: null,
     teams: [],
     forms: [],
     submissions: [],
   } as {
-    organization: Awaited<ReturnType<Repository['getOrganization']>> | null;
-    cohort: Awaited<ReturnType<Repository['getCohort']>> | null;
     teams: Awaited<ReturnType<Repository['listTeams']>>;
     forms: Awaited<ReturnType<Repository['listForms']>>;
     submissions: Awaited<ReturnType<Repository['listSubmissions']>>;
@@ -95,7 +86,6 @@ export default function DashboardPage() {
     <div className="mx-auto max-w-7xl">
       <PageHeader
         title={t.dashboard.title}
-        subtitle={t.portfolio.sectionEyebrow}
         actions={
           !loading ? (
             <ExportMenu
@@ -113,22 +103,14 @@ export default function DashboardPage() {
       />
 
       {/* Mentorship sessions — live from Calendly, on-demand sync. Placed
-          above the banner deliberately: it's the first live-updating number
-          on the page, ahead of the cohort story below it. */}
+          above the KPI row deliberately: it's the first live-updating number
+          on the page, ahead of the portfolio numbers below it. */}
       <div className="pb-6">
         <p className="text-sm font-semibold text-ink">{t.calendly.sectionTitle}</p>
-        <p className="mt-0.5 text-xs text-ink-subtle">{t.calendly.sectionSubtitle}</p>
         <div className="mt-4">
           <CalendlyPanel />
         </div>
       </div>
-
-      <ProgramBanner
-        organization={data.organization}
-        cohort={data.cohort}
-        avgReadiness={Math.round(portfolio.readiness.average)}
-        totalCompanies={portfolio.totalCompanies}
-      />
 
       {/* The seven numbers an executive reads first. */}
       <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4 xl:grid-cols-7">
@@ -193,25 +175,6 @@ export default function DashboardPage() {
               value={portfolio.keyPersonRiskCount}
             />
           </>
-        )}
-      </div>
-
-      {/* The narrative layer, computed from the numbers above. */}
-      <div className="mt-4">
-        {loading ? <Skeleton className="h-[220px]" /> : <KeyFindings findings={findings} />}
-      </div>
-
-      <div className="mt-4">
-        {loading ? (
-          <Skeleton className="h-[260px]" />
-        ) : (
-          <PortfolioHealthPanel
-            health={portfolio.health}
-            directJobs={portfolio.directJobs}
-            operatingRegions={portfolio.operatingRegions}
-            mvpCount={portfolio.mvpCount}
-            avgTeamSize={portfolio.avgTeamSize}
-          />
         )}
       </div>
 

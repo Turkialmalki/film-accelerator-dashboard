@@ -505,9 +505,17 @@ export class SupabaseAdapter implements Repository {
   }
 
   async saveTheme(input: { preset: ThemePresetKey; tokens: ThemeTokens }): Promise<ThemeSettings> {
+    // `org_id` carries its own UNIQUE constraint (see schema.sql) but is not
+    // the primary key — `id` is. Without an explicit `onConflict`, upsert()
+    // targets the primary key by default, so every save after the very
+    // first one tried to INSERT a fresh row and collided with the org_id
+    // constraint instead of updating the existing one: a 409 on every
+    // publish after the first, silently swallowed by nothing (the request
+    // just failed) until the Appearance page started publishing on every
+    // click instead of behind an explicit "Publish" button.
     const { data, error } = await this.client
       .from('theme_settings')
-      .upsert({ org_id: this.orgId, ...input, updated_at: new Date().toISOString() })
+      .upsert({ org_id: this.orgId, ...input, updated_at: new Date().toISOString() }, { onConflict: 'org_id' })
       .select()
       .single();
     if (error) throw error;

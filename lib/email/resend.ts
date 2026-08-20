@@ -208,3 +208,199 @@ export async function sendPasswordResetEmail(input: PasswordResetEmailInput): Pr
     };
   }
 }
+
+export interface SignupRequestAdminEmailInput {
+  /** One email per admin/owner — sent as separate messages, not one email
+   * with everyone on the To line, so nobody sees the whole admin roster. */
+  to: string;
+  requesterName: string;
+  requesterEmail: string;
+  requestedRole: 'admin' | 'participant';
+  approveUrl: string;
+  rejectUrl: string;
+  orgName?: string;
+}
+
+/**
+ * Notifies one admin/owner that someone asked to join, with the whole
+ * decision made in one click from the inbox — no sign-in required. The
+ * links carry a single-use token each; the route on the other end is what
+ * actually enforces that, this email is just the delivery.
+ */
+export async function sendSignupRequestAdminEmail(input: SignupRequestAdminEmailInput): Promise<EmailResult> {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) return { sent: false, reason: 'not_configured' };
+
+  const org = input.orgName || 'Film Business Accelerator';
+  const roleLabelAr = input.requestedRole === 'admin' ? 'مشرف' : 'شركة ناشئة / رائد أعمال';
+  const roleLabelEn = input.requestedRole === 'admin' ? 'Admin' : 'Startup / Entrepreneur';
+
+  const html = `
+<div style="font-family:system-ui,-apple-system,'Segoe UI',sans-serif;max-width:560px;margin:0 auto;color:#141414">
+  <div dir="rtl" style="text-align:right;line-height:1.8">
+    <h2 style="margin:0 0 12px">طلب انضمام جديد</h2>
+    <p style="margin:0 0 4px"><strong>${escapeHtml(input.requesterName)}</strong> (${escapeHtml(input.requesterEmail)})</p>
+    <p style="margin:0 0 16px;color:#666">طلب الانضمام إلى <strong>${escapeHtml(org)}</strong> بصفة: ${roleLabelAr}</p>
+    <table role="presentation" style="margin:0 0 16px"><tr>
+      <td style="padding-inline-end:10px"><a href="${escapeHtml(input.approveUrl)}" style="display:inline-block;padding:10px 20px;background:#2F7D62;color:#fff;border-radius:8px;text-decoration:none;font-weight:600">قبول</a></td>
+      <td><a href="${escapeHtml(input.rejectUrl)}" style="display:inline-block;padding:10px 20px;background:#B03A31;color:#fff;border-radius:8px;text-decoration:none;font-weight:600">رفض</a></td>
+    </tr></table>
+    <p style="margin:0;font-size:13px;color:#666">عند القبول سيُرسَل له بريد بكلمة مرور مؤقتة تلقائياً.</p>
+  </div>
+  <hr style="border:none;border-top:1px solid #e5e5e5;margin:24px 0">
+  <div dir="ltr" style="text-align:left;line-height:1.7">
+    <h3 style="margin:0 0 12px">New registration request</h3>
+    <p style="margin:0 0 4px"><strong>${escapeHtml(input.requesterName)}</strong> (${escapeHtml(input.requesterEmail)})</p>
+    <p style="margin:0 0 16px;color:#666">Asked to join <strong>${escapeHtml(org)}</strong> as: ${roleLabelEn}</p>
+    <table role="presentation" style="margin:0 0 16px"><tr>
+      <td style="padding-right:10px"><a href="${escapeHtml(input.approveUrl)}" style="display:inline-block;padding:10px 20px;background:#2F7D62;color:#fff;border-radius:8px;text-decoration:none;font-weight:600">Approve</a></td>
+      <td><a href="${escapeHtml(input.rejectUrl)}" style="display:inline-block;padding:10px 20px;background:#B03A31;color:#fff;border-radius:8px;text-decoration:none;font-weight:600">Reject</a></td>
+    </tr></table>
+    <p style="margin:0;font-size:13px;color:#666">Approving emails them a temporary password automatically.</p>
+  </div>
+</div>`.trim();
+
+  const text = [
+    `طلب انضمام جديد: ${input.requesterName} (${input.requesterEmail}) — ${roleLabelAr}`,
+    `قبول: ${input.approveUrl}`,
+    `رفض: ${input.rejectUrl}`,
+    '',
+    `New registration request: ${input.requesterName} (${input.requesterEmail}) — ${roleLabelEn}`,
+    `Approve: ${input.approveUrl}`,
+    `Reject: ${input.rejectUrl}`,
+  ].join('\n');
+
+  try {
+    const resend = new Resend(apiKey);
+    const { data, error } = await resend.emails.send({
+      from: resolveFrom(),
+      to: input.to,
+      subject: `طلب انضمام جديد من ${input.requesterName} / New registration request`,
+      html,
+      text,
+    });
+    if (error) return { sent: false, reason: 'send_failed', error: error.message };
+    return { sent: true, id: data?.id ?? null };
+  } catch (error) {
+    return {
+      sent: false,
+      reason: 'send_failed',
+      error: error instanceof Error ? error.message : 'unknown',
+    };
+  }
+}
+
+export interface SignupRejectedEmailInput {
+  to: string;
+  fullName?: string;
+  orgName?: string;
+}
+
+/** Polite, honest rejection notice — no reason is invented; there simply
+ * wasn't one supplied at decision time. */
+export async function sendSignupRejectedEmail(input: SignupRejectedEmailInput): Promise<EmailResult> {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) return { sent: false, reason: 'not_configured' };
+
+  const org = input.orgName || 'Film Business Accelerator';
+  const name = input.fullName || input.to.split('@')[0];
+
+  const html = `
+<div style="font-family:system-ui,-apple-system,'Segoe UI',sans-serif;max-width:560px;margin:0 auto;color:#141414">
+  <div dir="rtl" style="text-align:right;line-height:1.8">
+    <h2 style="margin:0 0 12px">مرحباً ${escapeHtml(name)}</h2>
+    <p style="margin:0">لم تتم الموافقة على طلب انضمامك إلى <strong>${escapeHtml(org)}</strong> في الوقت الحالي. لأي استفسار، يمكنك مراسلتنا مباشرة.</p>
+  </div>
+  <hr style="border:none;border-top:1px solid #e5e5e5;margin:24px 0">
+  <div dir="ltr" style="text-align:left;line-height:1.7">
+    <h3 style="margin:0 0 12px">Hello ${escapeHtml(name)}</h3>
+    <p style="margin:0">Your request to join <strong>${escapeHtml(org)}</strong> was not approved at this time. For any questions, feel free to reach out directly.</p>
+  </div>
+</div>`.trim();
+
+  const text = [
+    `مرحباً ${name} — لم تتم الموافقة على طلب انضمامك إلى ${org} في الوقت الحالي.`,
+    '',
+    `Hello ${name} — your request to join ${org} was not approved at this time.`,
+  ].join('\n');
+
+  try {
+    const resend = new Resend(apiKey);
+    const { data, error } = await resend.emails.send({
+      from: resolveFrom(),
+      to: input.to,
+      subject: `تحديث بخصوص طلبك / Update on your request — ${org}`,
+      html,
+      text,
+    });
+    if (error) return { sent: false, reason: 'send_failed', error: error.message };
+    return { sent: true, id: data?.id ?? null };
+  } catch (error) {
+    return {
+      sent: false,
+      reason: 'send_failed',
+      error: error instanceof Error ? error.message : 'unknown',
+    };
+  }
+}
+
+export interface FormSubmittedEmailInput {
+  to: string;
+  teamName: string;
+  formTitle: string;
+  resultsUrl: string;
+  orgName?: string;
+}
+
+/** Tells one admin a team just submitted a form — sent once per admin, same
+ * pattern as the signup-request notification. */
+export async function sendFormSubmittedEmail(input: FormSubmittedEmailInput): Promise<EmailResult> {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) return { sent: false, reason: 'not_configured' };
+
+  const org = input.orgName || 'Film Business Accelerator';
+
+  const html = `
+<div style="font-family:system-ui,-apple-system,'Segoe UI',sans-serif;max-width:560px;margin:0 auto;color:#141414">
+  <div dir="rtl" style="text-align:right;line-height:1.8">
+    <h2 style="margin:0 0 12px">إرسال استمارة جديد</h2>
+    <p style="margin:0 0 4px">أرسل فريق <strong>${escapeHtml(input.teamName)}</strong> استمارة:</p>
+    <p style="margin:0 0 16px;color:#666">${escapeHtml(input.formTitle)}</p>
+    <p style="margin:0 0 16px"><a href="${escapeHtml(input.resultsUrl)}" style="display:inline-block;padding:10px 20px;background:#141414;color:#fff;border-radius:8px;text-decoration:none">عرض النتائج</a></p>
+  </div>
+  <hr style="border:none;border-top:1px solid #e5e5e5;margin:24px 0">
+  <div dir="ltr" style="text-align:left;line-height:1.7">
+    <h3 style="margin:0 0 12px">New form submission</h3>
+    <p style="margin:0 0 4px"><strong>${escapeHtml(input.teamName)}</strong> submitted:</p>
+    <p style="margin:0 0 16px;color:#666">${escapeHtml(input.formTitle)}</p>
+    <p style="margin:0"><a href="${escapeHtml(input.resultsUrl)}" style="display:inline-block;padding:10px 20px;background:#141414;color:#fff;border-radius:8px;text-decoration:none">View results</a></p>
+  </div>
+</div>`.trim();
+
+  const text = [
+    `إرسال استمارة جديد: ${input.teamName} — ${input.formTitle}`,
+    `عرض النتائج: ${input.resultsUrl}`,
+    '',
+    `New form submission: ${input.teamName} — ${input.formTitle}`,
+    `View results: ${input.resultsUrl}`,
+  ].join('\n');
+
+  try {
+    const resend = new Resend(apiKey);
+    const { data, error } = await resend.emails.send({
+      from: resolveFrom(),
+      to: input.to,
+      subject: `${input.teamName} أرسل استمارة / ${input.teamName} submitted a form — ${org}`,
+      html,
+      text,
+    });
+    if (error) return { sent: false, reason: 'send_failed', error: error.message };
+    return { sent: true, id: data?.id ?? null };
+  } catch (error) {
+    return {
+      sent: false,
+      reason: 'send_failed',
+      error: error instanceof Error ? error.message : 'unknown',
+    };
+  }
+}

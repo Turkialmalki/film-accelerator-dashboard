@@ -126,6 +126,15 @@ export function ExportMenu({
         // paints it, capture it, then tear it down.
         setPrintSections(sections);
         await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+        // Belt-and-suspenders alongside the image-decode wait below: make
+        // sure the Arabic webfont itself has finished loading before
+        // html2canvas rasterizes anything. Usually already true by the time
+        // someone reaches this dialog (the whole app has been rendering in
+        // it), but a PDF is a document handed to someone else — worth the
+        // guarantee rather than the assumption.
+        if (typeof document !== 'undefined' && 'fonts' in document) {
+          await document.fonts.ready.catch(() => {});
+        }
         const node = document.getElementById('fba-export-print-layout');
         if (node) {
           // The brand lockup in the print header is an <img>. A frame of

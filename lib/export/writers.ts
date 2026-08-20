@@ -107,6 +107,14 @@ export async function exportNodeAsPdf(node: HTMLElement, baseName: string): Prom
   });
 
   const pdf = new jsPDF({ unit: 'pt', format: 'a4' });
+  // jsPDF's PDF metadata (the /Title etc. shown in a reader's document
+  // properties, distinct from anything drawn on the page) is written with
+  // single-byte PDFDocEncoding, which cannot carry Arabic — an Arabic string
+  // there comes out as mangled byte pairs in some readers. Keeping this
+  // metadata field plain ASCII sidesteps that entirely; it never affects
+  // what's visibly printed on the page, which is a rasterized screenshot of
+  // real, correctly-shaped Arabic DOM text regardless of this value.
+  pdf.setProperties({ title: 'Film Business Accelerator - Report' });
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
 

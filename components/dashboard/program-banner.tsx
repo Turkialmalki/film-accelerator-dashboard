@@ -7,6 +7,7 @@ import { motion, useReducedMotion, useScroll, useSpring, useTransform } from 'fr
 import { ArrowLeft, ArrowRight, CalendarClock, Flag, MapPin, Users } from 'lucide-react';
 import { useI18n } from '@/components/providers/locale-provider';
 import { Badge } from '@/components/ui/badge';
+import { FbaLockup } from '@/components/brand/logo';
 import { EASE_OUT, MOTION_MS } from '@/components/charts/chart-kit';
 import { useCountUp } from '@/lib/hooks/use-count-up';
 import type { Cohort, Organization } from '@/lib/data/types';
@@ -90,11 +91,15 @@ export function ProgramBanner({
   cohort,
   avgReadiness,
   totalCompanies,
+  ctaHref = '/dashboard',
 }: {
   organization: Organization | null;
   cohort: Cohort | null;
   avgReadiness: number;
   totalCompanies: number;
+  /** Where the "explore the portfolio" action leads. Defaults to the
+   * portfolio analytics dashboard — the banner itself now lives on /teams. */
+  ctaHref?: string;
 }) {
   const { t, b, fmtDate, fmtNumber, href, dir } = useI18n();
   const reduced = useReducedMotion();
@@ -216,8 +221,11 @@ export function ProgramBanner({
         />
       ) : null}
 
-      <div className="relative flex flex-wrap items-start justify-between gap-6 p-6 sm:p-8">
+      <div className="relative grid grid-cols-1 items-start gap-6 p-6 sm:p-8 lg:grid-cols-[1fr_auto]">
         <div className="min-w-0 max-w-2xl">
+          <motion.div {...rise(0)} className="mb-4">
+            <FbaLockup variant="light" className="h-7 w-auto opacity-95" />
+          </motion.div>
           <motion.p
             {...rise(0.04)}
             className="text-xs font-medium uppercase tracking-wider text-white/60"
@@ -288,7 +296,10 @@ export function ProgramBanner({
           </motion.p>
         </div>
 
-        <motion.div {...rise(0.29)} className="flex items-center gap-5">
+        <motion.div
+          {...rise(0.29)}
+          className="flex items-center justify-start gap-5 lg:flex-col lg:items-end lg:justify-center lg:gap-6"
+        >
           <ReadinessDial value={avgReadiness} />
           <div className="relative">
             {/* A slow, quiet breathing glow behind the one primary action in
@@ -303,7 +314,7 @@ export function ProgramBanner({
               }
             />
             <Link
-              href={href('/teams')}
+              href={href(ctaHref)}
               className="relative inline-flex items-center gap-2 rounded-md bg-[#FBAE40] px-4 py-2.5 text-sm font-semibold text-[#0F2837] transition-[background-color,transform] duration-200 hover:scale-[1.03] hover:bg-[#F89C49] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0F2837] motion-reduce:transition-none motion-reduce:hover:scale-100"
             >
               {t.dashboard.bannerCta}

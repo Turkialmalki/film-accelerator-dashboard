@@ -41,6 +41,8 @@ import { TeamDetailDrawer } from '@/components/teams/team-detail-drawer';
 import { csvToTeamInputs, teamsToCsvRows } from '@/lib/teams-csv';
 import { downloadCsv } from '@/lib/csv';
 import { cn } from '@/lib/utils';
+import { ProgramBanner } from '@/components/dashboard/program-banner';
+import { computePortfolioMetrics } from '@/lib/analytics';
 
 type SortKey = 'name' | 'readiness' | 'stage' | 'updated';
 type ViewMode = 'cards' | 'table';
@@ -61,6 +63,22 @@ export default function TeamsPage() {
   const { session } = useSession();
   const query = useCallback((repo: Repository) => repo.listTeams(), []);
   const { data: teams, loading } = useRepoQuery<Team[]>(query, []);
+
+  const bannerQuery = useCallback(
+    async (repo: Repository) => ({
+      organization: await repo.getOrganization(),
+      cohort: await repo.getCohort(),
+    }),
+    [],
+  );
+  const { data: bannerData } = useRepoQuery(bannerQuery, {
+    organization: null,
+    cohort: null,
+  } as {
+    organization: Awaited<ReturnType<Repository['getOrganization']>> | null;
+    cohort: Awaited<ReturnType<Repository['getCohort']>> | null;
+  });
+  const portfolio = useMemo(() => computePortfolioMetrics(teams), [teams]);
 
   const [search, setSearch] = useState('');
   const [stage, setStage] = useState<'all' | TeamStage>('all');
@@ -277,6 +295,15 @@ export default function TeamsPage() {
             {t.teams.tableView}
           </button>
         </div>
+      </div>
+
+      <div className="mb-5">
+        <ProgramBanner
+          organization={bannerData.organization}
+          cohort={bannerData.cohort}
+          avgReadiness={Math.round(portfolio.readiness.average)}
+          totalCompanies={portfolio.totalCompanies}
+        />
       </div>
 
       <p className="mb-3 text-sm text-ink-subtle">

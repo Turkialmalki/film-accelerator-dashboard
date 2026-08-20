@@ -171,6 +171,15 @@ export function FormFiller({
     setSubmitting(false);
     setDone(true);
     onSubmitted?.(submission);
+
+    // Best-effort admin notification — the submission above already
+    // succeeded and is real, committed data; this can never block or fail
+    // the thing the participant actually came here to do.
+    fetch('/api/notifications/form-submitted', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ formId: form.id, teamId: teamId ?? null }),
+    }).catch(() => {});
   }
 
   return (
