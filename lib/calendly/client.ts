@@ -82,10 +82,14 @@ export interface CalendlyScheduledEvent {
 
 export async function listScheduledEvents(
   organizationUri: string,
+  range?: { minStartTime?: string; maxStartTime?: string },
 ): Promise<CalendlyScheduledEvent[]> {
+  const params = new URLSearchParams({ organization: organizationUri, count: '100' });
+  if (range?.minStartTime) params.set('min_start_time', range.minStartTime);
+  if (range?.maxStartTime) params.set('max_start_time', range.maxStartTime);
+
   const out: CalendlyScheduledEvent[] = [];
-  let url: string | null =
-    `${API_BASE}/scheduled_events?organization=${encodeURIComponent(organizationUri)}&count=100`;
+  let url: string | null = `${API_BASE}/scheduled_events?${params.toString()}`;
   while (url) {
     const page: {
       collection: CalendlyScheduledEvent[];
@@ -99,6 +103,9 @@ export async function listScheduledEvents(
 
 export interface CalendlyInvitee {
   uri: string;
+  /** The mentee's own name/email, as they entered it booking the slot. */
+  name: string;
+  email: string;
   status: 'active' | 'canceled';
   rescheduled: boolean;
   old_invitee: string | null;

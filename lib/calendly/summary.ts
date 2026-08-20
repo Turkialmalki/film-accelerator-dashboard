@@ -11,6 +11,24 @@ export interface MentorSlice {
   sessions: number;
 }
 
+/** One real, individually identifiable mentorship session — the detail
+ * behind the aggregate counts, not another rollup. */
+export interface BookedSession {
+  mentorName: string;
+  menteeName: string;
+  /** The Calendly event type's own name (e.g. "القانونية") — what kind of
+   * session this was, not a generic label. */
+  topic: string;
+  startTime: string;
+  endTime: string;
+  status: 'active' | 'canceled';
+  /** Whether `startTime` is already in the past at fetch time — the same
+   * "active" Calendly status covers both an upcoming booking and a session
+   * that already happened; this is the one bit of derived state that
+   * actually answers "is this done yet". */
+  occurred: boolean;
+}
+
 export interface CalendlySummary {
   mentors: number;
   sessionsCompleted: number;
@@ -20,6 +38,12 @@ export interface CalendlySummary {
   sessionsPerMentor: MentorSlice[];
   eventTypesIncluded: number;
   fetchedAt: string;
+  /** The window every number above is actually scoped to. */
+  rangeStart: string;
+  rangeEnd: string;
+  /** Every booked (non-canceled) session in the window, individually —
+   * what the KPI cards summarize, laid out one row per real session. */
+  bookedSessions: BookedSession[];
 }
 
 /**
@@ -41,42 +65,66 @@ function hostName(event: CalendlyScheduledEvent): string {
   return event.event_memberships[0]?.user_name || 'Unknown';
 }
 
-function durationHours(event: CalendlyScheduledEvent): number {
-  const ms = new Date(event.end_time).getTime() - new Date(event.start_time).getTime();
-  return Math.max(0, ms) / 3_600_000;
-}
-
 /**
  * Fetches and aggregates every scheduled event across every event type on
- * the organization's Calendly account. There is no per-organization invitee
- * list endpoint, so classifying a canceled event as a real cancellation vs a
- * reschedule costs one invitees call per canceled event — fine at this
- * program's scale (tens of sessions), not something to paginate around.
+ * the organization's Calendly account, scoped to a fixed reporting window —
+ * mentorship sessions from 12 Aug 2026 onward, the date the programme's
+ * mentorship track actually started, through the moment this runs. There is
+ * no per-organization invitee list endpoint, so getting each session's
+ * mentee name (for the detail table) and classifying a canceled event as a
+ * real cancellation vs a reschedule both cost one invitees call per event —
+ * fine at this program's scale (dozens of sessions in the window), not
+ * something to paginate around.
  */
 export async function fetchCalendlySummary(): Promise<CalendlySummary> {
+  const rangeStart = '2026-08-12T00:00:00.000Z';
+  const rangeEnd = new Date().toISOString();
+
   const user = await getCurrentUser();
   const [eventTypes, events] = await Promise.all([
     listEventTypes(user.current_organization),
-    listScheduledEvents(user.current_organization),
+    listScheduledEvents(user.current_organization, { minStartTime: rangeStart, maxStartTime: rangeEnd }),
   ]);
 
-  const canceled = events.filter((e) => e.status === 'canceled');
-  const invitees = await Promise.all(canceled.map((e) => listInvitees(e.uri)));
+  // One invitees call per event: canceled events need it to tell a real
+  // cancellation from a reschedule, active events need it for the mentee's
+  // name in the detail table below.
+  const inviteesByEvent = await Promise.all(events.map((e) => listInvitees(e.uri)));
 
   let sessionsCanceled = 0;
   let sessionsRescheduled = 0;
-  canceled.forEach((_, i) => {
-    if (classifyCanceledEvent(invitees[i]) === 'rescheduled') sessionsRescheduled += 1;
-    else sessionsCanceled += 1;
-  });
+  const now = Date.now();
+  const bookedSessions: BookedSession[] = [];
 
-  const completed = events.filter((e) => e.status === 'active');
-  const hoursCompleted = completed.reduce((sum, e) => sum + durationHours(e), 0);
+  events.forEach((event, i) => {
+    const invitees = inviteesByEvent[i];
+    if (event.status === 'canceled') {
+      if (classifyCanceledEvent(invitees) === 'rescheduled') sessionsRescheduled += 1;
+      else sessionsCanceled += 1;
+      return;
+    }
+    const mentee = invitees.find((inv) => inv.status === 'active') ?? invitees[0];
+    bookedSessions.push({
+      mentorName: hostName(event),
+      menteeName: mentee?.name || '—',
+      topic: event.name,
+      startTime: event.start_time,
+      endTime: event.end_time,
+      status: 'active',
+      occurred: new Date(event.start_time).getTime() <= now,
+    });
+  });
+  bookedSessions.sort((a, b) => a.startTime.localeCompare(b.startTime));
+
+  const completed = bookedSessions.filter((s) => s.occurred);
+  const hoursCompleted = completed.reduce((sum, s) => {
+    const ms = new Date(s.endTime).getTime() - new Date(s.startTime).getTime();
+    return sum + Math.max(0, ms) / 3_600_000;
+  }, 0);
 
   const perMentor = new Map<string, number>();
-  events.forEach((e) => {
-    const name = hostName(e);
-    perMentor.set(name, (perMentor.get(name) ?? 0) + 1);
+  bookedSessions.forEach((s) => {
+    perMentor.set(s.mentorName, (perMentor.get(s.mentorName) ?? 0) + 1);
   });
   const sessionsPerMentor = Array.from(perMentor.entries())
     .map(([name, sessions]) => ({ name, sessions }))
@@ -91,5 +139,8 @@ export async function fetchCalendlySummary(): Promise<CalendlySummary> {
     sessionsPerMentor,
     eventTypesIncluded: eventTypes.length,
     fetchedAt: new Date().toISOString(),
+    rangeStart,
+    rangeEnd,
+    bookedSessions,
   };
 }

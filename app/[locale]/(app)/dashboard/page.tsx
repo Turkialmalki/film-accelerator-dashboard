@@ -40,6 +40,7 @@ import { ReadinessRankingCard } from '@/components/dashboard/portfolio-ranking';
 import { PortfolioRisksPanel } from '@/components/dashboard/portfolio-risks';
 import { ResponseTrend, StageBars, StatusDonut } from '@/components/dashboard/dashboard-charts';
 import { CalendlyPanel } from '@/components/dashboard/calendly-panel';
+import { BootcampSessions } from '@/components/dashboard/bootcamp-sessions';
 import { ExportMenu } from '@/components/dashboard/export-menu';
 import { Skeleton } from '@/components/ui/misc';
 
@@ -138,6 +139,12 @@ export default function DashboardPage() {
           <CalendlyPanel />
         </div>
       </Reveal>
+
+      {/* The bootcamp's own mentor sign-up sheet — a separate, static
+          record from the live Calendly numbers above it. */}
+      <div className="pb-6">
+        <BootcampSessions />
+      </div>
 
       {/* The seven numbers an executive reads first. */}
       <Reveal className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4 xl:grid-cols-7">

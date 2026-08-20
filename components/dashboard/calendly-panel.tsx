@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
 import { CalendarClock, Users } from 'lucide-react';
 import {
   Cell,
@@ -11,6 +12,7 @@ import {
 } from 'recharts';
 import { useI18n } from '@/components/providers/locale-provider';
 import { KpiCard } from '@/components/dashboard/kpi-card';
+import { Badge } from '@/components/ui/badge';
 import {
   KpiIconCalendarCheck,
   KpiIconCanceled,
@@ -23,11 +25,12 @@ import {
   ChartEmpty,
   ChartFrame,
   ChartTooltipBox,
+  EASE_OUT,
   LegendDots,
 } from '@/components/charts/chart-kit';
 import { useEntranceOnce } from '@/lib/hooks/use-entrance';
 import { Skeleton, EmptyState } from '@/components/ui/misc';
-import type { CalendlySummary } from '@/lib/calendly/summary';
+import type { BookedSession, CalendlySummary } from '@/lib/calendly/summary';
 
 type FetchState =
   | { status: 'loading' }
@@ -129,7 +132,79 @@ export function CalendlyPanel() {
         />
       </div>
       <SessionsPerMentorDonut data={data.sessionsPerMentor} />
+      <BookedSessionsTable sessions={data.bookedSessions} />
     </div>
+  );
+}
+
+/**
+ * The detail behind the KPI cards above: every individual booked session in
+ * the window, mentor and mentee together, not just a count. Rows animate in
+ * once, staggered, the same restrained "premium app" motion the rest of the
+ * dashboard now uses — never replays on a hover or a re-render.
+ */
+function BookedSessionsTable({ sessions }: { sessions: BookedSession[] }) {
+  const { t, fmtDateTime } = useI18n();
+  const reduced = useReducedMotion();
+
+  return (
+    <motion.section
+      initial={reduced ? false : { opacity: 0, y: 12 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-10% 0px -10% 0px' }}
+      transition={{ duration: 0.5, ease: EASE_OUT }}
+      className="overflow-hidden rounded-xl border border-line bg-surface shadow-card"
+    >
+      <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-line px-5 py-4">
+        <div>
+          <h3 className="text-sm font-semibold text-ink">{t.calendly.bookedTitle}</h3>
+          <p className="mt-0.5 text-xs text-ink-subtle">{t.calendly.bookedSubtitle}</p>
+        </div>
+        <Badge tone="accent">{t.calendly.rangeLabel}</Badge>
+      </div>
+
+      {sessions.length === 0 ? (
+        <div className="p-6">
+          <ChartEmpty icon={<CalendarClock aria-hidden />} title={t.calendly.bookedEmpty} />
+        </div>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[640px] border-collapse text-sm">
+            <thead>
+              <tr className="border-b border-line bg-surface-muted/60 text-xs text-ink-subtle">
+                <th className="px-5 py-2.5 text-start font-medium">{t.calendly.bookedMentor}</th>
+                <th className="px-5 py-2.5 text-start font-medium">{t.calendly.bookedMentee}</th>
+                <th className="px-5 py-2.5 text-start font-medium">{t.calendly.bookedTopic}</th>
+                <th className="px-5 py-2.5 text-start font-medium">{t.calendly.bookedWhen}</th>
+                <th className="px-5 py-2.5 text-start font-medium">{t.calendly.bookedStatus}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sessions.map((session, i) => (
+                <motion.tr
+                  key={`${session.mentorName}-${session.startTime}-${i}`}
+                  initial={reduced ? false : { opacity: 0, x: -6 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.35, delay: reduced ? 0 : Math.min(i, 14) * 0.03, ease: EASE_OUT }}
+                  className="border-b border-line/70 last:border-0 transition-colors hover:bg-surface-muted/50"
+                >
+                  <td className="px-5 py-3 font-medium text-ink">{session.mentorName}</td>
+                  <td className="px-5 py-3 text-ink-muted">{session.menteeName}</td>
+                  <td className="px-5 py-3 text-ink-muted">{session.topic}</td>
+                  <td className="tnum px-5 py-3 text-ink-muted">{fmtDateTime(session.startTime)}</td>
+                  <td className="px-5 py-3">
+                    <Badge tone={session.occurred ? 'success' : 'info'}>
+                      {session.occurred ? t.calendly.bookedStatusDone : t.calendly.bookedStatusUpcoming}
+                    </Badge>
+                  </td>
+                </motion.tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </motion.section>
   );
 }
 
