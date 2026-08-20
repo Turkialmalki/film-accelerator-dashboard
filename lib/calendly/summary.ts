@@ -143,9 +143,17 @@ export async function fetchCalendlySummary(): Promise<CalendlySummary> {
   bookedSessions.sort((a, b) => a.startTime.localeCompare(b.startTime));
 
   const completed = bookedSessions.filter((s) => s.occurred);
+  // Whole hours only, per session, rounded up — a real 20 or 30 minute
+  // session counts as 1 hour, a real 1h30 session counts as 2, never a
+  // fraction. Each session is costed from its own real start/end time on
+  // Calendly, then the whole-hour counts are summed; this is deliberately
+  // not "sum the real minutes, then round the total once", which would let
+  // several short sessions net out to a smaller number than counting each
+  // of them as the hour they actually occupied.
   const hoursCompleted = completed.reduce((sum, s) => {
     const ms = new Date(s.endTime).getTime() - new Date(s.startTime).getTime();
-    return sum + Math.max(0, ms) / 3_600_000;
+    const minutes = Math.max(0, ms) / 60_000;
+    return sum + Math.max(1, Math.ceil(minutes / 60));
   }, 0);
 
   const perMentor = new Map<string, number>();
@@ -169,7 +177,7 @@ export async function fetchCalendlySummary(): Promise<CalendlySummary> {
     sessionsCompleted: completed.length,
     sessionsCanceled,
     sessionsRescheduled,
-    hoursCompleted: Math.round(hoursCompleted * 10) / 10,
+    hoursCompleted,
     sessionsPerMentor,
     sessionsPerTopic,
     eventTypesIncluded: eventTypes.length,

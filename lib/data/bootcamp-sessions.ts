@@ -165,11 +165,6 @@ export function bootcampStats(): BootcampStats {
   return { totalSessions, sessionsByMentor };
 }
 
-/** A 30-minute slot — Calendly's own most common mentor-session length in
- * this account — used only as the bootcamp's per-session estimate when
- * there isn't yet a single real Calendly session to average from. */
-const FALLBACK_SESSION_HOURS = 0.5;
-
 /**
  * Folds the bootcamp sign-up sheet into the live Calendly numbers — the
  * one place this merge happens, used by both the dashboard panel and the
@@ -178,14 +173,15 @@ const FALLBACK_SESSION_HOURS = 0.5;
  *
  * The bootcamp ran 17-19 Aug, inside the same "12 Aug onward" window the
  * Calendly data is already scoped to, so this is genuinely one reporting
- * period. Mentor identity, session count, and hours are all merged; the
- * bootcamp sheet has no recorded start/end time for any of its sessions, so
- * its hours are an estimate — each one costed at the real *average* length
- * of an actual Calendly session in this window, not a guessed constant, and
- * that estimate is exactly why sessionsCompleted (89) and hoursCompleted no
- * longer look mismatched the way "14 hours for 89 sessions" did before.
- * Cancellations and reschedules stay Calendly-only — the sheet has no
- * cancellation record at all.
+ * period. Mentor identity, session count, and hours are all merged.
+ * Calendly's own hours are already whole numbers — each real session
+ * rounded up to the nearest hour it actually occupied (see
+ * `fetchCalendlySummary`), never a fraction. The bootcamp sheet has no
+ * recorded start/end time for any of its sessions at all, so each one is
+ * costed the same way any short mentor slot is under that same rule: one
+ * whole hour, the floor the rounding itself already applies to a real
+ * 15-30 minute Calendly session. Cancellations and reschedules stay
+ * Calendly-only — the sheet has no cancellation record.
  */
 export function mergeBootcampIntoMentorship(data: {
   sessionsCompleted: number;
@@ -203,14 +199,12 @@ export function mergeBootcampIntoMentorship(data: {
   data.sessionsPerMentor.forEach((m) => merged.set(m.name, m.sessions));
   sessionsByMentor.forEach((count, name) => merged.set(name, (merged.get(name) ?? 0) + count));
 
-  const avgSessionHours =
-    data.sessionsCompleted > 0 ? data.hoursCompleted / data.sessionsCompleted : FALLBACK_SESSION_HOURS;
-  const bootcampHours = totalSessions * avgSessionHours;
+  const bootcampHours = totalSessions;
 
   return {
     mentors: merged.size,
     sessionsCompleted: data.sessionsCompleted + totalSessions,
-    hoursCompleted: Math.round((data.hoursCompleted + bootcampHours) * 10) / 10,
+    hoursCompleted: data.hoursCompleted + bootcampHours,
     sessionsPerMentor: Array.from(merged.entries())
       .map(([name, sessions]) => ({ name, sessions }))
       .sort((a, b) => b.sessions - a.sessions),
