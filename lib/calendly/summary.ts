@@ -85,14 +85,23 @@ function hostName(event: CalendlyScheduledEvent): string {
  */
 /**
  * Internal test/integration events that live on the same Calendly account as
- * real mentor bookings but aren't sessions with anyone — e.g. "Fireflies ↔
- * Notion Transcript Test", booked and attended by the programme's own
- * account rather than a founder. Matched by name rather than an id list:
- * whoever runs these tools names the test event something recognisable,
- * and a fixed id would silently stop working the next time someone re-runs
- * a test under a fresh event.
+ * real mentor bookings but aren't sessions with anyone — matched by name
+ * rather than an id list, since whoever runs these tools names the test
+ * event something recognisable, and a fixed id would silently stop working
+ * the next time someone re-runs a test under a fresh event.
+ *
+ * Confirmed individually before being added here, not assumed from the name
+ * alone — each of these was checked against its real invitee:
+ *   - "Fireflies ↔ Notion Transcript Test": an integration test.
+ *   - "Film Accelerator" (no other qualifier): three bookings, one invitee
+ *     named literally "test"/"v", booked from an internal admin's own
+ *     address (vbdarhman@gmail.com — one of this project's own invited
+ *     admins), not a founder.
+ * "CDMP Consultation", by contrast, was checked the same way and is a real
+ * session — a real mentee's personal address, a real mentor host — so it
+ * stays counted.
  */
-const NON_SESSION_EVENT_NAME_PATTERNS = [/fireflies/i, /transcript test/i];
+const NON_SESSION_EVENT_NAME_PATTERNS = [/fireflies/i, /transcript test/i, /^film accelerator\s*$/i];
 
 function isRealMentorshipSession(eventName: string): boolean {
   return !NON_SESSION_EVENT_NAME_PATTERNS.some((pattern) => pattern.test(eventName));

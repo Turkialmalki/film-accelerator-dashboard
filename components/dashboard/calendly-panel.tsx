@@ -300,7 +300,7 @@ function SessionsPerTopicDonut({
               {fmtNumber(total)}
             </span>
             <span className="mt-1 text-[11px] font-medium uppercase tracking-wide text-ink-subtle">
-              {t.calendly.kpiSessionsCompleted}
+              {t.calendly.calendlySessionsLabel}
             </span>
           </div>
         </div>

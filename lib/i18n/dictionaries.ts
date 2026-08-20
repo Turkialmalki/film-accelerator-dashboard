@@ -361,6 +361,12 @@ const en = {
     sessionsPerMentorSubtitle: 'Across every mentor event type on the account',
     sessionsPerTopicTitle: 'Sessions per topic',
     sessionsPerTopicSubtitle: 'What mentees actually booked, straight from Calendly',
+    /** This chart is deliberately Calendly-only — the bootcamp sheet has no
+     * topic recorded for any session, so it never enters this total. Its
+     * centre number is smaller than the "Sessions completed" KPI card on
+     * purpose, and reusing that card's own label here read as if the two
+     * should match. This is its own label instead. */
+    calendlySessionsLabel: 'Calendly sessions',
     noSessions: 'No sessions yet',
     noSessionsBody: 'Sessions appear here as soon as a mentor booking is scheduled on Calendly.',
     notConfiguredTitle: 'Calendly is not connected',
@@ -1087,6 +1093,7 @@ const ar: Loose<Dictionary> = {
     sessionsPerMentorSubtitle: 'عبر جميع أنواع جلسات المرشدين في الحساب',
     sessionsPerTopicTitle: 'الجلسات حسب الموضوع',
     sessionsPerTopicSubtitle: 'ما حجزه رواد الأعمال فعلياً، مباشرة من Calendly',
+    calendlySessionsLabel: 'جلسات Calendly',
     noSessions: 'لا توجد جلسات بعد',
     noSessionsBody: 'تظهر الجلسات هنا فور جدولة أي حجز مرشد على Calendly.',
     notConfiguredTitle: 'Calendly غير متصل',
