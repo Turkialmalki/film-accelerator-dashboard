@@ -404,3 +404,55 @@ export async function sendFormSubmittedEmail(input: FormSubmittedEmailInput): Pr
     };
   }
 }
+
+export interface HelpContactEmailInput {
+  to: string;
+  fromName: string;
+  fromEmail: string;
+  message: string;
+}
+
+/**
+ * The Help page's "send an email" action, sent for real through this app's
+ * own Resend account rather than a `mailto:` link. A `mailto:` link only
+ * works if the visitor's device has a default mail client configured —
+ * unreliable enough on its own, and especially likely to fail for exactly
+ * the people using this page (a founder on a locked-down work laptop, a
+ * mobile browser with no mail app signed in). This sends the message
+ * itself, with `replyTo` set to the sender, so replying in the inbox goes
+ * straight back to them.
+ */
+export async function sendHelpContactEmail(input: HelpContactEmailInput): Promise<EmailResult> {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) return { sent: false, reason: 'not_configured' };
+
+  const html = `
+<div style="font-family:system-ui,-apple-system,'Segoe UI',sans-serif;max-width:560px;margin:0 auto;color:#141414;line-height:1.7">
+  <h2 style="margin:0 0 12px">رسالة من مساعدة المنصة</h2>
+  <p style="margin:0 0 4px"><strong>${escapeHtml(input.fromName)}</strong> (${escapeHtml(input.fromEmail)})</p>
+  <div style="margin:16px 0;padding:16px;background:#f4f1ec;border-radius:8px;white-space:pre-wrap">${escapeHtml(input.message)}</div>
+  <p style="margin:0;font-size:13px;color:#666">الرد على هذه الرسالة يصل مباشرة إلى ${escapeHtml(input.fromEmail)}.</p>
+</div>`.trim();
+
+  const text = [`رسالة من: ${input.fromName} (${input.fromEmail})`, '', input.message].join('\n');
+
+  try {
+    const resend = new Resend(apiKey);
+    const { data, error } = await resend.emails.send({
+      from: resolveFrom(),
+      to: input.to,
+      replyTo: input.fromEmail,
+      subject: `رسالة مساعدة من ${input.fromName}`,
+      html,
+      text,
+    });
+    if (error) return { sent: false, reason: 'send_failed', error: error.message };
+    return { sent: true, id: data?.id ?? null };
+  } catch (error) {
+    return {
+      sent: false,
+      reason: 'send_failed',
+      error: error instanceof Error ? error.message : 'unknown',
+    };
+  }
+}

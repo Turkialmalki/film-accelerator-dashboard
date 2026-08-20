@@ -67,12 +67,32 @@ export function PrintLayout({ sections }: { sections: ExportSection[] }) {
         />
         <div style={{ position: 'relative', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
           <div>
-            <div style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.55)' }}>
+            {/* Tracked small-caps styling is an English typography
+                convention — `letterSpacing` on Arabic breaks the natural
+                joining between letters (ه/ي/ئ/ة render as if disconnected),
+                and `textTransform: uppercase` is a no-op for Arabic anyway.
+                Only apply either for the Latin (`en`) locale. */}
+            <div
+              style={{
+                fontSize: 11,
+                fontWeight: 600,
+                letterSpacing: dir === 'rtl' ? 'normal' : '0.08em',
+                textTransform: dir === 'rtl' ? 'none' : 'uppercase',
+                color: 'rgba(255,255,255,0.55)',
+              }}
+            >
               {t.brand.commission}
             </div>
-            <div style={{ marginTop: 6, fontSize: 22, fontWeight: 700, color: '#fff', letterSpacing: '-0.01em' }}>
-              {t.brand.name}
-            </div>
+            {/* No negative letter-spacing here, on purpose: html2canvas does
+                not use the browser's real text shaper — it approximates
+                glyph placement on its own — and a negative tracking value
+                on large, bold Arabic text is exactly the combination that
+                broke it, scrambling the header into disconnected glyphs in
+                the actual exported PDF even though the live DOM (and every
+                screenshot taken of it before rasterization) rendered fine.
+                Verified by rendering the real output PDF, not just the
+                pre-capture DOM. */}
+            <div style={{ marginTop: 6, fontSize: 22, fontWeight: 700, color: '#fff' }}>{t.brand.name}</div>
           </div>
           <div style={{ textAlign: dir === 'rtl' ? 'left' : 'right' }}>
             <div style={{ fontSize: 13, fontWeight: 600, color: '#fff' }}>{t.dashboard.exportDialogTitle}</div>
