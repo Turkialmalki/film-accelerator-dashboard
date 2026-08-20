@@ -31,40 +31,13 @@ import {
 import { useEntranceOnce } from '@/lib/hooks/use-entrance';
 import { Skeleton, EmptyState } from '@/components/ui/misc';
 import type { BookedSession, CalendlySummary } from '@/lib/calendly/summary';
-import { bootcampStats } from '@/lib/data/bootcamp-sessions';
+import { mergeBootcampIntoMentorship } from '@/lib/data/bootcamp-sessions';
 
 type FetchState =
   | { status: 'loading' }
   | { status: 'not_configured' }
   | { status: 'error'; message: string }
   | { status: 'ready'; data: CalendlySummary };
-
-/**
- * Folds the bootcamp's own sign-up sheet into the live Calendly numbers —
- * the bootcamp ran 17-19 Aug, inside the same "12 Aug onward" window the
- * Calendly data is already scoped to, so these are genuinely the same
- * reporting period, not two separate ones being mixed together.
- *
- * Only what both sources can honestly speak to gets merged: mentor identity
- * and a session count. Hours, cancellations and reschedules stay Calendly-
- * only — the bootcamp sheet has no start/end times or cancellation record
- * for either, so inventing them would be worse than leaving them as-is.
- */
-function mergeBootcampTotals(data: CalendlySummary) {
-  const { totalSessions, sessionsByMentor } = bootcampStats();
-
-  const merged = new Map<string, number>();
-  data.sessionsPerMentor.forEach((m) => merged.set(m.name, m.sessions));
-  sessionsByMentor.forEach((count, name) => merged.set(name, (merged.get(name) ?? 0) + count));
-
-  return {
-    mentors: merged.size,
-    sessionsCompleted: data.sessionsCompleted + totalSessions,
-    sessionsPerMentor: Array.from(merged.entries())
-      .map(([name, sessions]) => ({ name, sessions }))
-      .sort((a, b) => b.sessions - a.sessions),
-  };
-}
 
 /**
  * Mentorship-session metrics, sourced live from Calendly — on-demand sync,
@@ -129,7 +102,7 @@ export function CalendlyPanel() {
   }
 
   const { data } = state;
-  const totals = mergeBootcampTotals(data);
+  const totals = mergeBootcampIntoMentorship(data);
 
   return (
     <div className="space-y-4">
@@ -145,7 +118,7 @@ export function CalendlyPanel() {
           index={2}
           icon={<KpiIconClock />}
           label={t.calendly.kpiHoursCompleted}
-          value={data.hoursCompleted}
+          value={totals.hoursCompleted}
         />
         <KpiCard
           index={3}
@@ -160,7 +133,7 @@ export function CalendlyPanel() {
           value={data.sessionsRescheduled}
         />
       </div>
-      <SessionsPerMentorDonut data={totals.sessionsPerMentor} />
+      <SessionsPerTopicDonut data={data.sessionsPerTopic} />
       <BookedSessionsTable sessions={data.bookedSessions} />
     </div>
   );
@@ -237,7 +210,15 @@ function BookedSessionsTable({ sessions }: { sessions: BookedSession[] }) {
   );
 }
 
-function SessionsPerMentorDonut({
+/**
+ * What mentees actually came in for, not who they sat with — grouped by the
+ * Calendly event type's own name ("القانونية", "الاستثمار", ...).
+ * Deliberately reads straight from the live Calendly summary, never the
+ * bootcamp-merged totals: the bootcamp sheet has no topic recorded for any
+ * of its sessions, so mixing it in here would mean showing a number this
+ * chart cannot actually back up. Real, accurate Calendly data only.
+ */
+function SessionsPerTopicDonut({
   data,
 }: {
   data: { name: string; sessions: number }[];
@@ -250,8 +231,8 @@ function SessionsPerMentorDonut({
 
   return (
     <ChartFrame
-      title={t.calendly.sessionsPerMentorTitle}
-      subtitle={t.calendly.sessionsPerMentorSubtitle}
+      title={t.calendly.sessionsPerTopicTitle}
+      subtitle={t.calendly.sessionsPerTopicSubtitle}
       height={280}
       summary={
         rows.length

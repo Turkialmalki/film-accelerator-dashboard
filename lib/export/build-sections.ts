@@ -2,6 +2,7 @@ import type { Finding, KpiSet, PortfolioMetrics, StageBar, StatusSlice, TrendPoi
 import { findingCopy } from '@/lib/analytics-copy';
 import type { Bilingual, Form, Team } from '@/lib/data/types';
 import type { CalendlySummary } from '@/lib/calendly/summary';
+import { BOOTCAMP_DAYS, mergeBootcampIntoMentorship } from '@/lib/data/bootcamp-sessions';
 import type { Dict } from '@/lib/i18n/dictionaries';
 import type { ExportSection, ExportTable } from './types';
 
@@ -11,35 +12,85 @@ interface I18nHelpers {
   b: (value: Bilingual | undefined | null) => string;
   fmtNumber: (value: number) => string;
   fmtDate: (value: string) => string;
+  /** Only the Calendly section needs a real date+time, not just a date. */
+  fmtDateTime?: (value: string) => string;
 }
 
+/**
+ * The full "Mentorship sessions" export scope: the live Calendly totals
+ * (merged with the bootcamp sheet, exactly like the on-screen cards — see
+ * `mergeBootcampIntoMentorship`, the one place that merge happens so a
+ * download can never disagree with the dashboard it came from), sessions
+ * grouped by topic (real Calendly data only — the bootcamp sheet has no
+ * topic recorded), every individual booked session with its own detail,
+ * and the bootcamp's own day-by-day sign-up sheet.
+ */
 export function buildCalendlySection(
   summary: CalendlySummary | null,
   i18n: I18nHelpers,
 ): ExportSection {
-  const { t } = i18n;
+  const { t, fmtDateTime } = i18n;
+  const fmtWhen = fmtDateTime ?? i18n.fmtDate;
+  const totals = summary
+    ? mergeBootcampIntoMentorship(summary)
+    : mergeBootcampIntoMentorship({ sessionsCompleted: 0, hoursCompleted: 0, sessionsPerMentor: [] });
+
   const kpiTable: ExportTable = {
     title: t.calendly.sectionTitle,
     headers: [t.common.metric, t.common.value],
+    rows: [
+      [t.calendly.kpiMentors, totals.mentors],
+      [t.calendly.kpiSessionsCompleted, totals.sessionsCompleted],
+      [t.calendly.kpiHoursCompleted, totals.hoursCompleted],
+      [t.calendly.kpiSessionsCanceled, summary?.sessionsCanceled ?? 0],
+      [t.calendly.kpiSessionsRescheduled, summary?.sessionsRescheduled ?? 0],
+    ],
+  };
+
+  const perTopicTable: ExportTable = {
+    title: t.calendly.sessionsPerTopicTitle,
+    headers: [t.calendly.bookedTopic, t.calendly.kpiSessionsCompleted],
+    rows: summary ? summary.sessionsPerTopic.map((r) => [r.name, r.sessions]) : [],
+  };
+
+  const bookedTable: ExportTable = {
+    title: t.calendly.bookedTitle,
+    headers: [
+      t.calendly.bookedMentor,
+      t.calendly.bookedMentee,
+      t.calendly.bookedTopic,
+      t.calendly.bookedWhen,
+      t.calendly.bookedStatus,
+    ],
     rows: summary
-      ? [
-          [t.calendly.kpiMentors, summary.mentors],
-          [t.calendly.kpiSessionsCompleted, summary.sessionsCompleted],
-          [t.calendly.kpiHoursCompleted, summary.hoursCompleted],
-          [t.calendly.kpiSessionsCanceled, summary.sessionsCanceled],
-          [t.calendly.kpiSessionsRescheduled, summary.sessionsRescheduled],
-        ]
+      ? summary.bookedSessions.map((s) => [
+          s.mentorName,
+          s.menteeName,
+          s.topic,
+          fmtWhen(s.startTime),
+          s.occurred ? t.calendly.bookedStatusDone : t.calendly.bookedStatusUpcoming,
+        ])
       : [],
   };
-  const perMentorTable: ExportTable = {
-    title: t.calendly.sessionsPerMentorTitle,
-    headers: [t.calendly.kpiMentors, t.calendly.kpiSessionsCompleted],
-    rows: summary ? summary.sessionsPerMentor.map((r) => [r.name, r.sessions]) : [],
+
+  const bootcampTable: ExportTable = {
+    title: t.bootcamp.sectionTitle,
+    headers: [t.common.date, t.calendly.bookedMentor, t.calendly.bookedMentee],
+    rows: BOOTCAMP_DAYS.flatMap((day) =>
+      day.groups.flatMap((group) =>
+        group.entrepreneurs.map((name) => [
+          i18n.tf(t.bootcamp.day, { n: day.day }),
+          group.mentorName,
+          name,
+        ]),
+      ),
+    ),
   };
+
   return {
     id: 'calendly',
     label: t.calendly.sectionTitle,
-    tables: [kpiTable, perMentorTable],
+    tables: [kpiTable, perTopicTable, bookedTable, bootcampTable],
   };
 }
 
@@ -107,6 +158,18 @@ export function buildPortfolioSection(
     rows: portfolio.geography.map((r) => [b(r.region), r.count, `${Math.round(r.pct)}%`]),
   };
 
+  // Rendered on screen as the other half of the geography panel (see
+  // GeographyTeamStructurePanel) but never included in the export until now.
+  const structureTable: ExportTable = {
+    title: t.dashboard.teams,
+    headers: [t.common.metric, t.common.companies],
+    rows: [
+      [t.portfolio.multiFounderLabel, portfolio.teamStructure.multiFounder],
+      [t.portfolio.soloFounderLabel, portfolio.teamStructure.soloFounder],
+      [t.portfolio.keyPersonRiskLabel, portfolio.teamStructure.keyPersonRisk],
+    ],
+  };
+
   const rankingTable: ExportTable = {
     title: t.portfolio.rankingTitle,
     headers: [t.common.company, t.common.stage, t.portfolio.kpiReadiness],
@@ -155,6 +218,7 @@ export function buildPortfolioSection(
       readinessStageTable,
       revenueTable,
       geoTable,
+      structureTable,
       rankingTable,
       risksTable,
       rosterTable,

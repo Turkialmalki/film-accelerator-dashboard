@@ -63,7 +63,7 @@ export function ExportMenu({
   stages: StageBar[];
   forms: Form[];
 }) {
-  const { t, tf, b, fmtNumber, fmtDate } = useI18n();
+  const { t, tf, b, fmtNumber, fmtDate, fmtDateTime } = useI18n();
   const { isAdmin } = useSession();
   const [open, setOpen] = useState(false);
   const [scope, setScope] = useState<Set<ScopeId>>(
@@ -84,7 +84,7 @@ export function ExportMenu({
     });
   };
 
-  const i18n = { t, tf, b, fmtNumber, fmtDate };
+  const i18n = { t, tf, b, fmtNumber, fmtDate, fmtDateTime };
 
   async function buildSelectedSections(): Promise<ExportSection[]> {
     const sections: ExportSection[] = [];

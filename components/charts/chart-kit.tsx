@@ -139,13 +139,23 @@ export function ChartTooltipBox({
   );
 }
 
+/**
+ * A single flex-wrap line reads fine for three or four categories, but a
+ * legend with a dozen-plus names (e.g. every mentor across two languages)
+ * wraps into a dense, hard-to-scan paragraph instead — worse once the
+ * labels themselves mix Arabic and Latin script, where the browser's own
+ * bidi algorithm can visually reorder a label relative to its neighbours if
+ * nothing pins its direction. A responsive grid gives every entry its own
+ * row-aligned slot instead, and `dir="auto"` on each label lets it set its
+ * own direction from its own content rather than inheriting the page's.
+ */
 export function LegendDots({
   items,
 }: {
   items: { label: string; color: string; value?: string; muted?: boolean }[];
 }) {
   return (
-    <ul className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
+    <ul className="grid grid-cols-1 gap-x-5 gap-y-2 sm:grid-cols-2 lg:grid-cols-3">
       {items.map((item) => (
         <li
           key={item.label}
@@ -154,9 +164,13 @@ export function LegendDots({
             item.muted && 'opacity-55',
           )}
         >
-          <span className="size-2.5 rounded-full" style={{ backgroundColor: item.color }} />
-          <span>{item.label}</span>
-          {item.value ? <span className="tnum font-semibold text-ink">{item.value}</span> : null}
+          <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: item.color }} />
+          <span dir="auto" className="min-w-0 flex-1 truncate" title={item.label}>
+            {item.label}
+          </span>
+          {item.value ? (
+            <span className="tnum shrink-0 font-semibold text-ink">{item.value}</span>
+          ) : null}
         </li>
       ))}
     </ul>

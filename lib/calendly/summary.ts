@@ -36,6 +36,13 @@ export interface CalendlySummary {
   sessionsRescheduled: number;
   hoursCompleted: number;
   sessionsPerMentor: MentorSlice[];
+  /** Every booked session grouped by its real Calendly event-type name
+   * (e.g. "القانونية", "الاستثمار") rather than who hosted it — what a
+   * mentee actually came in for. Deliberately Calendly-only, never merged
+   * with the bootcamp sheet: the sheet records who sat with whom, not what
+   * kind of session it was, so folding it in here would mean inventing a
+   * topic that was never recorded. */
+  sessionsPerTopic: MentorSlice[];
   eventTypesIncluded: number;
   fetchedAt: string;
   /** The window every number above is actually scoped to. */
@@ -130,6 +137,14 @@ export async function fetchCalendlySummary(): Promise<CalendlySummary> {
     .map(([name, sessions]) => ({ name, sessions }))
     .sort((a, b) => b.sessions - a.sessions);
 
+  const perTopic = new Map<string, number>();
+  bookedSessions.forEach((s) => {
+    perTopic.set(s.topic, (perTopic.get(s.topic) ?? 0) + 1);
+  });
+  const sessionsPerTopic = Array.from(perTopic.entries())
+    .map(([name, sessions]) => ({ name, sessions }))
+    .sort((a, b) => b.sessions - a.sessions);
+
   return {
     mentors: perMentor.size,
     sessionsCompleted: completed.length,
@@ -137,6 +152,7 @@ export async function fetchCalendlySummary(): Promise<CalendlySummary> {
     sessionsRescheduled,
     hoursCompleted: Math.round(hoursCompleted * 10) / 10,
     sessionsPerMentor,
+    sessionsPerTopic,
     eventTypesIncluded: eventTypes.length,
     fetchedAt: new Date().toISOString(),
     rangeStart,
