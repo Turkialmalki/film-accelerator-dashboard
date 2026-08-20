@@ -83,15 +83,34 @@ function hostName(event: CalendlyScheduledEvent): string {
  * fine at this program's scale (dozens of sessions in the window), not
  * something to paginate around.
  */
+/**
+ * Internal test/integration events that live on the same Calendly account as
+ * real mentor bookings but aren't sessions with anyone — e.g. "Fireflies ↔
+ * Notion Transcript Test", booked and attended by the programme's own
+ * account rather than a founder. Matched by name rather than an id list:
+ * whoever runs these tools names the test event something recognisable,
+ * and a fixed id would silently stop working the next time someone re-runs
+ * a test under a fresh event.
+ */
+const NON_SESSION_EVENT_NAME_PATTERNS = [/fireflies/i, /transcript test/i];
+
+function isRealMentorshipSession(eventName: string): boolean {
+  return !NON_SESSION_EVENT_NAME_PATTERNS.some((pattern) => pattern.test(eventName));
+}
+
 export async function fetchCalendlySummary(): Promise<CalendlySummary> {
   const rangeStart = '2026-08-12T00:00:00.000Z';
   const rangeEnd = new Date().toISOString();
 
   const user = await getCurrentUser();
-  const [eventTypes, events] = await Promise.all([
+  const [eventTypes, rawEvents] = await Promise.all([
     listEventTypes(user.current_organization),
     listScheduledEvents(user.current_organization, { minStartTime: rangeStart, maxStartTime: rangeEnd }),
   ]);
+  // Filtered before anything downstream ever sees it — not just kept out of
+  // the per-topic chart, but out of every count that reads from this list:
+  // sessions completed, hours, mentors, and the booked-sessions table too.
+  const events = rawEvents.filter((e) => isRealMentorshipSession(e.name));
 
   // One invitees call per event: canceled events need it to tell a real
   // cancellation from a reschedule, active events need it for the mentee's

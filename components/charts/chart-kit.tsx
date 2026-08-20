@@ -141,13 +141,17 @@ export function ChartTooltipBox({
 
 /**
  * A single flex-wrap line reads fine for three or four categories, but a
- * legend with a dozen-plus names (e.g. every mentor across two languages)
- * wraps into a dense, hard-to-scan paragraph instead — worse once the
- * labels themselves mix Arabic and Latin script, where the browser's own
- * bidi algorithm can visually reorder a label relative to its neighbours if
- * nothing pins its direction. A responsive grid gives every entry its own
- * row-aligned slot instead, and `dir="auto"` on each label lets it set its
- * own direction from its own content rather than inheriting the page's.
+ * legend with a dozen-plus names (e.g. every topic across two languages)
+ * wraps into a dense, hard-to-scan paragraph instead. A multi-column grid
+ * was tried here first and made it worse, not better: fixed-width grid
+ * tracks plus labels of wildly different lengths (a 3-character Arabic word
+ * next to "Fireflies ↔ Notion Transcript Test") left some rows' numbers
+ * lining up with completely different rows' labels. Each entry is its own
+ * full-width row instead — the dot+label group pinned to one side and the
+ * value pinned to the other, `justify-between` inside that one row and
+ * nothing else — so alignment never depends on any other row's content.
+ * `dir="auto"` on the label still lets it set its own direction from its
+ * own text rather than inheriting the page's.
  */
 export function LegendDots({
   items,
@@ -155,18 +159,20 @@ export function LegendDots({
   items: { label: string; color: string; value?: string; muted?: boolean }[];
 }) {
   return (
-    <ul className="grid grid-cols-1 gap-x-5 gap-y-2 sm:grid-cols-2 lg:grid-cols-3">
+    <ul className="grid grid-cols-1 gap-x-8 gap-y-1.5 sm:grid-cols-2">
       {items.map((item) => (
         <li
           key={item.label}
           className={cn(
-            'flex items-center gap-2 text-xs text-ink-muted',
+            'flex items-center justify-between gap-3 text-xs text-ink-muted',
             item.muted && 'opacity-55',
           )}
         >
-          <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: item.color }} />
-          <span dir="auto" className="min-w-0 flex-1 truncate" title={item.label}>
-            {item.label}
+          <span className="flex min-w-0 items-center gap-2">
+            <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: item.color }} />
+            <span dir="auto" className="min-w-0 truncate" title={item.label}>
+              {item.label}
+            </span>
           </span>
           {item.value ? (
             <span className="tnum shrink-0 font-semibold text-ink">{item.value}</span>
