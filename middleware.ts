@@ -128,7 +128,13 @@ export async function middleware(request: NextRequest) {
     if (isParticipantRoute(rest) && admin) {
       return redirectTo('/dashboard');
     }
-    if (isAuthRoute(rest)) {
+    // `/reset-password` is deliberately excluded here. A recovery link is
+    // meant to work even for someone who still holds a valid (or stale)
+    // session cookie from before — bouncing them to their dashboard would
+    // strand the very link that was supposed to let them in. The page
+    // itself establishes its own one-off session from the link, independent
+    // of whatever session cookie is already on the request.
+    if (isAuthRoute(rest) && rest !== '/reset-password') {
       return redirectTo(
         session.mustChangePassword ? CHANGE_PASSWORD_ROUTE : homeFor(session.role),
       );
