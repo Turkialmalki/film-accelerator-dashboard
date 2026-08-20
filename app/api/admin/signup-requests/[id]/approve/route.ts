@@ -7,7 +7,10 @@
  * The token in the query string *is* the authorization; it is a random
  * uuid stored only in this row, checked against the row the path names, and
  * the row's own `pending` status is the single-use guard — a second click,
- * or a forwarded link after the fact, does nothing.
+ * a forwarded link, or an email client's automatic link-prefetcher hitting
+ * this URL before a human ever does, all land on the same atomic
+ * `UPDATE ... WHERE status = 'pending'` claim below, so only one of any
+ * number of near-simultaneous hits ever proceeds to create an account.
  *
  * On approval:
  *   - `admin` requests get an `admin` org_membership on the existing org.
@@ -48,26 +51,44 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     return decisionPage({ ok: false, title: 'Not configured', body: 'The service-role key is missing.' });
   }
 
-  const { data: reqRow } = await admin
+  const { data: lookupRow } = await admin
     .from('signup_requests')
-    .select('*')
+    .select('id, approve_token, status')
     .eq('id', params.id)
     .maybeSingle();
 
-  if (!reqRow) {
+  if (!lookupRow) {
     return decisionPage({ ok: false, title: 'Not found', body: 'This request no longer exists.' });
   }
-  if (reqRow.approve_token !== token) {
+  if (lookupRow.approve_token !== token) {
     return decisionPage({ ok: false, title: 'Invalid link', body: 'This approval link is not valid.' });
   }
-  if (reqRow.status !== 'pending') {
+
+  // Claim the row atomically — `status = 'pending'` in the WHERE clause,
+  // not a prior SELECT, is what actually closes the race: two requests
+  // (a real double-click, an email client's link-prefetcher, a platform
+  // retry) can both read `pending` before either writes, but only one of
+  // them can be the row this UPDATE actually touches. `.select()` on an
+  // UPDATE returns the rows it changed, so an empty result here means this
+  // request lost the race — not that anything went wrong.
+  const { data: claimed } = await admin
+    .from('signup_requests')
+    .update({ status: 'approved', decided_at: new Date().toISOString() })
+    .eq('id', params.id)
+    .eq('status', 'pending')
+    .select('*')
+    .maybeSingle();
+
+  if (!claimed) {
+    const { data: reqRow } = await admin.from('signup_requests').select('status').eq('id', params.id).maybeSingle();
     return decisionPage({
       ok: true,
       title: 'Already decided',
-      body: `This request was already ${reqRow.status === 'approved' ? 'approved' : 'rejected'} — no action taken.`,
+      body: `This request was already ${reqRow?.status === 'approved' ? 'approved' : 'rejected'} — no action taken.`,
     });
   }
 
+  const reqRow = claimed;
   const email = reqRow.email as string;
   const fullName = reqRow.full_name as string;
   const orgId = reqRow.org_id as string;
@@ -143,10 +164,11 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     { org_id: orgId, profile_id: userId, role: requestedRole, team_id: teamId },
     { onConflict: 'org_id,profile_id' },
   );
-  await admin
-    .from('signup_requests')
-    .update({ status: 'approved', decided_at: new Date().toISOString(), team_id: teamId })
-    .eq('id', reqRow.id);
+  // Status and decided_at were already set atomically by the claim above;
+  // team_id is the one field that could only be known after creating it.
+  if (teamId) {
+    await admin.from('signup_requests').update({ team_id: teamId }).eq('id', reqRow.id);
+  }
 
   const origin = process.env.NEXT_PUBLIC_SITE_URL || request.nextUrl.origin;
   const signInUrl = new URL('/ar/sign-in', origin).toString();

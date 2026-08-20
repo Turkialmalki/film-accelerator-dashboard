@@ -22,30 +22,37 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     return decisionPage({ ok: false, title: 'Not configured', body: 'The service-role key is missing.' });
   }
 
-  const { data: reqRow } = await admin
+  const { data: lookupRow } = await admin
     .from('signup_requests')
-    .select('*')
+    .select('id, reject_token')
     .eq('id', params.id)
     .maybeSingle();
 
-  if (!reqRow) {
+  if (!lookupRow) {
     return decisionPage({ ok: false, title: 'Not found', body: 'This request no longer exists.' });
   }
-  if (reqRow.reject_token !== token) {
+  if (lookupRow.reject_token !== token) {
     return decisionPage({ ok: false, title: 'Invalid link', body: 'This rejection link is not valid.' });
   }
-  if (reqRow.status !== 'pending') {
+
+  // Same atomic claim as the approve route — see its comment for why a
+  // prior SELECT check isn't enough on its own.
+  const { data: reqRow } = await admin
+    .from('signup_requests')
+    .update({ status: 'rejected', decided_at: new Date().toISOString() })
+    .eq('id', params.id)
+    .eq('status', 'pending')
+    .select('*')
+    .maybeSingle();
+
+  if (!reqRow) {
+    const { data: current } = await admin.from('signup_requests').select('status').eq('id', params.id).maybeSingle();
     return decisionPage({
       ok: true,
       title: 'Already decided',
-      body: `This request was already ${reqRow.status === 'approved' ? 'approved' : 'rejected'} — no action taken.`,
+      body: `This request was already ${current?.status === 'approved' ? 'approved' : 'rejected'} — no action taken.`,
     });
   }
-
-  await admin
-    .from('signup_requests')
-    .update({ status: 'rejected', decided_at: new Date().toISOString() })
-    .eq('id', reqRow.id);
 
   await sendSignupRejectedEmail({ to: reqRow.email, fullName: reqRow.full_name });
 
