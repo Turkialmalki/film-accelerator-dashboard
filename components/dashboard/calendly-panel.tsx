@@ -12,6 +12,13 @@ import {
 import { useI18n } from '@/components/providers/locale-provider';
 import { KpiCard } from '@/components/dashboard/kpi-card';
 import {
+  KpiIconCalendarCheck,
+  KpiIconCanceled,
+  KpiIconClock,
+  KpiIconPeople,
+  KpiIconRescheduled,
+} from '@/components/dashboard/kpi-icons';
+import {
   CHART_COLORS,
   ChartEmpty,
   ChartFrame,
@@ -95,28 +102,28 @@ export function CalendlyPanel() {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
-        <KpiCard index={0} icon="Users" label={t.calendly.kpiMentors} value={data.mentors} />
+        <KpiCard index={0} icon={<KpiIconPeople />} label={t.calendly.kpiMentors} value={data.mentors} />
         <KpiCard
           index={1}
-          icon="CalendarCheck"
+          icon={<KpiIconCalendarCheck />}
           label={t.calendly.kpiSessionsCompleted}
           value={data.sessionsCompleted}
         />
         <KpiCard
           index={2}
-          icon="Clock"
+          icon={<KpiIconClock />}
           label={t.calendly.kpiHoursCompleted}
           value={data.hoursCompleted}
         />
         <KpiCard
           index={3}
-          icon="XCircle"
+          icon={<KpiIconCanceled />}
           label={t.calendly.kpiSessionsCanceled}
           value={data.sessionsCanceled}
         />
         <KpiCard
           index={4}
-          icon="RefreshCw"
+          icon={<KpiIconRescheduled />}
           label={t.calendly.kpiSessionsRescheduled}
           value={data.sessionsRescheduled}
         />

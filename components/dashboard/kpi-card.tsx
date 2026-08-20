@@ -19,7 +19,14 @@ export function KpiCard({
   hint?: string;
   value: number;
   suffix?: string;
-  icon: string;
+  /**
+   * Either the name of a registered Lucide glyph — rendered in the original
+   * flat accent chip, which is what `/overview` and `/results/[formId]` still
+   * pass — or a ready-made icon node, which is what the dashboard's KPI cards
+   * now pass (see `components/dashboard/kpi-icons.tsx`). A node draws its own
+   * plate, so it is rendered without the chip.
+   */
+  icon: string | React.ReactNode;
   index?: number;
   className?: string;
 }) {
@@ -37,9 +44,13 @@ export function KpiCard({
     >
       <div className="flex items-start justify-between gap-3">
         <p className="text-sm font-medium text-ink-muted">{label}</p>
-        <span className="flex size-8 items-center justify-center rounded-md bg-accent-soft text-accent">
-          <Icon name={icon} className="size-4" />
-        </span>
+        {typeof icon === 'string' ? (
+          <span className="flex size-8 items-center justify-center rounded-md bg-accent-soft text-accent">
+            <Icon name={icon} className="size-4" />
+          </span>
+        ) : (
+          icon
+        )}
       </div>
       <p className="tnum mt-3 text-3xl font-semibold text-ink">
         {fmtNumber(shown)}

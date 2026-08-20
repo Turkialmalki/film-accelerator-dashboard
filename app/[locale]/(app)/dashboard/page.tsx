@@ -16,6 +16,19 @@ import {
 import { PageHeader } from '@/components/shell/page-header';
 import { ProgramBanner } from '@/components/dashboard/program-banner';
 import { KpiCard } from '@/components/dashboard/kpi-card';
+import {
+  KpiIconClipboardCheck,
+  KpiIconCompanies,
+  KpiIconCompass,
+  KpiIconForms,
+  KpiIconGauge,
+  KpiIconGrowth,
+  KpiIconInbox,
+  KpiIconJobs,
+  KpiIconPeople,
+  KpiIconShieldAlert,
+  KpiIconShieldCheck,
+} from '@/components/dashboard/kpi-icons';
 import { KeyFindings } from '@/components/dashboard/portfolio-findings';
 import { PortfolioHealthPanel } from '@/components/dashboard/portfolio-health';
 import {
@@ -125,14 +138,14 @@ export default function DashboardPage() {
           <>
             <KpiCard
               index={0}
-              icon="Building2"
+              icon={<KpiIconCompanies />}
               label={t.portfolio.kpiCompanies}
               hint={t.portfolio.kpiCompaniesHint}
               value={portfolio.totalCompanies}
             />
             <KpiCard
               index={1}
-              icon="Gauge"
+              icon={<KpiIconGauge />}
               label={t.portfolio.kpiReadiness}
               hint={tf(t.portfolio.kpiReadinessHint, {
                 median: portfolio.readiness.median,
@@ -144,28 +157,28 @@ export default function DashboardPage() {
             />
             <KpiCard
               index={2}
-              icon="Compass"
+              icon={<KpiIconCompass />}
               label={t.portfolio.kpiMvp}
               hint={t.portfolio.kpiMvpHint}
               value={portfolio.mvpCount}
             />
             <KpiCard
               index={3}
-              icon="Briefcase"
+              icon={<KpiIconJobs />}
               label={t.portfolio.kpiJobs}
               hint={t.portfolio.kpiJobsHint}
               value={portfolio.directJobs}
             />
             <KpiCard
               index={4}
-              icon="TrendingUp"
+              icon={<KpiIconGrowth />}
               label={t.portfolio.kpiRevenueActive}
               hint={t.portfolio.kpiRevenueActiveHint}
               value={portfolio.revenueActiveCount}
             />
             <KpiCard
               index={5}
-              icon="ShieldCheck"
+              icon={<KpiIconShieldCheck />}
               label={t.portfolio.kpiInvestorReady}
               hint={tf(t.portfolio.kpiInvestorReadyHint, {
                 threshold: INVESTOR_READY_THRESHOLD,
@@ -174,7 +187,7 @@ export default function DashboardPage() {
             />
             <KpiCard
               index={6}
-              icon="ShieldAlert"
+              icon={<KpiIconShieldAlert />}
               label={t.portfolio.kpiSoloRisk}
               hint={t.portfolio.kpiSoloRiskHint}
               value={portfolio.keyPersonRiskCount}
@@ -270,28 +283,28 @@ export default function DashboardPage() {
             <>
               <KpiCard
                 index={0}
-                icon="Users"
+                icon={<KpiIconPeople />}
                 label={t.dashboard.kpiTeams}
                 hint={t.dashboard.kpiTeamsHint}
                 value={kpis.teams}
               />
               <KpiCard
                 index={1}
-                icon="FileText"
+                icon={<KpiIconForms />}
                 label={t.dashboard.kpiForms}
                 hint={t.dashboard.kpiFormsHint}
                 value={kpis.activeForms}
               />
               <KpiCard
                 index={2}
-                icon="Inbox"
+                icon={<KpiIconInbox />}
                 label={t.dashboard.kpiSubmissions}
                 hint={t.dashboard.kpiSubmissionsHint}
                 value={kpis.submissions}
               />
               <KpiCard
                 index={3}
-                icon="Gauge"
+                icon={<KpiIconGauge tint="info" />}
                 label={t.dashboard.kpiRate}
                 hint={t.dashboard.kpiRateHint}
                 value={kpis.responseRate}
@@ -299,7 +312,7 @@ export default function DashboardPage() {
               />
               <KpiCard
                 index={4}
-                icon="ClipboardCheck"
+                icon={<KpiIconClipboardCheck />}
                 label={t.dashboard.kpiPending}
                 hint={t.dashboard.kpiPendingHint}
                 value={kpis.pendingReview}
