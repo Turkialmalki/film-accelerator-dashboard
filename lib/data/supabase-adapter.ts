@@ -144,8 +144,20 @@ export class SupabaseAdapter implements Repository {
   }
 
   async requestPasswordReset(email: string): Promise<void> {
-    const { error } = await this.client.auth.resetPasswordForEmail(email);
-    if (error) throw error;
+    // Deliberately not `this.client.auth.resetPasswordForEmail()` — that
+    // sends from Supabase's own mailer and redirects to whatever "Site URL"
+    // is configured in the project's Auth settings, which on this project
+    // points at localhost. `/api/auth/request-reset` generates the recovery
+    // link with the service-role key, redirecting to this app's own origin,
+    // and emails it through Resend instead. See that route for the full
+    // rationale.
+    const locale = typeof document !== 'undefined' ? document.documentElement.lang : undefined;
+    const response = await fetch('/api/auth/request-reset', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, locale: locale === 'en' ? 'en' : 'ar' }),
+    });
+    if (!response.ok) throw new Error('RESET_REQUEST_FAILED');
   }
 
   async resetPassword(_token: string, password: string): Promise<void> {
